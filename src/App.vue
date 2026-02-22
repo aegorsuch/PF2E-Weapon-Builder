@@ -98,15 +98,15 @@
           <option value="Gnome">Gnome</option>
           <option value="Goblin">Goblin</option>
           <option value="Halfling">Halfling</option>
-          <option value="Orc">Orc</option>
           <option value="Kobold">Kobold</option>
+          <option value="Orc">Orc</option>
         </select>
       </label>
       <hr>
       <div class="row">
         <div class="col">
-          Minor Boons (1 point each)
-          <select class="form-select" v-model="boons.minor" multiple>
+          Minor Traits (1 point each)
+          <select class="form-select" v-model="traits.minor" multiple>
             <option value="Backstabber">Backstabber</option>
             <option value="Backswing">Backswing</option>
             <option value="Disarm">Disarm </option>
@@ -122,8 +122,8 @@
           </select>
         </div>
         <div class="col">
-          Greater Boons (2 points each)
-          <select class="form-select" v-model="boons.greater" multiple>
+          Greater Traits (2 points each)
+          <select class="form-select" v-model="traits.greater" multiple>
             <option value="Agile">Agile</option>
             <option value="Deadly">Deadly</option>
             <option value="Grapple">Grapple</option>
@@ -133,8 +133,8 @@
           </select>
         </div>
         <div class="col">
-          Major Boons (3 points each)
-          <select class="form-select" v-model="boons.major" multiple>
+          Major Traits (3 points each)
+          <select class="form-select" v-model="traits.major" multiple>
             <option value="Attached">Attached</option>
             <option value="Fatal">Fatal</option>
             <option value="Reach">Reach</option>
@@ -180,7 +180,7 @@ export default {
       price: 0,
       range: 0,
     },
-    boons: {
+    traits: {
       minor: [],
       greater: [],
       major: [],
@@ -198,7 +198,7 @@ export default {
   },
   computed: {
     hasFinesse () {
-      return this.boons.minor.indexOf('Finesse') > -1
+      return this.traits.minor.indexOf('Finesse') > -1
     },
     isMelee () {
       return this.range === 'melee';
@@ -208,14 +208,14 @@ export default {
       if(!this.isMelee) {
         value =  value - 3 + this.adjustements.reload + this.adjustements.volley + this.adjustements.range
       }
-      value = value - this.boons.minor.length - this.boons.greater.length * 2 - this.boons.major.length * 3
+      value = value - this.traits.minor.length - this.traits.greater.length * 2 - this.traits.major.length * 3
       return value
     },
     allTraits() {
       const combined = [
-        ...this.boons.minor, 
-        ...this.boons.greater, 
-        ...this.boons.major
+        ...this.traits.minor, 
+        ...this.traits.greater, 
+        ...this.traits.major
       ];
       if (this.selectedAncestry) {
         combined.push(this.selectedAncestry);
@@ -236,7 +236,7 @@ export default {
         price: 0,
         range: 0,
       };
-      this.boons = {
+      this.traits = {
         minor: [],
         greater: [],
         major: [],
