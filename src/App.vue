@@ -2,67 +2,74 @@
   <div id="app" class="container">
     <form>
       <div class="d-flex justify-content-between align-items-center mt-3">
-       <h1 class="mb-0">Points Left: {{ total }}</h1>
-       <button type="button" class="btn btn-outline-danger" @click="resetBuilder">
-        Clear All
-       </button>
-     </div>
-
-      <div class="form-check">
-        <input v-model="range" class="form-check-input" type="radio" id="range-melee" value="melee">
-        <label class="form-check-label" for="range-melee">
-          Melee
-        </label>
+        <h1 class="mb-0">Points Left: {{ total }}</h1>
+        <div>
+          <button type="button" class="btn btn-outline-primary me-2" @click="copyToClipboard">
+            Copy Traits
+          </button>
+          <button type="button" class="btn btn-outline-danger" @click="resetBuilder">
+            Clear All
+          </button>
+        </div>
       </div>
-      <div class="form-check">
-        <input v-model="range" class="form-check-input" type="radio" id="range-ranged" value="ranged">
-        <label class="form-check-label" for="range-ranged">
-          Ranged
-        </label>
+
+      <div class="mt-3">
+        <div class="form-check">
+          <input v-model="range" class="form-check-input" type="radio" id="range-melee" value="melee">
+          <label class="form-check-label" for="range-melee">
+            Melee
+          </label>
+        </div>
+        <div class="form-check">
+          <input v-model="range" class="form-check-input" type="radio" id="range-ranged" value="ranged">
+          <label class="form-check-label" for="range-ranged">
+            Ranged
+          </label>
+        </div>
       </div>
 
       <hr>
-        <label class="me-2">
-          Expensive (13gp+)
-          <select class="form-select block" v-model="adjustements.price">
-            <option :value="0">Nope</option>
-            <option :value="1">Yup</option>
-          </select>
-        </label>
-        <label class="me-2">
-          Weapon Category
-          <select class="form-select block" v-model="adjustements.category">
-            <option :value="0">Simple</option>
-            <option :value="3">Martial</option>
-            <option :value="5">Advanced</option>
-          </select>
-        </label>
-        <label class="me-2">
-          Hands
-          <select class="form-select block" v-model="adjustements.hands">
-            <option :value="0">1</option>
-            <option v-if="!isMelee" :value="1">1+</option>
-            <option :value="6">2</option>
-          </select>
-        </label>
-        <label class="me-2">
-          Damage
-          <select class="form-select" v-model="adjustements.die">
-            <option :value="3">d4</option>
-            <option :value="0">d6</option>
-            <option :value="-3">d8</option>
-            <option :value="-6">d10</option>
-            <option :value="-9">d12</option>
-          </select>
-        </label>
-        <label v-if="!isMelee" class="me-2">
-          Reload
-          <select class="form-select" v-model="adjustements.reload">
-            <option :value="0">Reload 0</option>
-            <option :value="3">Reload 1</option>
-            <option :value="6">Reload 2</option>
-          </select>
-        </label>
+      <label class="me-2">
+        Expensive (13gp+)
+        <select class="form-select block" v-model="adjustements.price">
+          <option :value="0">Nope</option>
+          <option :value="1">Yup</option>
+        </select>
+      </label>
+      <label class="me-2">
+        Weapon Category
+        <select class="form-select block" v-model="adjustements.category">
+          <option :value="0">Simple</option>
+          <option :value="3">Martial</option>
+          <option :value="5">Advanced</option>
+        </select>
+      </label>
+      <label class="me-2">
+        Hands
+        <select class="form-select block" v-model="adjustements.hands">
+          <option :value="0">1</option>
+          <option v-if="!isMelee" :value="1">1+</option>
+          <option :value="6">2</option>
+        </select>
+      </label>
+      <label class="me-2">
+        Damage
+        <select class="form-select" v-model="adjustements.die">
+          <option :value="3">d4</option>
+          <option :value="0">d6</option>
+          <option :value="-3">d8</option>
+          <option :value="-6">d10</option>
+          <option :value="-9">d12</option>
+        </select>
+      </label>
+      <label v-if="!isMelee" class="me-2">
+        Reload
+        <select class="form-select" v-model="adjustements.reload">
+          <option :value="0">Reload 0</option>
+          <option :value="3">Reload 1</option>
+          <option :value="6">Reload 2</option>
+        </select>
+      </label>
       <label v-if="!isMelee" class="me-2">
         Range
         <select class="form-select" v-model="adjustements.range">
@@ -74,13 +81,13 @@
           <option :value="-3">120ft</option>
         </select>
       </label>
-        <label v-if="!isMelee" class="me-2">
-          Volley
-          <select class="form-select" v-model="adjustements.volley">
-            <option :value="0">No Volley</option>
-            <option :value="3">Volley 30ft</option>
-          </select>
-        </label>
+      <label v-if="!isMelee" class="me-2">
+        Volley
+        <select class="form-select" v-model="adjustements.volley">
+          <option :value="0">No Volley</option>
+          <option :value="3">Volley 30ft</option>
+        </select>
+      </label>
       <hr>
       <div class="row">
         <div class="col">
@@ -129,15 +136,15 @@
       <p>There are currently no published weapons with Finesse trait.</p>
     </div>
     <div>
-    <div v-if="allTraits.length > 0" class="mt-4">
-  <h4>Selected Traits (Alphabetical)</h4>
-  <div class="d-flex flex-wrap gap-2">
-    <span v-for="(trait, index) in allTraits" :key="index" class="badge bg-primary">
-      {{ trait }}
-    </span>
-  </div>
-</div>
-<hr />
+      <div v-if="allTraits.length > 0" class="mt-4">
+        <h4>Selected Traits (Alphabetical)</h4>
+        <div class="d-flex flex-wrap gap-2">
+          <span v-for="(trait, index) in allTraits" :key="index" class="badge bg-primary">
+            {{ trait }}
+          </span>
+        </div>
+      </div>
+      <hr />
       <h4>Source</h4>
       <p>The implemented calculation has not been in any way confirmed by Paizo to be anything close to real.</p>
       <p>The tool is built on top of the analysis made by Pronate (see <a href="https://docs.google.com/document/d/1j0uUtVcTgvn2a0oMYFKMwe_-tAPOdnFY21_0FOiX2DI/edit">the document</a> for details) with several modifications on top.</p>
@@ -146,9 +153,8 @@
 </template>
 
 <script>
-
-
 export default {
+  name: 'App',
   data: () => ({
     range: 'melee',
     adjustements: {
@@ -167,11 +173,13 @@ export default {
     },
   }),
   created () {
-    window.ym(79182352, "init", {
-      clickmap:true,
-      trackLinks:true,
-      accurateTrackBounce:true
-    });
+    if (window.ym) {
+      window.ym(79182352, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true
+      });
+    }
   },
   computed: {
     hasFinesse () {
@@ -196,9 +204,8 @@ export default {
       ];
       return combined.sort();
     }
-  }, // <--- This brace/comma ends "computed"
-  
-  methods: { // <--- PASTE THE NEW SECTION STARTING HERE
+  },
+  methods: {
     resetBuilder() {
       this.range = 'melee';
       this.adjustements = {
@@ -215,9 +222,21 @@ export default {
         greater: [],
         major: [],
       };
-    }
-  }, // <--- ENDS "methods"
+    },
+    copyToClipboard() {
+      const textToCopy = this.allTraits.join(", ");
+      
+      if (textToCopy === "") {
+        alert("No traits selected to copy!");
+        return;
+      }
 
-  name: 'App',
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        alert("Traits copied to clipboard!");
+      }).catch(err => {
+        console.error('Could not copy text: ', err);
+      });
+    }
+  }
 }
 </script>

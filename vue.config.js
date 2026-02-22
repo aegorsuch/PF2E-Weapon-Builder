@@ -1,5 +1,5 @@
 module.exports = {
   publicPath: process.env.NODE_ENV === 'production'
-  ? '/pf2-weapons/'
-  : '/'
+    ? '/PF2E-Weapon-Builder/'
+    : '/'
 }
