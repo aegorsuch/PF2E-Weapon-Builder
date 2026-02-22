@@ -190,6 +190,7 @@ export default {
     },
     allTraits() {
       const combined = [
+        'Uncommon',
         ...this.traits.onePoint, 
         ...this.traits.twoPoint, 
         ...this.traits.threePoint
