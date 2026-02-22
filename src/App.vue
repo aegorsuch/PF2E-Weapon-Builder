@@ -225,7 +225,6 @@ export default {
       // Add 1-Point Traits
       this.traits.onePoint.forEach(t => {
         if (t === 'Two-Hand') combined.push(`Two-Hand ${traitDie}`);
-        else if (t === 'Thrown 20') combined.push('Thrown 20ft');
         else combined.push(t);
       });
 
@@ -243,7 +242,7 @@ export default {
 
       // Volley Check
       if (!this.isMelee && this.adjustements.volley === 3) {
-        combined.push('Volley 30ft');
+        combined.push('Volley 30');
       }
 
       if (this.selectedAncestry) combined.push(this.selectedAncestry);
