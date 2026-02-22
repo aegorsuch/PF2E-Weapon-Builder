@@ -92,6 +92,7 @@
         </select>
       </label>
       <hr>
+
       <div class="row mt-4">
         <div class="col-md-4">
           <label class="fw-bold mb-2">1-Point Traits</label>
@@ -99,7 +100,7 @@
             <button v-for="t in ['Backstabber', 'Backswing', 'Brace', 'Climbing', 'Combination', 'Concealable', 'Disarm', 'Finesse', 'Forceful', 'Free-Hand', 'Kickback', 'Propulsive', 'Shove', 'Sweep', 'Thrown 20', 'Twin', 'Two-Hand', 'Versatile B', 'Versatile P', 'Versatile S']" 
                     :key="t" type="button"
                     @click="toggleTrait('onePoint', t)"
-                    :class="['btn btn-sm', traits.onePoint.includes(t) ? 'btn-primary shadow-sm' : 'btn-outline-secondary']">
+                    :class="['btn btn-sm', traits.onePoint.includes(t) ? 'btn-success fw-bold text-white' : 'btn-outline-secondary']">
               {{ t }}
             </button>
           </div>
@@ -111,7 +112,7 @@
             <button v-for="t in ['Agile', 'Capacity 5', 'Concussive', 'Deadly', 'Grapple', 'Hampering', 'Jousting', 'Modular', 'Parry', 'Ranged Trip', 'Razing', 'Resonant', 'Training', 'Trip']" 
                     :key="t" type="button"
                     @click="toggleTrait('twoPoint', t)"
-                    :class="['btn btn-sm', traits.twoPoint.includes(t) ? 'btn-primary shadow-sm' : 'btn-outline-secondary']">
+                    :class="['btn btn-sm', traits.twoPoint.includes(t) ? 'btn-success fw-bold text-white' : 'btn-outline-secondary']">
               {{ t }}
             </button>
           </div>
@@ -123,7 +124,7 @@
             <button v-for="t in ['Attached', 'Critical Fusion', 'Double Barrel', 'Fatal', 'Fatal Aim', 'Injection', 'Reach', 'Recovery', 'Repeating', 'Scatter 10', 'Tethered', 'Unarmed']" 
                     :key="t" type="button"
                     @click="toggleTrait('threePoint', t)"
-                    :class="['btn btn-sm', traits.threePoint.includes(t) ? 'btn-primary shadow-sm' : 'btn-outline-secondary']">
+                    :class="['btn btn-sm', traits.threePoint.includes(t) ? 'btn-success fw-bold text-white' : 'btn-outline-secondary']">
               {{ t }}
             </button>
           </div>
@@ -148,76 +149,41 @@ export default {
   data: () => ({
     range: 'melee',
     adjustements: {
-      proficiency: 0,
-      die: 0,
-      hands: 0,
-      reload: 0,
-      volley: 0,
-      range: 0,
+      proficiency: 0, die: 0, hands: 0, reload: 0, volley: 0, range: 0,
     },
     traits: {
-      onePoint: [],
-      twoPoint: [],
-      threePoint: [],
+      onePoint: [], twoPoint: [], threePoint: [],
     },
     selectedAncestry: '',
   }),
   computed: {
-    isMelee () {
-      return this.range === 'melee';
-    },
+    isMelee () { return this.range === 'melee'; },
     total () {
       let bonusPoint = 2;
       let baseCost = this.adjustements.proficiency + this.adjustements.die + this.adjustements.hands;
-      if(!this.isMelee) {
-        baseCost = baseCost - 3 + this.adjustements.reload + this.adjustements.volley + this.adjustements.range;
-      }
-      let traitsCost = this.traits.onePoint.length + 
-                       this.traits.twoPoint.length * 2 + 
-                       this.traits.threePoint.length * 3;
+      if(!this.isMelee) baseCost = baseCost - 3 + this.adjustements.reload + this.adjustements.volley + this.adjustements.range;
+      let traitsCost = this.traits.onePoint.length + this.traits.twoPoint.length * 2 + this.traits.threePoint.length * 3;
       return bonusPoint + baseCost - traitsCost;
     },
     allTraits() {
       let combined = ['Uncommon'];
-      
-      const traitDieMap = { 
-        3: 'd8', 0: 'd10', '-3': 'd12', '-6': 'd12', '-9': 'd12'
-      };
-      
+      const traitDieMap = { 3: 'd8', 0: 'd10', '-3': 'd12', '-6': 'd12', '-9': 'd12' };
       const traitDie = traitDieMap[this.adjustements.die] || 'd12';
 
-      this.traits.onePoint.forEach(t => {
-        if (t === 'Two-Hand') combined.push(`Two-Hand ${traitDie}`);
-        else combined.push(t);
-      });
+      this.traits.onePoint.forEach(t => combined.push(t === 'Two-Hand' ? `Two-Hand ${traitDie}` : t));
+      this.traits.twoPoint.forEach(t => combined.push(t === 'Deadly' ? `Deadly ${traitDie}` : t));
+      this.traits.threePoint.forEach(t => combined.push(t === 'Fatal' ? `Fatal ${traitDie}` : t));
 
-      this.traits.twoPoint.forEach(t => {
-        if (t === 'Deadly') combined.push(`Deadly ${traitDie}`);
-        else combined.push(t);
-      });
-
-      this.traits.threePoint.forEach(t => {
-        if (t === 'Fatal') combined.push(`Fatal ${traitDie}`);
-        else combined.push(t);
-      });
-
-      if (!this.isMelee && this.adjustements.volley === 3) {
-        combined.push('Volley 30');
-      }
-
+      if (!this.isMelee && this.adjustements.volley === 3) combined.push('Volley 30');
       if (this.selectedAncestry) combined.push(this.selectedAncestry);
-
       return combined.sort();
     }
   },
   methods: {
     toggleTrait(group, trait) {
       const index = this.traits[group].indexOf(trait);
-      if (index > -1) {
-        this.traits[group].splice(index, 1);
-      } else {
-        this.traits[group].push(trait);
-      }
+      if (index > -1) this.traits[group].splice(index, 1);
+      else this.traits[group].push(trait);
     },
     resetBuilder() {
       this.range = 'melee';
@@ -227,10 +193,6 @@ export default {
     },
     copyToClipboard() {
       const textToCopy = this.allTraits.join(", ");
-      if (textToCopy === "") {
-        alert("No traits selected to copy!");
-        return;
-      }
       navigator.clipboard.writeText(textToCopy).then(() => {
         alert("Traits copied to clipboard!");
       });
