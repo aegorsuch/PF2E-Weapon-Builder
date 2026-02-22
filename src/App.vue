@@ -50,23 +50,33 @@
       </label>
       
       <template v-if="!isMelee">
-        <label class="me-2">Reload
-          <select class="form-select" v-model="adjustements.reload">
-            <option :value="0">Reload 0</option>
-            <option :value="3">Reload 1</option>
-            <option :value="6">Reload 2</option>
-          </select>
-        </label>
-        <label class="me-2">Range
-          <select class="form-select" v-model="adjustements.range">
-            <option :value="4">20</option>
-            <option :value="3">30</option>
-            <option :value="1">50</option>
-            <option :value="0">60</option>
-            <option :value="-2">100</option>
-            <option :value="-3">120</option>
-          </select>
-        </label>
+        <div class="d-flex flex-wrap gap-2 align-items-end mt-2">
+          <label>Reload
+            <select class="form-select" v-model="adjustements.reload">
+              <option :value="0">Reload 0</option>
+              <option :value="3">Reload 1</option>
+              <option :value="6">Reload 2</option>
+            </select>
+          </label>
+
+          <label>Range
+            <select class="form-select" v-model="adjustements.range">
+              <option :value="4">20</option>
+              <option :value="3">30</option>
+              <option :value="1">50</option>
+              <option :value="0">60</option>
+              <option :value="-2">100</option>
+              <option :value="-3">120</option>
+            </select>
+          </label>
+
+          <label>Volley
+            <select class="form-select" v-model="adjustements.volley">
+              <option :value="0">None</option>
+              <option :value="3">Volley 30</option>
+            </select>
+          </label>
+        </div>
       </template>
       <hr>
 
