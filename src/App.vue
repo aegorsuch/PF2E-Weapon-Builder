@@ -136,12 +136,11 @@
     <hr />
     <div>
       <div v-if="allTraits.length > 0" class="mt-4">
-        <h4>Selected Traits (Alphabetical)</h4>
+        <h4>Traits</h4>
         <div class="d-flex flex-wrap gap-2">
           <span v-for="(trait, index) in allTraits" 
-                :key="index" 
-                class="badge"
-                :class="trait === selectedAncestry ? 'bg-success' : 'bg-primary'">
+             :key="index" 
+              class="badge bg-primary">
             {{ trait }}
           </span>
         </div>
