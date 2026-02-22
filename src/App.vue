@@ -16,26 +16,15 @@
       <div class="mt-3">
         <div class="form-check">
           <input v-model="range" class="form-check-input" type="radio" id="range-melee" value="melee">
-          <label class="form-check-label" for="range-melee">
-            Melee
-          </label>
+          <label class="form-check-label" for="range-melee">Melee</label>
         </div>
         <div class="form-check">
           <input v-model="range" class="form-check-input" type="radio" id="range-ranged" value="ranged">
-          <label class="form-check-label" for="range-ranged">
-            Ranged
-          </label>
+          <label class="form-check-label" for="range-ranged">Ranged</label>
         </div>
       </div>
 
       <hr>
-      <label class="me-2">
-        Expensive (13gp+)
-        <select class="form-select block" v-model="adjustements.price">
-          <option :value="0">Nope</option>
-          <option :value="1">Yup</option>
-        </select>
-      </label>
       <label class="me-2">
         Proficiency
         <select class="form-select block" v-model="adjustements.proficiency">
@@ -149,15 +138,17 @@
       <div v-if="allTraits.length > 0" class="mt-4">
         <h4>Selected Traits (Alphabetical)</h4>
         <div class="d-flex flex-wrap gap-2">
-          <span v-for="(trait, index) in allTraits" :key="index" class="badge bg-primary">
+          <span v-for="(trait, index) in allTraits" 
+                :key="index" 
+                class="badge"
+                :class="trait === selectedAncestry ? 'bg-success' : 'bg-primary'">
             {{ trait }}
           </span>
         </div>
       </div>
       <hr />
       <h4>Source</h4>
-      <p>The implemented calculation has not been in any way confirmed by Paizo to be anything close to real.</p>
-      <p>The tool is built on top of the analysis made by Pronate (see <a href="https://docs.google.com/document/d/1j0uUtVcTgvn2a0oMYFKMwe_-tAPOdnFY21_0FOiX2DI/edit">the document</a> for details) with several modifications on top.</p>
+      <p>The implemented calculation has not been in any way confirmed by Paizo. Built on <a href="https://docs.google.com/document/d/1j0uUtVcTgvn2a0oMYFKMwe_-tAPOdnFY21_0FOiX2DI/edit" target="_blank">the document</a> for details.</p>
     </div>
   </div>
 </template>
@@ -173,7 +164,6 @@ export default {
       hands: 0,
       reload: 0,
       volley: 0,
-      price: 0,
       range: 0,
     },
     traits: {
@@ -183,26 +173,20 @@ export default {
     },
     selectedAncestry: '',
   }),
-  created () {
-    if (window.ym) {
-      window.ym(79182352, "init", {
-        clickmap:true,
-        trackLinks:true,
-        accurateTrackBounce:true
-      });
-    }
-  },
   computed: {
     isMelee () {
       return this.range === 'melee';
     },
     total () {
-      let value = 1 + this.adjustements.proficiency + this.adjustements.die + this.adjustements.hands + this.adjustements.price
+      let bonusPoint = 2;
+      let baseCost = this.adjustements.proficiency + this.adjustements.die + this.adjustements.hands;
       if(!this.isMelee) {
-        value =  value - 3 + this.adjustements.reload + this.adjustements.volley + this.adjustements.range
+        baseCost = baseCost - 3 + this.adjustements.reload + this.adjustements.volley + this.adjustements.range;
       }
-      value = value - this.traits.onePoint.length - this.traits.twoPoint.length * 2 - this.traits.threePoint.length * 3
-      return value
+      let traitsCost = this.traits.onePoint.length + 
+                       this.traits.twoPoint.length * 2 + 
+                       this.traits.threePoint.length * 3;
+      return bonusPoint + baseCost - traitsCost;
     },
     allTraits() {
       const combined = [
@@ -226,7 +210,6 @@ export default {
         hands: 0,
         reload: 0,
         volley: 0,
-        price: 0,
         range: 0,
       };
       this.traits = {
@@ -237,12 +220,10 @@ export default {
     },
     copyToClipboard() {
       const textToCopy = this.allTraits.join(", ");
-      
       if (textToCopy === "") {
         alert("No traits selected to copy!");
         return;
       }
-
       navigator.clipboard.writeText(textToCopy).then(() => {
         alert("Traits copied to clipboard!");
       }).catch(err => {
