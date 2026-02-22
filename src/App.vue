@@ -177,25 +177,50 @@ export default {
     },
     allTraits() {
       let combined = ['Uncommon'];
+      
+      // 1. Die Size Maps
       const traitDieMap = { 3: 'd8', 0: 'd10', '-3': 'd12', '-6': 'd12', '-9': 'd12' };
+      const baseDieMap = { 3: 'd4', 0: 'd6', '-3': 'd8', '-6': 'd10', '-9': 'd12' };
+      
+      // 2. Synergy Helpers
+      const stepUp = { 'd4': 'd6', 'd6': 'd8', 'd8': 'd10', 'd10': 'd12', 'd12': 'd12' };
+      const stepDown = { 'd12': 'd10', 'd10': 'd8', 'd8': 'd6', 'd6': 'd4', 'd4': 'd4' };
+      
       const traitDie = traitDieMap[this.adjustements.die] || 'd12';
+      const currentBaseDie = baseDieMap[this.adjustements.die] || 'd12';
+      const hasDoubleBarrel = this.traits.threePoint.includes('Double Barrel');
 
+      // 3. Handle 1-Point Traits (Two-Hand)
       this.traits.onePoint.forEach(t => combined.push(t === 'Two-Hand' ? `Two-Hand ${traitDie}` : t));
-      this.traits.twoPoint.forEach(t => combined.push(t === 'Deadly' ? `Deadly ${traitDie}` : t));
-      // This handles Fatal, Fatal Aim, and all other 3-point traits correctly
-      this.traits.threePoint.forEach(t => {
-        if (t === 'Fatal') {
-          combined.push(`Fatal ${traitDie}`);
-        } else if (t === 'Fatal Aim') {
-          combined.push(`Fatal Aim ${traitDie}`);
+
+      // 4. Handle 2-Point Traits (Deadly & Jousting)
+      this.traits.twoPoint.forEach(t => {
+        if (t === 'Deadly') {
+          combined.push(`Deadly ${traitDie}`);
+        } else if (t === 'Jousting') {
+          const reducedDie = stepDown[currentBaseDie];
+          combined.push(`Jousting ${reducedDie}`);
         } else {
-          combined.push(t); // This ensures 'Reach', 'Repeating', etc. still show up!
+          combined.push(t);
         }
       });
 
+      // 5. Handle 3-Point Traits (Fatal, Fatal Aim, Double Barrel)
+      this.traits.threePoint.forEach(t => {
+        if (t === 'Fatal') {
+          const fatalDie = hasDoubleBarrel ? stepUp[traitDie] : traitDie;
+          combined.push(`Fatal ${fatalDie}`);
+        } else if (t === 'Fatal Aim') {
+          const fatalAimDie = hasDoubleBarrel ? stepUp[traitDie] : traitDie;
+          combined.push(`Fatal Aim ${fatalAimDie}`);
+        } else {
+          combined.push(t);
+        }
+      });
 
       if (!this.isMelee && this.adjustements.volley === 3) combined.push('Volley 30');
       if (this.selectedAncestry) combined.push(this.selectedAncestry);
+      
       return combined.sort();
     }
   },
