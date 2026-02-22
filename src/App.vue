@@ -48,7 +48,17 @@
           <option :value="-9">d12</option>
         </select>
       </label>
-      
+      <label class="me-2">Ancestry
+        <select class="form-select" v-model="selectedAncestry">
+          <option value="">None</option>
+          <option value="Dwarf">Dwarf</option>
+          <option value="Elf">Elf</option>
+          <option value="Gnome">Gnome</option>
+          <option value="Goblin">Goblin</option>
+          <option value="Halfling">Halfling</option>
+          <option value="Orc">Orc</option>
+        </select>
+      </label>
       <template v-if="!isMelee">
         <div class="d-flex flex-wrap gap-2 align-items-end mt-2">
           <label>Reload
@@ -76,6 +86,7 @@
               <option :value="3">Volley 30</option>
             </select>
           </label>
+          
         </div>
       </template>
       <hr>
