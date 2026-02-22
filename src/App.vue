@@ -189,12 +189,10 @@ export default {
       return bonusPoint + baseCost - traitsCost;
     },
     allTraits() {
-      const combined = [
-        'Uncommon',
-        ...this.traits.onePoint, 
-        ...this.traits.twoPoint, 
-        ...this.traits.threePoint
-      ];
+      let combined = ['Uncommon'];
+        combined.push(...this.traits.onePoint);
+        combined.push(...this.traits.twoPoint);
+        combined.push(...this.traits.threePoint);
       if (this.selectedAncestry) {
         combined.push(this.selectedAncestry);
       }
