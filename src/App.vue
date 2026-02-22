@@ -2,7 +2,16 @@
   <div id="app" class="container">
     <form>
       <div class="d-flex justify-content-between align-items-center mt-3">
-        <h1 class="mb-0">Points Left: {{ total }}</h1>
+        <div class="d-flex align-items-center">
+          <h1 class="mb-0 me-3">Points Left: {{ total }}</h1>
+          <input 
+            v-model="weaponName" 
+            type="text" 
+            class="form-control" 
+            placeholder="Weapon Name..." 
+            style="max-width: 250px;"
+          >
+        </div>
         <div>
           <button type="button" class="btn btn-outline-primary me-2" @click="copyToClipboard">
             Copy Traits
@@ -16,26 +25,15 @@
       <div class="mt-3">
         <div class="form-check">
           <input v-model="range" class="form-check-input" type="radio" id="range-melee" value="melee">
-          <label class="form-check-label" for="range-melee">
-            Melee
-          </label>
+          <label class="form-check-label" for="range-melee">Melee</label>
         </div>
         <div class="form-check">
           <input v-model="range" class="form-check-input" type="radio" id="range-ranged" value="ranged">
-          <label class="form-check-label" for="range-ranged">
-            Ranged
-          </label>
+          <label class="form-check-label" for="range-ranged">Ranged</label>
         </div>
       </div>
 
       <hr>
-      <label class="me-2">
-        Expensive (13gp+)
-        <select class="form-select block" v-model="adjustements.price">
-          <option :value="0">Nope</option>
-          <option :value="1">Yup</option>
-        </select>
-      </label>
       <label class="me-2">
         Proficiency
         <select class="form-select block" v-model="adjustements.proficiency">
@@ -149,7 +147,10 @@
       <div v-if="allTraits.length > 0" class="mt-4">
         <h4>Selected Traits (Alphabetical)</h4>
         <div class="d-flex flex-wrap gap-2">
-          <span v-for="(trait, index) in allTraits" :key="index" class="badge bg-primary">
+          <span v-for="(trait, index) in allTraits" 
+                :key="index" 
+                class="badge"
+                :class="trait === selectedAncestry ? 'bg-success' : 'bg-primary'">
             {{ trait }}
           </span>
         </div>
@@ -157,7 +158,7 @@
       <hr />
       <h4>Source</h4>
       <p>The implemented calculation has not been in any way confirmed by Paizo to be anything close to real.</p>
-      <p>The tool is built on top of the analysis made by Pronate (see <a href="https://docs.google.com/document/d/1j0uUtVcTgvn2a0oMYFKMwe_-tAPOdnFY21_0FOiX2DI/edit">the document</a> for details) with several modifications on top.</p>
+      <p>The tool is built on top of the analysis made by Pronate (see <a href="https://docs.google.com/document/d/1j0uUtVcTgvn2a0oMYFKMwe_-tAPOdnFY21_0FOiX2DI/edit" target="_blank">the document</a> for details).</p>
     </div>
   </div>
 </template>
@@ -166,6 +167,7 @@
 export default {
   name: 'App',
   data: () => ({
+    weaponName: '',
     range: 'melee',
     adjustements: {
       proficiency: 0,
@@ -173,8 +175,7 @@ export default {
       hands: 0,
       reload: 0,
       volley: 0,
-      price: 0,
-      range: 0,
+      range: 0, // Removed price
     },
     traits: {
       onePoint: [],
@@ -183,21 +184,13 @@ export default {
     },
     selectedAncestry: '',
   }),
-  created () {
-    if (window.ym) {
-      window.ym(79182352, "init", {
-        clickmap:true,
-        trackLinks:true,
-        accurateTrackBounce:true
-      });
-    }
-  },
   computed: {
     isMelee () {
       return this.range === 'melee';
     },
     total () {
-      let value = 1 + this.adjustements.proficiency + this.adjustements.die + this.adjustements.hands + this.adjustements.price
+      // Start at 1 base + proficiency + die + hands
+      let value = 1 + this.adjustements.proficiency + this.adjustements.die + this.adjustements.hands
       if(!this.isMelee) {
         value =  value - 3 + this.adjustements.reload + this.adjustements.volley + this.adjustements.range
       }
@@ -218,6 +211,7 @@ export default {
   },
   methods: {
     resetBuilder() {
+      this.weaponName = '';
       this.range = 'melee';
       this.selectedAncestry = '';
       this.adjustements = {
@@ -226,7 +220,6 @@ export default {
         hands: 0,
         reload: 0,
         volley: 0,
-        price: 0,
         range: 0,
       };
       this.traits = {
@@ -236,15 +229,17 @@ export default {
       };
     },
     copyToClipboard() {
-      const textToCopy = this.allTraits.join(", ");
-      
-      if (textToCopy === "") {
+      const traitString = this.allTraits.join(", ");
+      if (traitString === "") {
         alert("No traits selected to copy!");
         return;
       }
+      const textToCopy = this.weaponName 
+        ? `${this.weaponName}: ${traitString}` 
+        : traitString;
 
       navigator.clipboard.writeText(textToCopy).then(() => {
-        alert("Traits copied to clipboard!");
+        alert(`Copied to clipboard: ${textToCopy}`);
       }).catch(err => {
         console.error('Could not copy text: ', err);
       });
