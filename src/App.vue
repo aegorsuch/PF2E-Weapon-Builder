@@ -98,26 +98,42 @@
           <select class="form-select" v-model="traits.onePoint" multiple>
             <option value="Backstabber">Backstabber</option>
             <option value="Backswing">Backswing</option>
-            <option value="Disarm">Disarm </option>
+            <option value="Brace">Brace</option>
+            <option value="Climbing">Climbing</option>            
+            <option value="Combination">Combination</option>
+            <option value="Concealable">Concealable</option>
+            <option value="Disarm">Disarm</option>
             <option value="Finesse">Finesse</option>
+            <option value="Forceful">Forceful</option>            
             <option value="Free-Hand">Free-Hand</option>
-            <option value="Propulsive ">Propulsive </option>
+            <option value="Kickback">Kickback</option>
+            <option value="Propulsive">Propulsive</option>
             <option value="Shove">Shove</option>
             <option value="Sweep">Sweep</option>
-            <option value="Thrown">Thrown</option>
+            <option value="Thrown 20">Thrown 20</option>
             <option value="Twin">Twin</option>
             <option value="Two-Hand">Two-Hand</option>
-            <option value="Versatile">Versatile</option>
+            <option value="Versatile B">Versatile B</option>
+            <option value="Versatile P">Versatile P</option>
+            <option value="Versatile S">Versatile S</option>
           </select>
         </div>
         <div class="col">
           2-Point Traits
           <select class="form-select" v-model="traits.twoPoint" multiple>
             <option value="Agile">Agile</option>
+            <option value="Capacity 5">Capacity 5</option>            
+            <option value="Concussive">Concussive</option>
             <option value="Deadly">Deadly</option>
-            <option value="Grapple">Grapple</option>
+            <option value="Grapple">Grapple</option>            
+            <option value="Hampering">Hampering</option>
             <option value="Jousting">Jousting</option>
+            <option value="Modular">Modular</option>
             <option value="Parry">Parry</option>
+            <option value="Ranged Trip">Ranged Trip</option>
+            <option value="Razing">Razing</option>
+            <option value="Resonant">Resonant</option>
+            <option value="Training">Training</option>
             <option value="Trip">Trip</option>
           </select>
         </div>
@@ -125,10 +141,15 @@
           3-Point Traits
           <select class="form-select" v-model="traits.threePoint" multiple>
             <option value="Attached">Attached</option>
+            <option value="Critical Fusion">Critical Fusion</option>
             <option value="Fatal">Fatal</option>
+            <option value="Injection">Injection</option>
             <option value="Reach">Reach</option>
-            <option value="Forceful">Forceful</option>
+            <option value="Recovery">Recovery</option>
             <option value="Repeating">Repeating</option>
+            <option value="Scatter">Scatter 10</option>
+            <option value="Tethered">Tethered</option>
+            <option value="Unarmed">Unarmed</option>
           </select>
         </div>
       </div>
