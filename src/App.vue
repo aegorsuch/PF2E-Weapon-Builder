@@ -210,15 +210,44 @@ export default {
     },
     allTraits() {
       let combined = ['Uncommon'];
-        combined.push(...this.traits.onePoint);
-        combined.push(...this.traits.twoPoint);
-        combined.push(...this.traits.threePoint);
+      
+      // Corrected Die Mapping
+      const traitDieMap = { 
+        3: 'd8',     // base d4 -> trait d8
+        0: 'd10',    // base d6 -> trait d10
+        '-3': 'd12', // base d8 -> trait d12
+        '-6': 'd12', // base d10 -> trait d12
+        '-9': 'd12'  // base d12 -> trait d12
+      };
+      
+      const traitDie = traitDieMap[this.adjustements.die] || 'd12';
+
+      // Add 1-Point Traits
+      this.traits.onePoint.forEach(t => {
+        if (t === 'Two-Hand') combined.push(`Two-Hand ${traitDie}`);
+        else if (t === 'Thrown 20') combined.push('Thrown 20ft');
+        else combined.push(t);
+      });
+
+      // Add 2-Point Traits
+      this.traits.twoPoint.forEach(t => {
+        if (t === 'Deadly') combined.push(`Deadly ${traitDie}`);
+        else combined.push(t);
+      });
+
+      // Add 3-Point Traits
+      this.traits.threePoint.forEach(t => {
+        if (t === 'Fatal') combined.push(`Fatal ${traitDie}`);
+        else combined.push(t);
+      });
+
+      // Volley Check
       if (!this.isMelee && this.adjustements.volley === 3) {
-        combined.push('Volley 30');
+        combined.push('Volley 30ft');
       }
-      if (this.selectedAncestry) {
-        combined.push(this.selectedAncestry);
-      }
+
+      if (this.selectedAncestry) combined.push(this.selectedAncestry);
+
       return combined.sort();
     }
   },
@@ -226,19 +255,8 @@ export default {
     resetBuilder() {
       this.range = 'melee';
       this.selectedAncestry = '';
-      this.adjustements = {
-        proficiency: 0,
-        die: 0,
-        hands: 0,
-        reload: 0,
-        volley: 0,
-        range: 0,
-      };
-      this.traits = {
-        onePoint: [],
-        twoPoint: [],
-        threePoint: [],
-      };
+      this.adjustements = { proficiency: 0, die: 0, hands: 0, reload: 0, volley: 0, range: 0 };
+      this.traits = { onePoint: [], twoPoint: [], threePoint: [] };
     },
     copyToClipboard() {
       const textToCopy = this.allTraits.join(", ");
