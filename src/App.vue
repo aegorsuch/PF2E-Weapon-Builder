@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="container">
+  <div id="app" class="container pb-5">
     <form>
       <div class="d-flex justify-content-between align-items-center mt-3">
         <h1 class="mb-0">Points Left: {{ total }}</h1>
@@ -99,7 +99,7 @@
             <button v-for="t in ['Backstabber', 'Backswing', 'Brace', 'Climbing', 'Combination', 'Concealable', 'Disarm', 'Finesse', 'Forceful', 'Free-Hand', 'Kickback', 'Propulsive', 'Shove', 'Sweep', 'Thrown 20', 'Twin', 'Two-Hand', 'Versatile B', 'Versatile P', 'Versatile S']" 
                     :key="t" type="button"
                     @click="toggleTrait('onePoint', t)"
-                    :class="['btn btn-sm', traits.onePoint.includes(t) ? 'btn-primary' : 'btn-outline-secondary']">
+                    :class="['btn btn-sm', traits.onePoint.includes(t) ? 'btn-primary shadow-sm' : 'btn-outline-secondary']">
               {{ t }}
             </button>
           </div>
@@ -111,7 +111,7 @@
             <button v-for="t in ['Agile', 'Capacity 5', 'Concussive', 'Deadly', 'Grapple', 'Hampering', 'Jousting', 'Modular', 'Parry', 'Ranged Trip', 'Razing', 'Resonant', 'Training', 'Trip']" 
                     :key="t" type="button"
                     @click="toggleTrait('twoPoint', t)"
-                    :class="['btn btn-sm', traits.twoPoint.includes(t) ? 'btn-primary' : 'btn-outline-secondary']">
+                    :class="['btn btn-sm', traits.twoPoint.includes(t) ? 'btn-primary shadow-sm' : 'btn-outline-secondary']">
               {{ t }}
             </button>
           </div>
@@ -123,26 +123,21 @@
             <button v-for="t in ['Attached', 'Critical Fusion', 'Double Barrel', 'Fatal', 'Fatal Aim', 'Injection', 'Reach', 'Recovery', 'Repeating', 'Scatter 10', 'Tethered', 'Unarmed']" 
                     :key="t" type="button"
                     @click="toggleTrait('threePoint', t)"
-                    :class="['btn btn-sm', traits.threePoint.includes(t) ? 'btn-primary' : 'btn-outline-secondary']">
+                    :class="['btn btn-sm', traits.threePoint.includes(t) ? 'btn-primary shadow-sm' : 'btn-outline-secondary']">
               {{ t }}
             </button>
           </div>
         </div>
       </div>
     </form>
+    
     <hr />
-    <div>
-      <div v-if="allTraits.length > 0" class="mt-4">
-        <h4>Traits</h4>
-        <div class="d-flex flex-wrap gap-2">
-          <span v-for="(trait, index) in allTraits" 
-             :key="index" 
-              class="badge bg-primary">
-            {{ trait }}
-          </span>
-        </div>
+
+    <div v-if="allTraits.length > 0" class="mt-4 p-3 bg-light rounded border">
+      <h4>Traits</h4>
+      <div class="lead">
+        {{ allTraits.join(', ') }}
       </div>
-      <hr />
     </div>
   </div>
 </template>
@@ -185,36 +180,27 @@ export default {
     allTraits() {
       let combined = ['Uncommon'];
       
-      // Corrected Die Mapping
       const traitDieMap = { 
-        3: 'd8',     // base d4 -> trait d8
-        0: 'd10',    // base d6 -> trait d10
-        '-3': 'd12', // base d8 -> trait d12
-        '-6': 'd12', // base d10 -> trait d12
-        '-9': 'd12'  // base d12 -> trait d12
+        3: 'd8', 0: 'd10', '-3': 'd12', '-6': 'd12', '-9': 'd12'
       };
       
       const traitDie = traitDieMap[this.adjustements.die] || 'd12';
 
-      // Add 1-Point Traits
       this.traits.onePoint.forEach(t => {
         if (t === 'Two-Hand') combined.push(`Two-Hand ${traitDie}`);
         else combined.push(t);
       });
 
-      // Add 2-Point Traits
       this.traits.twoPoint.forEach(t => {
         if (t === 'Deadly') combined.push(`Deadly ${traitDie}`);
         else combined.push(t);
       });
 
-      // Add 3-Point Traits
       this.traits.threePoint.forEach(t => {
         if (t === 'Fatal') combined.push(`Fatal ${traitDie}`);
         else combined.push(t);
       });
 
-      // Volley Check
       if (!this.isMelee && this.adjustements.volley === 3) {
         combined.push('Volley 30');
       }
@@ -228,9 +214,9 @@ export default {
     toggleTrait(group, trait) {
       const index = this.traits[group].indexOf(trait);
       if (index > -1) {
-        this.traits[group].splice(index, 1); // Remove if already there
+        this.traits[group].splice(index, 1);
       } else {
-        this.traits[group].push(trait); // Add if not there
+        this.traits[group].push(trait);
       }
     },
     resetBuilder() {
@@ -247,8 +233,6 @@ export default {
       }
       navigator.clipboard.writeText(textToCopy).then(() => {
         alert("Traits copied to clipboard!");
-      }).catch(err => {
-        console.error('Could not copy text: ', err);
       });
     }
   }
