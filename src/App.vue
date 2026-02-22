@@ -92,67 +92,41 @@
         </select>
       </label>
       <hr>
-      <div class="row">
-        <div class="col">
-          1-Point Traits
-          <select class="form-select" v-model="traits.onePoint" multiple>
-            <option value="Backstabber">Backstabber</option>
-            <option value="Backswing">Backswing</option>
-            <option value="Brace">Brace</option>
-            <option value="Climbing">Climbing</option>            
-            <option value="Combination">Combination</option>
-            <option value="Concealable">Concealable</option>
-            <option value="Disarm">Disarm</option>
-            <option value="Finesse">Finesse</option>
-            <option value="Forceful">Forceful</option>            
-            <option value="Free-Hand">Free-Hand</option>
-            <option value="Kickback">Kickback</option>
-            <option value="Propulsive">Propulsive</option>
-            <option value="Shove">Shove</option>
-            <option value="Sweep">Sweep</option>
-            <option value="Thrown 20">Thrown 20</option>
-            <option value="Twin">Twin</option>
-            <option value="Two-Hand">Two-Hand</option>
-            <option value="Versatile B">Versatile B</option>
-            <option value="Versatile P">Versatile P</option>
-            <option value="Versatile S">Versatile S</option>
-          </select>
+      <div class="row mt-4">
+        <div class="col-md-4">
+          <label class="fw-bold mb-2">1-Point Traits</label>
+          <div class="d-flex flex-wrap gap-2">
+            <button v-for="t in ['Backstabber', 'Backswing', 'Brace', 'Climbing', 'Combination', 'Concealable', 'Disarm', 'Finesse', 'Forceful', 'Free-Hand', 'Kickback', 'Propulsive', 'Shove', 'Sweep', 'Thrown 20', 'Twin', 'Two-Hand', 'Versatile B', 'Versatile P', 'Versatile S']" 
+                    :key="t" type="button"
+                    @click="toggleTrait('onePoint', t)"
+                    :class="['btn btn-sm', traits.onePoint.includes(t) ? 'btn-primary' : 'btn-outline-secondary']">
+              {{ t }}
+            </button>
+          </div>
         </div>
-        <div class="col">
-          2-Point Traits
-          <select class="form-select" v-model="traits.twoPoint" multiple>
-            <option value="Agile">Agile</option>
-            <option value="Capacity 5">Capacity 5</option>            
-            <option value="Concussive">Concussive</option>
-            <option value="Deadly">Deadly</option>
-            <option value="Grapple">Grapple</option>            
-            <option value="Hampering">Hampering</option>
-            <option value="Jousting">Jousting</option>
-            <option value="Modular">Modular</option>
-            <option value="Parry">Parry</option>
-            <option value="Ranged Trip">Ranged Trip</option>
-            <option value="Razing">Razing</option>
-            <option value="Resonant">Resonant</option>
-            <option value="Training">Training</option>
-            <option value="Trip">Trip</option>
-          </select>
+
+        <div class="col-md-4">
+          <label class="fw-bold mb-2">2-Point Traits</label>
+          <div class="d-flex flex-wrap gap-2">
+            <button v-for="t in ['Agile', 'Capacity 5', 'Concussive', 'Deadly', 'Grapple', 'Hampering', 'Jousting', 'Modular', 'Parry', 'Ranged Trip', 'Razing', 'Resonant', 'Training', 'Trip']" 
+                    :key="t" type="button"
+                    @click="toggleTrait('twoPoint', t)"
+                    :class="['btn btn-sm', traits.twoPoint.includes(t) ? 'btn-primary' : 'btn-outline-secondary']">
+              {{ t }}
+            </button>
+          </div>
         </div>
-        <div class="col">
-          3-Point Traits
-          <select class="form-select" v-model="traits.threePoint" multiple>
-            <option value="Attached">Attached</option>
-            <option value="Critical Fusion">Critical Fusion</option>
-            <option value="Double Barrel">Double Barrel</option>
-            <option value="Fatal">Fatal</option>
-            <option value="Fatal Aim">Fatal Aim</option>
-            <option value="Injection">Injection</option>
-            <option value="Reach">Reach</option>
-            <option value="Recovery">Recovery</option>
-            <option value="Repeating">Repeating</option>
-            <option value="Scatter 10">Scatter 10</option>
-            <option value="Tethered">Tethered</option>
-            <option value="Unarmed">Unarmed</option>
-          </select>
+
+        <div class="col-md-4">
+          <label class="fw-bold mb-2">3-Point Traits</label>
+          <div class="d-flex flex-wrap gap-2">
+            <button v-for="t in ['Attached', 'Critical Fusion', 'Double Barrel', 'Fatal', 'Fatal Aim', 'Injection', 'Reach', 'Recovery', 'Repeating', 'Scatter 10', 'Tethered', 'Unarmed']" 
+                    :key="t" type="button"
+                    @click="toggleTrait('threePoint', t)"
+                    :class="['btn btn-sm', traits.threePoint.includes(t) ? 'btn-primary' : 'btn-outline-secondary']">
+              {{ t }}
+            </button>
+          </div>
         </div>
       </div>
     </form>
@@ -251,6 +225,14 @@ export default {
     }
   },
   methods: {
+    toggleTrait(group, trait) {
+      const index = this.traits[group].indexOf(trait);
+      if (index > -1) {
+        this.traits[group].splice(index, 1); // Remove if already there
+      } else {
+        this.traits[group].push(trait); // Add if not there
+      }
+    },
     resetBuilder() {
       this.range = 'melee';
       this.selectedAncestry = '';
