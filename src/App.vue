@@ -169,8 +169,6 @@
         </div>
       </div>
       <hr />
-      <h4>Source</h4>
-      <p>The implemented calculation has not been in any way confirmed by Paizo. Built on <a href="https://docs.google.com/document/d/1j0uUtVcTgvn2a0oMYFKMwe_-tAPOdnFY21_0FOiX2DI/edit" target="_blank">the document</a> for details.</p>
     </div>
   </div>
 </template>
