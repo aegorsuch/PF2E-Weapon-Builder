@@ -105,8 +105,8 @@
       <hr>
       <div class="row">
         <div class="col">
-          Minor Traits (1 point each)
-          <select class="form-select" v-model="traits.minor" multiple>
+          1-Point Traits
+          <select class="form-select" v-model="traits.onePoint" multiple>
             <option value="Backstabber">Backstabber</option>
             <option value="Backswing">Backswing</option>
             <option value="Disarm">Disarm </option>
@@ -181,7 +181,7 @@ export default {
       range: 0,
     },
     traits: {
-      minor: [],
+      onePoint: [],
       greater: [],
       major: [],
     },
@@ -198,7 +198,7 @@ export default {
   },
   computed: {
     hasFinesse () {
-      return this.traits.minor.indexOf('Finesse') > -1
+      return this.traits.onePoint.indexOf('Finesse') > -1
     },
     isMelee () {
       return this.range === 'melee';
@@ -208,12 +208,12 @@ export default {
       if(!this.isMelee) {
         value =  value - 3 + this.adjustements.reload + this.adjustements.volley + this.adjustements.range
       }
-      value = value - this.traits.minor.length - this.traits.greater.length * 2 - this.traits.major.length * 3
+      value = value - this.traits.onePoint.length - this.traits.greater.length * 2 - this.traits.major.length * 3
       return value
     },
     allTraits() {
       const combined = [
-        ...this.traits.minor, 
+        ...this.traits.onePoint, 
         ...this.traits.greater, 
         ...this.traits.major
       ];
@@ -237,7 +237,7 @@ export default {
         range: 0,
       };
       this.traits = {
-        minor: [],
+        onePoint: [],
         greater: [],
         major: [],
       };
