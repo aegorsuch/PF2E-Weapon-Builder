@@ -62,19 +62,19 @@
       <label v-if="!isMelee" class="me-2">
         Range
         <select class="form-select" v-model="adjustements.range">
-          <option :value="4">20ft</option>
-          <option :value="3">30ft</option>
-          <option :value="1">50ft</option>
-          <option :value="0">60ft</option>
-          <option :value="-2">100ft</option>
-          <option :value="-3">120ft</option>
+          <option :value="4">20</option>
+          <option :value="3">30</option>
+          <option :value="1">50</option>
+          <option :value="0">60</option>
+          <option :value="-2">100</option>
+          <option :value="-3">120</option>
         </select>
       </label>
       <label v-if="!isMelee" class="me-2">
         Volley
         <select class="form-select" v-model="adjustements.volley">
           <option :value="0">No Volley</option>
-          <option :value="3">Volley 30ft</option>
+          <option :value="3">Volley 30</option>
         </select>
       </label>
       <hr>
