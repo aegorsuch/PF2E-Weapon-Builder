@@ -142,7 +142,9 @@
           <select class="form-select" v-model="traits.threePoint" multiple>
             <option value="Attached">Attached</option>
             <option value="Critical Fusion">Critical Fusion</option>
+            <option value="Double Barrel">Double Barrel</option>
             <option value="Fatal">Fatal</option>
+            <option value="Fatal Aim">Fatal Aim</option>
             <option value="Injection">Injection</option>
             <option value="Reach">Reach</option>
             <option value="Recovery">Recovery</option>
