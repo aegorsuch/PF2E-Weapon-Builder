@@ -86,7 +86,7 @@
           <select class="form-select" v-model="traits.onePoint" multiple style="height: 300px;">
             <option value="Backstabber">Backstabber</option>
             <option value="Backswing">Backswing</option>
-            <option value="Disarm">Disarm </option>
+            <option value="Disarm">Disarm</option>
             <option value="Finesse">Finesse</option>
             <option value="Free-Hand">Free-Hand</option>
             <option value="Shove">Shove</option>
@@ -114,4 +114,85 @@
       </div>
     </form>
     <hr />
-    <div v-if="
+    <div v-if="allTraits.length > 0" class="mt-4">
+      <h4>Selected Traits (Alphabetical)</h4>
+      <div class="d-flex flex-wrap gap-2">
+        <span v-for="(trait, index) in allTraits" 
+              :key="index" 
+              class="badge"
+              :class="trait === selectedAncestry ? 'bg-success' : 'bg-primary'">
+          {{ trait }}
+        </span>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'App',
+  data: () => ({
+    range: 'melee',
+    adjustements: {
+      proficiency: 0,
+      die: 0,
+      hands: 0,
+      reload: 0,
+      range: 0
+    },
+    traits: {
+      onePoint: [],
+      twoPoint: [],
+      threePoint: []
+    },
+    selectedAncestry: ''
+  }),
+  computed: {
+    isMelee () {
+      return this.range === 'melee'
+    },
+    total () {
+      let bonusPoint = 2
+      let baseCost = this.adjustements.proficiency + this.adjustements.die + this.adjustements.hands
+      if (!this.isMelee) {
+        baseCost = baseCost - 3 + this.adjustements.reload + this.adjustements.range
+      }
+      let traitsCost = this.traits.onePoint.length + 
+                       (this.traits.twoPoint.length * 2) + 
+                       (this.traits.threePoint.length * 3)
+      return bonusPoint + baseCost - traitsCost
+    },
+    allTraits () {
+      const combined = [
+        ...this.traits.onePoint, 
+        ...this.traits.twoPoint, 
+        ...this.traits.threePoint
+      ]
+      if (this.selectedAncestry) {
+        combined.push(this.selectedAncestry)
+      }
+      return combined.sort()
+    }
+  },
+  methods: {
+    resetBuilder () {
+      this.range = 'melee'
+      this.selectedAncestry = ''
+      this.adjustements = { proficiency: 0, die: 0, hands: 0, reload: 0, range: 0 }
+      this.traits = { onePoint: [], twoPoint: [], threePoint: [] }
+    },
+    copyToClipboard () {
+      const textToCopy = this.allTraits.join(', ')
+      if (textToCopy === '') {
+        alert('No traits selected to copy!')
+        return
+      }
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        alert('Traits copied to clipboard!')
+      }).catch(err => {
+        console.error('Could not copy text: ', err)
+      })
+    }
+  }
+}
+</script
