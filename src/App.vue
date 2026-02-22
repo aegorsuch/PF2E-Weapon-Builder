@@ -213,6 +213,9 @@ export default {
         combined.push(...this.traits.onePoint);
         combined.push(...this.traits.twoPoint);
         combined.push(...this.traits.threePoint);
+      if (!this.isMelee && this.adjustements.volley === 3) {
+        combined.push('Volley 30');
+      }
       if (this.selectedAncestry) {
         combined.push(this.selectedAncestry);
       }
