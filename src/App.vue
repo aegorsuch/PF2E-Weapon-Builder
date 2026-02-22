@@ -89,6 +89,18 @@
         </select>
       </label>
       <hr>
+      <div class="row mb-3">
+        <div class="col-12">
+          <h5>Ancestry Tags (0 points)</h5>
+          <div class="d-flex flex-wrap gap-3">
+            <div v-for="race in ['Dwarf', 'Elf', 'Gnome', 'Goblin', 'Halfling', 'Orc', 'Kobold']" :key="race" class="form-check">
+              <input class="form-check-input" type="checkbox" :id="race" :value="race" v-model="ancestries">
+              <label class="form-check-label" :for="race">{{ race }}</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr>
       <div class="row">
         <div class="col">
           Minor Boons (1 point each)
@@ -171,6 +183,7 @@ export default {
       greater: [],
       major: [],
     },
+    ancestries: [],
   }),
   created () {
     if (window.ym) {
@@ -198,6 +211,7 @@ export default {
     },
     allTraits() {
       const combined = [
+        ...this.ancestries,
         ...this.boons.minor, 
         ...this.boons.greater, 
         ...this.boons.major
@@ -208,6 +222,7 @@ export default {
   methods: {
     resetBuilder() {
       this.range = 'melee';
+      this.ancestries = [];
       this.adjustements = {
         category: 0,
         die: 0,
