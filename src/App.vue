@@ -149,7 +149,7 @@
             <option value="Reach">Reach</option>
             <option value="Recovery">Recovery</option>
             <option value="Repeating">Repeating</option>
-            <option value="Scatter">Scatter 10</option>
+            <option value="Scatter 10">Scatter 10</option>
             <option value="Tethered">Tethered</option>
             <option value="Unarmed">Unarmed</option>
           </select>
