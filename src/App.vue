@@ -37,8 +37,8 @@
         </select>
       </label>
       <label class="me-2">
-        Weapon Category
-        <select class="form-select block" v-model="adjustements.category">
+        Proficiency
+        <select class="form-select block" v-model="adjustements.proficiency">
           <option :value="0">Simple</option>
           <option :value="3">Martial</option>
           <option :value="5">Advanced</option>
@@ -122,8 +122,8 @@
           </select>
         </div>
         <div class="col">
-          Greater Traits (2 points each)
-          <select class="form-select" v-model="traits.greater" multiple>
+          2-Point Traits
+          <select class="form-select" v-model="traits.twoPoint" multiple>
             <option value="Agile">Agile</option>
             <option value="Deadly">Deadly</option>
             <option value="Grapple">Grapple</option>
@@ -133,8 +133,8 @@
           </select>
         </div>
         <div class="col">
-          Major Traits (3 points each)
-          <select class="form-select" v-model="traits.major" multiple>
+          3-Point Traits
+          <select class="form-select" v-model="traits.threePoint" multiple>
             <option value="Attached">Attached</option>
             <option value="Fatal">Fatal</option>
             <option value="Reach">Reach</option>
@@ -172,7 +172,7 @@ export default {
   data: () => ({
     range: 'melee',
     adjustements: {
-      category: 0,
+      proficiency: 0,
       die: 0,
       hands: 0,
       reload: 0,
@@ -182,8 +182,8 @@ export default {
     },
     traits: {
       onePoint: [],
-      greater: [],
-      major: [],
+      twoPoint: [],
+      threePoint: [],
     },
     selectedAncestry: '',
   }),
@@ -204,18 +204,18 @@ export default {
       return this.range === 'melee';
     },
     total () {
-      let value = 1 + this.adjustements.category + this.adjustements.die + this.adjustements.hands + this.adjustements.price
+      let value = 1 + this.adjustements.proficiency + this.adjustements.die + this.adjustements.hands + this.adjustements.price
       if(!this.isMelee) {
         value =  value - 3 + this.adjustements.reload + this.adjustements.volley + this.adjustements.range
       }
-      value = value - this.traits.onePoint.length - this.traits.greater.length * 2 - this.traits.major.length * 3
+      value = value - this.traits.onePoint.length - this.traits.twoPoint.length * 2 - this.traits.threePoint.length * 3
       return value
     },
     allTraits() {
       const combined = [
         ...this.traits.onePoint, 
-        ...this.traits.greater, 
-        ...this.traits.major
+        ...this.traits.twoPoint, 
+        ...this.traits.threePoint
       ];
       if (this.selectedAncestry) {
         combined.push(this.selectedAncestry);
@@ -228,7 +228,7 @@ export default {
       this.range = 'melee';
       this.selectedAncestry = '';
       this.adjustements = {
-        category: 0,
+        proficiency: 0,
         die: 0,
         hands: 0,
         reload: 0,
@@ -238,8 +238,8 @@ export default {
       };
       this.traits = {
         onePoint: [],
-        greater: [],
-        major: [],
+        twoPoint: [],
+        threePoint: [],
       };
     },
     copyToClipboard() {
