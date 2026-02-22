@@ -77,7 +77,8 @@
             <button v-for="t in ['Backstabber', 'Backswing', 'Brace', 'Climbing', 'Combination', 'Concealable', 'Disarm', 'Finesse', 'Forceful', 'Free-Hand', 'Kickback', 'Propulsive', 'Shove', 'Sweep', 'Thrown 20', 'Twin', 'Two-Hand', 'Versatile B', 'Versatile P', 'Versatile S']" 
                     :key="t" type="button" @click="toggleTrait('onePoint', t)"
                     class="btn btn-sm"
-                    :class="traits.onePoint.includes(t) ? 'selected-trait' : 'btn-outline-secondary opacity-75'">
+                    :class="traits.onePoint.includes(t) ? 'fw-bold' : 'btn-outline-secondary opacity-75'"
+                    :style="traits.onePoint.includes(t) ? { backgroundColor: '#198754', color: 'white', borderColor: '#198754' } : {}">
               {{ t }}
             </button>
           </div>
@@ -89,7 +90,8 @@
             <button v-for="t in ['Agile', 'Capacity 5', 'Concussive', 'Deadly', 'Grapple', 'Hampering', 'Jousting', 'Modular', 'Parry', 'Ranged Trip', 'Razing', 'Resonant', 'Training', 'Trip']" 
                     :key="t" type="button" @click="toggleTrait('twoPoint', t)"
                     class="btn btn-sm"
-                    :class="traits.twoPoint.includes(t) ? 'selected-trait' : 'btn-outline-secondary opacity-75'">
+                    :class="traits.twoPoint.includes(t) ? 'fw-bold' : 'btn-outline-secondary opacity-75'"
+                    :style="traits.twoPoint.includes(t) ? { backgroundColor: '#198754', color: 'white', borderColor: '#198754' } : {}">
               {{ t }}
             </button>
           </div>
@@ -101,7 +103,8 @@
             <button v-for="t in ['Attached', 'Critical Fusion', 'Double Barrel', 'Fatal', 'Fatal Aim', 'Injection', 'Reach', 'Recovery', 'Repeating', 'Scatter 10', 'Tethered', 'Unarmed']" 
                     :key="t" type="button" @click="toggleTrait('threePoint', t)"
                     class="btn btn-sm"
-                    :class="traits.threePoint.includes(t) ? 'selected-trait' : 'btn-outline-secondary opacity-75'">
+                    :class="traits.threePoint.includes(t) ? 'fw-bold' : 'btn-outline-secondary opacity-75'"
+                    :style="traits.threePoint.includes(t) ? { backgroundColor: '#198754', color: 'white', borderColor: '#198754' } : {}">
               {{ t }}
             </button>
           </div>
