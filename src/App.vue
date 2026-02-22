@@ -89,17 +89,19 @@
         </select>
       </label>
       <hr>
-      <div class="row mb-3">
-        <div class="col-12">
-          <h5>Ancestry Tags (0 points)</h5>
-          <div class="d-flex flex-wrap gap-3">
-            <div v-for="race in ['Dwarf', 'Elf', 'Gnome', 'Goblin', 'Halfling', 'Orc', 'Kobold']" :key="race" class="form-check">
-              <input class="form-check-input" type="checkbox" :id="race" :value="race" v-model="ancestries">
-              <label class="form-check-label" :for="race">{{ race }}</label>
-            </div>
-          </div>
-        </div>
-      </div>
+      <label class="me-2">
+        Ancestry
+        <select class="form-select" v-model="selectedAncestry">
+          <option value="">None</option>
+          <option value="Dwarf">Dwarf</option>
+          <option value="Elf">Elf</option>
+          <option value="Gnome">Gnome</option>
+          <option value="Goblin">Goblin</option>
+          <option value="Halfling">Halfling</option>
+          <option value="Orc">Orc</option>
+          <option value="Kobold">Kobold</option>
+        </select>
+      </label>
       <hr>
       <div class="row">
         <div class="col">
@@ -183,7 +185,7 @@ export default {
       greater: [],
       major: [],
     },
-    ancestries: [],
+    selectedAncestry: '',
   }),
   created () {
     if (window.ym) {
@@ -211,18 +213,20 @@ export default {
     },
     allTraits() {
       const combined = [
-        ...this.ancestries,
         ...this.boons.minor, 
         ...this.boons.greater, 
         ...this.boons.major
       ];
+      if (this.selectedAncestry) {
+        combined.push(this.selectedAncestry);
+      }
       return combined.sort();
     }
   },
   methods: {
     resetBuilder() {
       this.range = 'melee';
-      this.ancestries = [];
+      this.selectedAncestry = '';
       this.adjustements = {
         category: 0,
         die: 0,
