@@ -145,10 +145,6 @@
       </div>
     </form>
     <hr />
-    <div v-if="hasFinesse">
-      <h4>Finesse</h4>
-      <p>There are currently no published weapons with Finesse trait.</p>
-    </div>
     <div>
       <div v-if="allTraits.length > 0" class="mt-4">
         <h4>Selected Traits (Alphabetical)</h4>
@@ -197,9 +193,6 @@ export default {
     }
   },
   computed: {
-    hasFinesse () {
-      return this.traits.onePoint.indexOf('Finesse') > -1
-    },
     isMelee () {
       return this.range === 'melee';
     },
