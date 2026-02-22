@@ -182,7 +182,17 @@ export default {
 
       this.traits.onePoint.forEach(t => combined.push(t === 'Two-Hand' ? `Two-Hand ${traitDie}` : t));
       this.traits.twoPoint.forEach(t => combined.push(t === 'Deadly' ? `Deadly ${traitDie}` : t));
-      this.traits.threePoint.forEach(t => combined.push(t === 'Fatal' ? `Fatal ${traitDie}` : t));
+      // This handles Fatal, Fatal Aim, and all other 3-point traits correctly
+      this.traits.threePoint.forEach(t => {
+        if (t === 'Fatal') {
+          combined.push(`Fatal ${traitDie}`);
+        } else if (t === 'Fatal Aim') {
+          combined.push(`Fatal Aim ${traitDie}`);
+        } else {
+          combined.push(t); // This ensures 'Reach', 'Repeating', etc. still show up!
+        }
+      });
+
 
       if (!this.isMelee && this.adjustements.volley === 3) combined.push('Volley 30');
       if (this.selectedAncestry) combined.push(this.selectedAncestry);
