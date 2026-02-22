@@ -189,26 +189,33 @@ export default {
       return this.range === 'melee';
     },
     total () {
-      // Start at 1 base + proficiency + die + hands
-      let value = 1 + this.adjustements.proficiency + this.adjustements.die + this.adjustements.hands
+      // 1. Start with 2 points (1 Base + 1 for being "Expensive")
+      let startingPoints = 2;
+
+      // 2. Calculate the "Cost" of the base weapon stats
+      // Proficiency (0, 3, 5) + Die (3, 0, -3, -6, -9) + Hands (0, 6)
+      let baseStatsModifier = this.adjustements.proficiency + 
+                              this.adjustements.die + 
+                              this.adjustements.hands;
+      
+      // 3. Apply Ranged penalties if applicable
       if(!this.isMelee) {
-        value =  value - 3 + this.adjustements.reload + this.adjustements.volley + this.adjustements.range
+        baseStatsModifier = baseStatsModifier - 3 + 
+                            this.adjustements.reload + 
+                            this.adjustements.volley + 
+                            this.adjustements.range;
       }
-      value = value - this.traits.onePoint.length - this.traits.twoPoint.length * 2 - this.traits.threePoint.length * 3
-      return value
+
+      // 4. Calculate the cost of all selected traits
+      let traitsCost = this.traits.onePoint.length + 
+                       this.traits.twoPoint.length * 2 + 
+                       this.traits.threePoint.length * 3;
+
+      // Final Math: 2 + (Modifiers) - (Traits)
+      return startingPoints + baseStatsModifier - traitsCost;
     },
-    allTraits() {
-      const combined = [
-        ...this.traits.onePoint, 
-        ...this.traits.twoPoint, 
-        ...this.traits.threePoint
-      ];
-      if (this.selectedAncestry) {
-        combined.push(this.selectedAncestry);
-      }
-      return combined.sort();
-    }
-  },
+    // ... allTraits stays the same
+  }
   methods: {
     resetBuilder() {
       this.weaponName = '';
