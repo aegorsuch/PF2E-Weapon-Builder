@@ -25,24 +25,21 @@
       </div>
 
       <hr>
-      <label class="me-2">
-        Proficiency
+      <label class="me-2">Proficiency
         <select class="form-select block" v-model="adjustements.proficiency">
           <option :value="0">Simple</option>
           <option :value="3">Martial</option>
           <option :value="5">Advanced</option>
         </select>
       </label>
-      <label class="me-2">
-        Hands
+      <label class="me-2">Hands
         <select class="form-select block" v-model="adjustements.hands">
           <option :value="0">1</option>
           <option v-if="!isMelee" :value="1">1+</option>
           <option :value="6">2</option>
         </select>
       </label>
-      <label class="me-2">
-        Damage
+      <label class="me-2">Damage
         <select class="form-select" v-model="adjustements.die">
           <option :value="3">d4</option>
           <option :value="0">d6</option>
@@ -51,46 +48,26 @@
           <option :value="-9">d12</option>
         </select>
       </label>
-      <label v-if="!isMelee" class="me-2">
-        Reload
-        <select class="form-select" v-model="adjustements.reload">
-          <option :value="0">Reload 0</option>
-          <option :value="3">Reload 1</option>
-          <option :value="6">Reload 2</option>
-        </select>
-      </label>
-      <label v-if="!isMelee" class="me-2">
-        Range
-        <select class="form-select" v-model="adjustements.range">
-          <option :value="4">20</option>
-          <option :value="3">30</option>
-          <option :value="1">50</option>
-          <option :value="0">60</option>
-          <option :value="-2">100</option>
-          <option :value="-3">120</option>
-        </select>
-      </label>
-      <label v-if="!isMelee" class="me-2">
-        Volley
-        <select class="form-select" v-model="adjustements.volley">
-          <option :value="0">No Volley</option>
-          <option :value="3">Volley 30</option>
-        </select>
-      </label>
-      <hr>
-      <label class="me-2">
-        Ancestry
-        <select class="form-select" v-model="selectedAncestry">
-          <option value="">None</option>
-          <option value="Dwarf">Dwarf</option>
-          <option value="Elf">Elf</option>
-          <option value="Gnome">Gnome</option>
-          <option value="Goblin">Goblin</option>
-          <option value="Halfling">Halfling</option>
-          <option value="Kobold">Kobold</option>
-          <option value="Orc">Orc</option>
-        </select>
-      </label>
+      
+      <template v-if="!isMelee">
+        <label class="me-2">Reload
+          <select class="form-select" v-model="adjustements.reload">
+            <option :value="0">Reload 0</option>
+            <option :value="3">Reload 1</option>
+            <option :value="6">Reload 2</option>
+          </select>
+        </label>
+        <label class="me-2">Range
+          <select class="form-select" v-model="adjustements.range">
+            <option :value="4">20</option>
+            <option :value="3">30</option>
+            <option :value="1">50</option>
+            <option :value="0">60</option>
+            <option :value="-2">100</option>
+            <option :value="-3">120</option>
+          </select>
+        </label>
+      </template>
       <hr>
 
       <div class="row mt-4">
@@ -98,9 +75,9 @@
           <label class="fw-bold mb-2">1-Point Traits</label>
           <div class="d-flex flex-wrap gap-2">
             <button v-for="t in ['Backstabber', 'Backswing', 'Brace', 'Climbing', 'Combination', 'Concealable', 'Disarm', 'Finesse', 'Forceful', 'Free-Hand', 'Kickback', 'Propulsive', 'Shove', 'Sweep', 'Thrown 20', 'Twin', 'Two-Hand', 'Versatile B', 'Versatile P', 'Versatile S']" 
-                    :key="t" type="button"
-                    @click="toggleTrait('onePoint', t)"
-                    :class="['btn btn-sm', traits.onePoint.includes(t) ? 'btn-success fw-bold text-white' : 'btn-outline-secondary']">
+                    :key="t" type="button" @click="toggleTrait('onePoint', t)"
+                    class="btn btn-sm"
+                    :class="traits.onePoint.includes(t) ? 'selected-trait' : 'btn-outline-secondary opacity-75'">
               {{ t }}
             </button>
           </div>
@@ -110,9 +87,9 @@
           <label class="fw-bold mb-2">2-Point Traits</label>
           <div class="d-flex flex-wrap gap-2">
             <button v-for="t in ['Agile', 'Capacity 5', 'Concussive', 'Deadly', 'Grapple', 'Hampering', 'Jousting', 'Modular', 'Parry', 'Ranged Trip', 'Razing', 'Resonant', 'Training', 'Trip']" 
-                    :key="t" type="button"
-                    @click="toggleTrait('twoPoint', t)"
-                    :class="['btn btn-sm', traits.twoPoint.includes(t) ? 'btn-success fw-bold text-white' : 'btn-outline-secondary']">
+                    :key="t" type="button" @click="toggleTrait('twoPoint', t)"
+                    class="btn btn-sm"
+                    :class="traits.twoPoint.includes(t) ? 'selected-trait' : 'btn-outline-secondary opacity-75'">
               {{ t }}
             </button>
           </div>
@@ -122,9 +99,9 @@
           <label class="fw-bold mb-2">3-Point Traits</label>
           <div class="d-flex flex-wrap gap-2">
             <button v-for="t in ['Attached', 'Critical Fusion', 'Double Barrel', 'Fatal', 'Fatal Aim', 'Injection', 'Reach', 'Recovery', 'Repeating', 'Scatter 10', 'Tethered', 'Unarmed']" 
-                    :key="t" type="button"
-                    @click="toggleTrait('threePoint', t)"
-                    :class="['btn btn-sm', traits.threePoint.includes(t) ? 'btn-success fw-bold text-white' : 'btn-outline-secondary']">
+                    :key="t" type="button" @click="toggleTrait('threePoint', t)"
+                    class="btn btn-sm"
+                    :class="traits.threePoint.includes(t) ? 'selected-trait' : 'btn-outline-secondary opacity-75'">
               {{ t }}
             </button>
           </div>
@@ -136,12 +113,21 @@
 
     <div v-if="allTraits.length > 0" class="mt-4 p-3 bg-light rounded border">
       <h4>Traits</h4>
-      <div class="lead">
-        {{ allTraits.join(', ') }}
-      </div>
+      <div class="lead">{{ allTraits.join(', ') }}</div>
     </div>
   </div>
 </template>
+
+<style scoped>
+/* This forces the color regardless of Bootstrap settings */
+.selected-trait {
+  background-color: #198754 !important; /* Green */
+  color: white !important;
+  border-color: #198754 !important;
+  font-weight: bold !important;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+</style>
 
 <script>
 export default {
