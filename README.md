@@ -25,41 +25,40 @@ This project uses **Yarn** as the package manager. Ensure you have [Node.js](htt
 bash
 git clone [https://github.com/aegorsuch/PF2E-Weapon-Builder.git](https://github.com/aegorsuch/PF2E-Weapon-Builder.git)
 cd PF2E-Weapon-Builder
-2. Install dependencies
-Bash
+### 2. Install dependencies
+bash
 yarn install
-3. Start development server
-Bash
-yarn serve
+
+### 3. Start development server
+```bash
+yarn install
+```
 Your app will be available at http://localhost:8080/.
 
-4. Build for production
-Bash
+### 4. Build for production
+```bash
 yarn build
-📂 Project Structure
-src/components/: Reusable Vue UI elements (Weapon displays, Trait buttons, etc.).
+```
+## 📂 Project Structure
 
-src/assets/: Icons, styling, and branding for the Pathfinder aesthetic.
+* **`src/components/`**: Reusable Vue UI elements (Weapon displays, Trait buttons, etc.).
+* **`src/assets/`**: Icons, styling, and branding for the Pathfinder aesthetic.
+* **`public/`**: Static assets and the main `index.html` entry point.
 
-public/: Static assets and the main index.html entry point.
-
-🤝 Contributing
+## 🤝 Contributing
 Contributions are welcome! If you want to add new traits from recent sourcebooks or fix a logic bug:
 
-Fork the Project.
+1. **Fork** the Project.
+2. **Create** your Feature Branch (`git checkout -b feature/AmazingFeature`).
+3. **Commit** your Changes (`git commit -m 'Add some AmazingFeature'`).
+4. **Push** to the Branch (`git push origin feature/AmazingFeature`).
+5. **Open** a Pull Request.
 
-Create your Feature Branch (git checkout -b feature/AmazingFeature).
+## 📜 License
+Distributed under the MIT License. See `LICENSE` for more information.
 
-Commit your Changes (git commit -m 'Add some AmazingFeature').
+---
 
-Push to the Branch (git push origin feature/AmazingFeature).
-
-Open a Pull Request.
-
-📜 License
-Distributed under the MIT License. See LICENSE for more information.
-
-🎲 Acknowledgments
-Inspired by the Pathfinder 2nd Edition tabletop roleplaying game by Paizo.
-
-Built for the community to make homebrewing and character management more accessible.
+## 🎲 Acknowledgments
+* Inspired by the **Pathfinder 2nd Edition** tabletop roleplaying game by **Paizo**.
+* Built for the community to make homebrewing and character management more accessible.
