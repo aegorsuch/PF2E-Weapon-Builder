@@ -1,11 +1,11 @@
 # PF2E Weapon Builder ⚔️
 
-A specialized web application for **Pathfinder 2nd Edition** players and Game Masters to design, customize, and calculate stats for weapons. Built with **Vue.js**, this tool streamlines the weapon creation process, ensuring all traits, damage dice, and runes align with PF2E rules.
+A specialized web application for **Pathfinder 2nd Edition** players and Game Masters to design, customize, and calculate stats for weapons. Built with **Vue.js**, this tool streamlines the weapon creation process, ensuring all traits, proficiency, and damage dice align with PF2E rules.
 
 ---
 
 ## ✨ Features
-* **Dynamic Stat Calculation:** Automatically updates weapon stats based on selected runes and materials.
+* **Dynamic Stat Calculation:** Automatically updates weapon stats based on traits and proficiency.
 * **Trait Management:** Easily add or remove PF2E weapon traits (e.g., Agile, Trip, Versatile).
 * **Responsive UI:** A clean, intuitive interface built with Vue to make theory-crafting fast.
 * **Build Exports:** Save your weapon configurations for use in your next session.
@@ -22,13 +22,14 @@ A specialized web application for **Pathfinder 2nd Edition** players and Game Ma
 This project uses **Yarn** as the package manager. Ensure you have [Node.js](https://nodejs.org/) and [Yarn](https://yarnpkg.com/) installed.
 
 ### 1. Clone the repository
-bash
+```bash
 git clone [https://github.com/aegorsuch/PF2E-Weapon-Builder.git](https://github.com/aegorsuch/PF2E-Weapon-Builder.git)
 cd PF2E-Weapon-Builder
+```
 ### 2. Install dependencies
-bash
+```bash
 yarn install
-
+```
 ### 3. Start development server
 ```bash
 yarn install
