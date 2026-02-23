@@ -95,7 +95,7 @@
         <div class="col-md-4">
           <label class="fw-bold mb-2">1-Point Traits</label>
           <div class="d-flex flex-wrap gap-2">
-            <button v-for="t in ['Backstabber', 'Backswing', 'Brace', 'Climbing', 'Combination', 'Concealable', 'Disarm', 'Finesse', 'Forceful', 'Free-Hand', 'Kickback', 'Propulsive', 'Shove', 'Sweep', 'Thrown 20', 'Twin', 'Two-Hand', 'Versatile B', 'Versatile P', 'Versatile S']" 
+            <button v-for="t in ['Backstabber', 'Backswing', 'Brace', 'Climbing', 'Combination', 'Concealable', 'Disarm', 'Finesse', 'Forceful', 'Free-Hand', 'Grapple', 'Kickback', 'Parry', 'Propulsive', 'Shove', 'Sweep', 'Tearing', 'Thrown 20', 'Trip', 'Twin', 'Two-Hand', 'Versatile B', 'Versatile P', 'Versatile S']" 
                     :key="t" type="button" @click="toggleTrait('onePoint', t)"
                     class="btn btn-sm"
                     :class="traits.onePoint.includes(t) ? 'fw-bold' : 'btn-outline-secondary opacity-75'"
@@ -108,7 +108,7 @@
         <div class="col-md-4">
           <label class="fw-bold mb-2">2-Point Traits</label>
           <div class="d-flex flex-wrap gap-2">
-            <button v-for="t in ['Agile', 'Capacity 5', 'Concussive', 'Deadly', 'Grapple', 'Hampering', 'Jousting', 'Modular', 'Parry', 'Ranged Trip', 'Razing', 'Resonant', 'Training', 'Trip']" 
+            <button v-for="t in ['Agile', 'Capacity 5', 'Concussive', 'Deadly', 'Hampering', 'Jousting', 'Modular', 'Ranged Trip', 'Razing', 'Resonant', 'Training']" 
                     :key="t" type="button" @click="toggleTrait('twoPoint', t)"
                     class="btn btn-sm"
                     :class="traits.twoPoint.includes(t) ? 'fw-bold' : 'btn-outline-secondary opacity-75'"
@@ -121,7 +121,7 @@
         <div class="col-md-4">
           <label class="fw-bold mb-2">3-Point Traits</label>
           <div class="d-flex flex-wrap gap-2">
-            <button v-for="t in ['Attached', 'Critical Fusion', 'Double Barrel', 'Fatal', 'Fatal Aim', 'Injection', 'Reach', 'Recovery', 'Repeating', 'Scatter 10', 'Tethered', 'Unarmed']" 
+            <button v-for="t in ['Attached to Crossbow or Firearm', 'Attached to Shield', 'Critical Fusion', 'Double Barrel', 'Fatal', 'Fatal Aim', 'Injection', 'Reach', 'Recovery', 'Repeating', 'Scatter 10', 'Tethered', 'Unarmed']" 
                     :key="t" type="button" @click="toggleTrait('threePoint', t)"
                     class="btn btn-sm"
                     :class="traits.threePoint.includes(t) ? 'fw-bold' : 'btn-outline-secondary opacity-75'"
