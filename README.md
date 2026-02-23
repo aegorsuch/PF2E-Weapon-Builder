@@ -22,7 +22,7 @@ A specialized web application for **Pathfinder 2nd Edition** players and Game Ma
 This project uses **Yarn** as the package manager. Ensure you have [Node.js](https://nodejs.org/) and [Yarn](https://yarnpkg.com/) installed.
 
 ### 1. Clone the repository
-```bash
+bash
 git clone [https://github.com/aegorsuch/PF2E-Weapon-Builder.git](https://github.com/aegorsuch/PF2E-Weapon-Builder.git)
 cd PF2E-Weapon-Builder
 2. Install dependencies
