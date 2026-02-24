@@ -48,6 +48,12 @@
           <option :value="-9">d12</option>
         </select>
       </label>
+      <label class="me-2">Group
+        <select class="form-select" v-model="selectedGroup">
+          <option value="">None</option>
+          <option v-for="g in groups" :key="g" :value="g">{{ g }}</option>
+        </select>
+      </label>
       <label class="me-2">Ancestry
         <select class="form-select" v-model="selectedAncestry">
           <option value="">None</option>
@@ -165,6 +171,8 @@ export default {
       onePoint: [], twoPoint: [], threePoint: [],
     },
     selectedAncestry: '',
+    selectedGroup: '',
+    groups: ['Axe','Bomb','Bow','Brawling','Club','Dart','Firearm','Flail','Hammer','Knife','Mace','Pick','Polearm','Shield','Sling','Spear','Sword'],
   }),
   computed: {
     isMelee () { return this.range === 'melee'; },
@@ -233,11 +241,12 @@ export default {
     resetBuilder() {
       this.range = 'melee';
       this.selectedAncestry = '';
+      this.selectedGroup = '';
       this.adjustements = { proficiency: 0, die: 0, hands: 0, reload: 0, volley: 0, range: 0 };
       this.traits = { onePoint: [], twoPoint: [], threePoint: [] };
     },
     copyToClipboard() {
-      const textToCopy = this.allTraits.join(", ");
+      const textToCopy = this.allTraits.join(", "); // group not included in traits
       navigator.clipboard.writeText(textToCopy).then(() => {
         alert("Traits copied to clipboard!");
       });
