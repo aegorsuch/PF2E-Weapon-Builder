@@ -25,46 +25,48 @@
       </div>
 
       <hr>
-      <label class="me-2">Proficiency
-        <select class="form-select block" v-model="adjustements.proficiency">
-          <option :value="0">Simple</option>
-          <option :value="3">Martial</option>
-          <option :value="5">Advanced</option>
-        </select>
-      </label>
-      <label class="me-2">Hands
-        <select class="form-select block" v-model="adjustements.hands">
-          <option :value="0">1</option>
-          <option v-if="!isMelee" :value="1">1+</option>
-          <option :value="6">2</option>
-        </select>
-      </label>
-      <label class="me-2">Damage
-        <select class="form-select" v-model="adjustements.die">
-          <option :value="3">d4</option>
-          <option :value="0">d6</option>
-          <option :value="-3">d8</option>
-          <option :value="-6">d10</option>
-          <option :value="-9">d12</option>
-        </select>
-      </label>
-      <label class="me-2">Group
-        <select class="form-select" v-model="selectedGroup">
-          <option value="">None</option>
-          <option v-for="g in groups" :key="g" :value="g">{{ g }}</option>
-        </select>
-      </label>
-      <label class="me-2">Ancestry
-        <select class="form-select" v-model="selectedAncestry">
-          <option value="">None</option>
-          <option value="Dwarf">Dwarf</option>
-          <option value="Elf">Elf</option>
-          <option value="Gnome">Gnome</option>
-          <option value="Goblin">Goblin</option>
-          <option value="Halfling">Halfling</option>
-          <option value="Orc">Orc</option>
-        </select>
-      </label>
+      <div class="d-flex flex-wrap gap-3 mt-2">
+        <label class="me-2 mb-2">Proficiency
+          <select class="form-select block" v-model="adjustements.proficiency">
+            <option :value="0">Simple</option>
+            <option :value="3">Martial</option>
+            <option :value="5">Advanced</option>
+          </select>
+        </label>
+        <label class="me-2 mb-2">Hands
+          <select class="form-select block" v-model="adjustements.hands">
+            <option :value="0">1</option>
+            <option v-if="!isMelee" :value="1">1+</option>
+            <option :value="6">2</option>
+          </select>
+        </label>
+        <label class="me-2 mb-2">Damage
+          <select class="form-select" v-model="adjustements.die">
+            <option :value="3">d4</option>
+            <option :value="0">d6</option>
+            <option :value="-3">d8</option>
+            <option :value="-6">d10</option>
+            <option :value="-9">d12</option>
+          </select>
+        </label>
+        <label class="me-2 mb-2">Weapon Group
+          <select class="form-select" v-model="selectedGroup">
+            <option value="">None</option>
+            <option v-for="g in groups" :key="g" :value="g">{{ g }}</option>
+          </select>
+        </label>
+        <label class="me-2 mb-2">Ancestry
+          <select class="form-select" v-model="selectedAncestry">
+            <option value="">None</option>
+            <option value="Dwarf">Dwarf</option>
+            <option value="Elf">Elf</option>
+            <option value="Gnome">Gnome</option>
+            <option value="Goblin">Goblin</option>
+            <option value="Halfling">Halfling</option>
+            <option value="Orc">Orc</option>
+          </select>
+        </label>
+      </div>
       <template v-if="!isMelee">
         <div class="d-flex flex-wrap gap-2 align-items-end mt-2">
           <label>Reload
