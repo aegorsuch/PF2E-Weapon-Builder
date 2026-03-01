@@ -143,6 +143,8 @@ const groupTraitWhitelist = {
   'Polearm': ['Backswing', 'Deadly', 'Disarm', 'Forceful', 'Hampering', 'Razing', 'Reach', 'Shove', 'Sweep', 'Tethered', 'Thrown 20', 'Trip', 'Versatile B', 'Versatile P', 'Versatile S'],
   'Shield': ['Attached to Shield'],
   'Sling': ['Agile', 'Combination', 'Concussive', 'Propulsive', 'Ranged Trip', 'Razing', 'Scatter 5', 'Thrown 20'],
+  'Spear': ['Agile', 'Backstabber', 'Backswing', 'Combination', 'Deadly', 'Disarm', 'Finesse', 'Grapple', 'Injection', 'Jousting', 'Monk', 'Parry', 'Razing', 
+  'Reach', 'Shove', 'Sweep', 'Tethered', 'Thrown 20', 'Versatile B', 'Versatile S'],
 
   'Sword': ['Agile', 'Deadly', 'Disarm', 'Finesse', 'Forceful', 'Parry', 'Twin', 'Versatile']
 };
