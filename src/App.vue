@@ -25,6 +25,7 @@
       </div>
 
       <hr>
+
       <div class="d-flex flex-wrap gap-3 mt-2">
         <label class="me-2 mb-2">Proficiency
           <select class="form-select block" v-model="adjustements.proficiency">
@@ -51,22 +52,18 @@
         </label>
         <label class="me-2 mb-2">Weapon Group
           <select class="form-select" v-model="selectedGroup">
-            <option value="">None</option>
+            <option value="">None (Custom/Rígfennid)</option>
             <option v-for="g in groups" :key="g" :value="g">{{ g }}</option>
           </select>
         </label>
         <label class="me-2 mb-2">Ancestry
           <select class="form-select" v-model="selectedAncestry">
             <option value="">None</option>
-            <option value="Dwarf">Dwarf</option>
-            <option value="Elf">Elf</option>
-            <option value="Gnome">Gnome</option>
-            <option value="Goblin">Goblin</option>
-            <option value="Halfling">Halfling</option>
-            <option value="Orc">Orc</option>
+            <option v-for="a in ancestries" :key="a" :value="a">{{ a }}</option>
           </select>
         </label>
       </div>
+
       <template v-if="!isMelee">
         <div class="d-flex flex-wrap gap-2 align-items-end mt-2">
           <label>Reload
@@ -76,7 +73,6 @@
               <option :value="6">Reload 2</option>
             </select>
           </label>
-
           <label>Range
             <select class="form-select" v-model="adjustements.range">
               <option :value="4">20</option>
@@ -87,53 +83,32 @@
               <option :value="-3">120</option>
             </select>
           </label>
-
           <label>Volley
             <select class="form-select" v-model="adjustements.volley">
               <option :value="0">None</option>
               <option :value="3">Volley 30</option>
             </select>
           </label>
-          
         </div>
       </template>
+
       <hr>
 
       <div class="row mt-4">
-        <div class="col-md-4">
-          <label class="fw-bold mb-2">1-Point Traits</label>
+        <div v-for="(traitList, pointKey) in traitCategories" :key="pointKey" class="col-md-4">
+          <label class="fw-bold mb-2">{{ pointKey.replace('Point', '-Point') }} Traits</label>
           <div class="d-flex flex-wrap gap-2">
-            <button v-for="t in ['Backstabber', 'Backswing', 'Brace', 'Capacity 3', 'Climbing', 'Combination', 'Concealable', 'Disarm', 'Finesse', 'Forceful', 'Free-Hand', 'Grapple', 'Kickback', 'Parry', 'Propulsive', 'Shove', 'Sweep', 'Tearing', 'Thrown 10', 'Trip', 'Twin', 'Two-Hand', 'Versatile B', 'Versatile P', 'Versatile S']" 
-                    :key="t" type="button" @click="toggleTrait('onePoint', t)"
+            <button v-for="t in traitList" 
+                    :key="t" 
+                    type="button" 
+                    @click="toggleTrait(pointKey, t)"
                     class="btn btn-sm"
-                    :class="traits.onePoint.includes(t) ? 'fw-bold' : 'btn-outline-secondary opacity-75'"
-                    :style="traits.onePoint.includes(t) ? { backgroundColor: '#198754', color: 'white', borderColor: '#198754' } : {}">
-              {{ t }}
-            </button>
-          </div>
-        </div>
-
-        <div class="col-md-4">
-          <label class="fw-bold mb-2">2-Point Traits</label>
-          <div class="d-flex flex-wrap gap-2">
-            <button v-for="t in ['Agile', 'Attached to Crossbow or Firearm', 'Attached to Shield', 'Capacity 5', 'Concussive', 'Deadly', 'Hampering', 'Jousting', 'Modular', 'Ranged Trip', 'Razing', 'Resonant', 'Thrown 20', 'Training']" 
-                    :key="t" type="button" @click="toggleTrait('twoPoint', t)"
-                    class="btn btn-sm"
-                    :class="traits.twoPoint.includes(t) ? 'fw-bold' : 'btn-outline-secondary opacity-75'"
-                    :style="traits.twoPoint.includes(t) ? { backgroundColor: '#198754', color: 'white', borderColor: '#198754' } : {}">
-              {{ t }}
-            </button>
-          </div>
-        </div>
-
-        <div class="col-md-4">
-          <label class="fw-bold mb-2">3-Point Traits</label>
-          <div class="d-flex flex-wrap gap-2">
-            <button v-for="t in ['Critical Fusion', 'Double Barrel', 'Fatal', 'Fatal Aim', 'Injection', 'Reach', 'Recovery', 'Repeating', 'Scatter 10', 'Tethered', 'Unarmed']" 
-                    :key="t" type="button" @click="toggleTrait('threePoint', t)"
-                    class="btn btn-sm"
-                    :class="traits.threePoint.includes(t) ? 'fw-bold' : 'btn-outline-secondary opacity-75'"
-                    :style="traits.threePoint.includes(t) ? { backgroundColor: '#198754', color: 'white', borderColor: '#198754' } : {}">
+                    :disabled="!isTraitAllowed(t)"
+                    :class="{
+                      'selected-trait': traits[pointKey].includes(t),
+                      'btn-outline-secondary opacity-75': !traits[pointKey].includes(t),
+                      'opacity-25 pointer-none': !isTraitAllowed(t) && !traits[pointKey].includes(t)
+                    }">
               {{ t }}
             </button>
           </div>
@@ -144,115 +119,38 @@
     <hr />
 
     <div v-if="allTraits.length > 0" class="mt-4 p-3 bg-light rounded border">
-      <h4>Traits</h4>
-      <div class="lead">{{ allTraits.join(', ') }}</div>
+      <h4>Weapon Profile</h4>
+      <div class="lead"><strong>Traits:</strong> {{ allTraits.join(', ') }}</div>
+      <div class="mt-2 text-muted small">Group: {{ selectedGroup || 'None' }} | Ancestry: {{ selectedAncestry || 'None' }}</div>
     </div>
   </div>
 </template>
 
-<style scoped>
-/* This forces the color regardless of Bootstrap settings */
-.selected-trait {
-  background-color: #198754 !important; /* Green */
-  color: white !important;
-  border-color: #198754 !important;
-  font-weight: bold !important;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-</style>
-
 <script>
+// Logic: Defining the "Legal" traits for each weapon group
+const groupTraitWhitelist = {
+  'Axe': ['Agile', 'Climbing', 'Combination', 'Critical Fusion', 'Deadly', 'Disarm', 'Finesse', 'Forceful', 'Orc', 'Parry', 'Shove', 'Sweep', 'Thrown 10', 'Thrown 20', 'Two-Hand', 'Trip', 'Versatile P', 'Vehicular'],
+  'Bow': ['Deadly', 'Finesse', 'Propulsive', 'Volley'],
+  'Crossbow': ['Agile', 'Backstabber', 'Combination', 'Deadly', 'Fatal Aim', 'Finesse', 'Parry', 'Repeating'],
+  'Knife': ['Agile', 'Backstabber', 'Concealable', 'Deadly', 'Finesse', 'Thrown', 'Twin', 'Versatile'],
+  'Brawling': ['Agile', 'Disarm', 'Fatal', 'Finesse', 'Grapple', 'Shove', 'Trip', 'Unarmed'],
+  'Hammer': ['Fatal', 'Shove', 'Thrown', 'Versatile'],
+  'Sword': ['Agile', 'Deadly', 'Disarm', 'Finesse', 'Forceful', 'Parry', 'Twin', 'Versatile'],
+  'Pick': ['Fatal', 'Forceful', 'Shove'],
+  'Polearm': ['Forceful', 'Reach', 'Shove', 'Sweep', 'Trip']
+};
+
 export default {
-  name: 'App',
+  name: 'WeaponBuilder',
   data: () => ({
     range: 'melee',
-    adjustements: {
-      proficiency: 0, die: 0, hands: 0, reload: 0, volley: 0, range: 0,
-    },
-    traits: {
-      onePoint: [], twoPoint: [], threePoint: [],
-    },
+    adjustements: { proficiency: 0, die: 0, hands: 0, reload: 0, volley: 0, range: 0 },
+    traits: { onePoint: [], twoPoint: [], threePoint: [] },
     selectedAncestry: '',
     selectedGroup: '',
     groups: ['Axe','Bomb','Bow','Brawling','Club','Crossbow','Dart','Firearm','Flail','Hammer','Knife','Mace','Pick','Polearm','Shield','Sling','Spear','Sword'],
-  }),
-  computed: {
-    isMelee () { return this.range === 'melee'; },
-    total () {
-      let bonusPoint = 2;
-      let baseCost = this.adjustements.proficiency + this.adjustements.die + this.adjustements.hands;
-      if(!this.isMelee) baseCost = baseCost - 3 + this.adjustements.reload + this.adjustements.volley + this.adjustements.range;
-      let traitsCost = this.traits.onePoint.length + this.traits.twoPoint.length * 2 + this.traits.threePoint.length * 3;
-      return bonusPoint + baseCost - traitsCost;
-    },
-    allTraits() {
-      let combined = ['Uncommon'];
-      
-      // 1. Die Size Maps
-      const traitDieMap = { 3: 'd8', 0: 'd10', '-3': 'd12', '-6': 'd12', '-9': 'd12' };
-      const baseDieMap = { 3: 'd4', 0: 'd6', '-3': 'd8', '-6': 'd10', '-9': 'd12' };
-      
-      // 2. Synergy Helpers
-      const stepUp = { 'd4': 'd6', 'd6': 'd8', 'd8': 'd10', 'd10': 'd12', 'd12': 'd12' };
-      const stepDown = { 'd12': 'd10', 'd10': 'd8', 'd8': 'd6', 'd6': 'd4', 'd4': 'd4' };
-      
-      const traitDie = traitDieMap[this.adjustements.die] || 'd12';
-      const currentBaseDie = baseDieMap[this.adjustements.die] || 'd12';
-      const hasDoubleBarrel = this.traits.threePoint.includes('Double Barrel');
-
-      // 3. Handle 1-Point Traits (Two-Hand)
-      this.traits.onePoint.forEach(t => combined.push(t === 'Two-Hand' ? `Two-Hand ${traitDie}` : t));
-
-      // 4. Handle 2-Point Traits (Deadly & Jousting)
-      this.traits.twoPoint.forEach(t => {
-        if (t === 'Deadly') {
-          combined.push(`Deadly ${traitDie}`);
-        } else if (t === 'Jousting') {
-          const reducedDie = stepDown[currentBaseDie];
-          combined.push(`Jousting ${reducedDie}`);
-        } else {
-          combined.push(t);
-        }
-      });
-
-      // 5. Handle 3-Point Traits (Fatal, Fatal Aim, Double Barrel)
-      this.traits.threePoint.forEach(t => {
-        if (t === 'Fatal') {
-          const fatalDie = hasDoubleBarrel ? stepUp[traitDie] : traitDie;
-          combined.push(`Fatal ${fatalDie}`);
-        } else if (t === 'Fatal Aim') {
-          const fatalAimDie = hasDoubleBarrel ? stepUp[traitDie] : traitDie;
-          combined.push(`Fatal Aim ${fatalAimDie}`);
-        } else {
-          combined.push(t);
-        }
-      });
-
-      if (!this.isMelee && this.adjustements.volley === 3) combined.push('Volley 30');
-      if (this.selectedAncestry) combined.push(this.selectedAncestry);
-      
-      return combined.sort();
-    }
-  },
-  methods: {
-    toggleTrait(group, trait) {
-      const index = this.traits[group].indexOf(trait);
-      if (index > -1) this.traits[group].splice(index, 1);
-      else this.traits[group].push(trait);
-    },
-    resetBuilder() {
-      this.range = 'melee';
-      this.selectedAncestry = '';
-      this.selectedGroup = '';
-      this.adjustements = { proficiency: 0, die: 0, hands: 0, reload: 0, volley: 0, range: 0 };
-      this.traits = { onePoint: [], twoPoint: [], threePoint: [] };
-    },
-    copyToClipboard() {
-      const textToCopy = this.allTraits.join(", "); // group not included in traits
-      navigator.clipboard.writeText(textToCopy).then(() => {
-        alert("Traits copied to clipboard!");
-      });
-    }
-  }
-}
-</script>
+    ancestries: ['Dwarf', 'Elf', 'Gnome', 'Goblin', 'Halfling', 'Orc', 'Azarketi'],
+    traitCategories: {
+      onePoint: ['Backstabber', 'Backswing', 'Brace', 'Capacity 3', 'Climbing', 'Combination', 'Concealable', 'Disarm', 'Finesse', 'Forceful', 'Free-Hand', 'Grapple', 'Kickback', 'Parry', 'Propulsive', 'Shove', 'Sweep', 'Tearing', 'Thrown 10', 'Trip', 'Twin', 'Two-Hand', 'Versatile B', 'Versatile P', 'Versatile S'],
+      twoPoint: ['Agile', 'Attached to Crossbow or Firearm', 'Attached to Shield', 'Capacity 5', 'Concussive', 'Deadly', 'Hampering', 'Jousting', 'Modular', 'Ranged Trip', 'Razing', 'Resonant', 'Thrown 20', 'Training'],
+      threePoint: ['Critical Fusion', 'Double Barrel', 'Fatal', 'Fatal Aim', 'Injection', 'Reach', 'Recovery', 'Repeating', 'Scatter 10
