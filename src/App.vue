@@ -141,7 +141,6 @@ const groupTraitWhitelist = {
   'Pick': ['Fatal', 'Forceful', 'Shove'],
   'Polearm': ['Forceful', 'Reach', 'Shove', 'Sweep', 'Trip'],
   'Sword': ['Agile', 'Deadly', 'Disarm', 'Finesse', 'Forceful', 'Parry', 'Twin', 'Versatile']
-  , ''
 };
 
 export default {
