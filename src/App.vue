@@ -52,7 +52,7 @@
         </label>
         <label class="me-2 mb-2">Weapon Group
           <select class="form-select" v-model="selectedGroup">
-            <option value="">None (Custom/Rígfennid)</option>
+            <option value="">None</option>
             <option v-for="g in groups" :key="g" :value="g">{{ g }}</option>
           </select>
         </label>
@@ -96,7 +96,7 @@
 
       <div class="row mt-4">
         <div v-for="(traitList, pointKey) in traitCategories" :key="pointKey" class="col-md-4">
-          <label class="fw-bold mb-2">{{ pointKey.replace('Point', '-Point') }} Traits</label>
+          <label class="fw-bold mb-2">{{ pointKey === 'onePoint' ? '1-Point' : pointKey === 'twoPoint' ? '2-Point' : '3-Point' }} Traits</label>
           <div class="d-flex flex-wrap gap-2">
             <button v-for="t in traitList" 
                     :key="t" 
@@ -119,38 +119,30 @@
     <hr />
 
     <div v-if="allTraits.length > 0" class="mt-4 p-3 bg-light rounded border">
-      <h4>Weapon Profile</h4>
+      <h4>Weapon Summary</h4>
       <div class="lead"><strong>Traits:</strong> {{ allTraits.join(', ') }}</div>
-      <div class="mt-2 text-muted small">Group: {{ selectedGroup || 'None' }} | Ancestry: {{ selectedAncestry || 'None' }}</div>
     </div>
   </div>
 </template>
 
 <script>
-// Logic: Defining the "Legal" traits for each weapon group
 const groupTraitWhitelist = {
-  'Axe': ['Agile', 'Climbing', 'Combination', 'Critical Fusion', 'Deadly', 'Disarm', 'Finesse', 'Forceful', 'Orc', 'Parry', 'Shove', 'Sweep', 'Thrown 10', 'Thrown 20', 'Two-Hand', 'Trip', 'Versatile P', 'Vehicular'],
+  'Axe': ['Agile', 'Climbing', 'Combination', 'Critical Fusion', 'Deadly', 'Disarm', 'Dwarf', 'Finesse', 'Forceful', 'Orc', 'Parry', 'Shove', 'Sweep', 'Thrown 10', 'Thrown 20', 'Two-Hand', 'Trip', 'Versatile P'],
   'Bow': ['Deadly', 'Finesse', 'Propulsive', 'Volley'],
-  'Crossbow': ['Agile', 'Backstabber', 'Combination', 'Deadly', 'Fatal Aim', 'Finesse', 'Parry', 'Repeating'],
-  'Knife': ['Agile', 'Backstabber', 'Concealable', 'Deadly', 'Finesse', 'Thrown', 'Twin', 'Versatile'],
   'Brawling': ['Agile', 'Disarm', 'Fatal', 'Finesse', 'Grapple', 'Shove', 'Trip', 'Unarmed'],
+  'Crossbow': ['Agile', 'Backstabber', 'Combination', 'Deadly', 'Fatal Aim', 'Finesse', 'Parry', 'Repeating'],
   'Hammer': ['Fatal', 'Shove', 'Thrown', 'Versatile'],
-  'Sword': ['Agile', 'Deadly', 'Disarm', 'Finesse', 'Forceful', 'Parry', 'Twin', 'Versatile'],
+  'Knife': ['Agile', 'Backstabber', 'Concealable', 'Deadly', 'Finesse', 'Thrown', 'Twin', 'Versatile'],
   'Pick': ['Fatal', 'Forceful', 'Shove'],
-  'Polearm': ['Forceful', 'Reach', 'Shove', 'Sweep', 'Trip']
+  'Polearm': ['Forceful', 'Reach', 'Shove', 'Sweep', 'Trip'],
+  'Sword': ['Agile', 'Deadly', 'Disarm', 'Finesse', 'Forceful', 'Parry', 'Twin', 'Versatile']
 };
 
 export default {
-  name: 'WeaponBuilder',
+  name: 'App',
   data: () => ({
     range: 'melee',
     adjustements: { proficiency: 0, die: 0, hands: 0, reload: 0, volley: 0, range: 0 },
     traits: { onePoint: [], twoPoint: [], threePoint: [] },
     selectedAncestry: '',
     selectedGroup: '',
-    groups: ['Axe','Bomb','Bow','Brawling','Club','Crossbow','Dart','Firearm','Flail','Hammer','Knife','Mace','Pick','Polearm','Shield','Sling','Spear','Sword'],
-    ancestries: ['Dwarf', 'Elf', 'Gnome', 'Goblin', 'Halfling', 'Orc', 'Azarketi'],
-    traitCategories: {
-      onePoint: ['Backstabber', 'Backswing', 'Brace', 'Capacity 3', 'Climbing', 'Combination', 'Concealable', 'Disarm', 'Finesse', 'Forceful', 'Free-Hand', 'Grapple', 'Kickback', 'Parry', 'Propulsive', 'Shove', 'Sweep', 'Tearing', 'Thrown 10', 'Trip', 'Twin', 'Two-Hand', 'Versatile B', 'Versatile P', 'Versatile S'],
-      twoPoint: ['Agile', 'Attached to Crossbow or Firearm', 'Attached to Shield', 'Capacity 5', 'Concussive', 'Deadly', 'Hampering', 'Jousting', 'Modular', 'Ranged Trip', 'Razing', 'Resonant', 'Thrown 20', 'Training'],
-      threePoint: ['Critical Fusion', 'Double Barrel', 'Fatal', 'Fatal Aim', 'Injection', 'Reach', 'Recovery', 'Repeating', 'Scatter 10
