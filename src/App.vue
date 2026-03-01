@@ -129,7 +129,7 @@
 
 <script>
 const groupTraitWhitelist = {
-  'Axe': ['Agile', 'Climbing', 'Combination', 'Critical Fusion', 'Deadly', 'Disarm', 'Finesse', 'Forceful', 'Parry', 'Shove', 'Sweep', 'Thrown 10', 'Thrown 20', 'Trip', 'Two-Hand', 'Versatile P'],
+  'Axe': ['Agile', 'Climbing', 'Combination', 'Deadly', 'Disarm', 'Finesse', 'Forceful', 'Parry', 'Shove', 'Sweep', 'Thrown 10', 'Thrown 20', 'Trip', 'Two-Hand', 'Vehicular', 'Versatile P'],
   'Bow': ['Capacity 3', 'Combination', 'Deadly', 'Finesse', 'Forceful', 'Modular (B, P, or S)', 'Parry', 'Propulsive','Razing'],
   'Brawling': ['Agile', 'Backstabber', 'Deadly', 'Disarm', 'Fatal', 'Finesse', 'Free-Hand', 'Grapple', 'Reach', 'Shove', 'Trip', 'Twin', 'Unarmed'],
   'Crossbow': ['Agile', 'Backstabber', 'Combination', 'Deadly', 'Fatal Aim', 'Finesse', 'Parry', 'Repeating'],
@@ -152,9 +152,9 @@ export default {
       groups: ['Axe','Bomb','Bow','Brawling','Club','Crossbow','Dart','Firearm','Flail','Hammer','Knife','Mace','Pick','Polearm','Shield','Sling','Spear','Sword'],
       ancestries: ['Dwarf', 'Elf', 'Gnome', 'Goblin', 'Halfling', 'Orc', 'Azarketi'],
       traitCategories: {
-        onePoint: ['Backstabber', 'Backswing', 'Brace', 'Capacity 3', 'Climbing', 'Combination', 'Concealable', 'Disarm', 'Finesse', 'Forceful', 'Free-Hand', 'Grapple', 'Kickback', 'Parry', 'Propulsive', 'Shove', 'Sweep', 'Tearing', 'Thrown 10', 'Trip', 'Twin', 'Two-Hand', 'Versatile B', 'Versatile P', 'Versatile S'],
+        onePoint: ['Backstabber', 'Backswing', 'Brace', 'Capacity 3', 'Climbing', 'Combination', 'Concealable', 'Disarm', 'Finesse', 'Forceful', 'Free-Hand', 'Grapple', 'Kickback', 'Parry', 'Propulsive', 'Shove', 'Sweep', 'Tearing', 'Thrown 10', 'Trip', 'Twin', 'Two-Hand', 'Vehicular', 'Versatile B', 'Versatile P', 'Versatile S'],
         twoPoint: ['Agile', 'Attached to Crossbow or Firearm', 'Attached to Shield', 'Capacity 5', 'Concussive', 'Deadly', 'Hampering', 'Jousting', 'Modular', 'Ranged Trip', 'Razing', 'Resonant', 'Thrown 20', 'Training'],
-        threePoint: ['Critical Fusion', 'Double Barrel', 'Fatal', 'Fatal Aim', 'Injection', 'Reach', 'Recovery', 'Repeating', 'Scatter 10', 'Tethered', 'Unarmed']
+        threePoint: ['Double Barrel', 'Fatal', 'Fatal Aim', 'Injection', 'Reach', 'Recovery', 'Repeating', 'Scatter 10', 'Tethered', 'Unarmed']
       }
     };
   },
@@ -192,6 +192,9 @@ export default {
             combined.push(`${t} ${finalDie}`);
         } else combined.push(t);
       });
+      if (this.isMelee && this.traits.onePoint.includes('Combination')) {
+        combined.push('Critical Fusion');
+      }
 
       if (!this.isMelee && this.adjustements.volley === 3) combined.push('Volley 30');
       if (this.selectedAncestry) combined.push(this.selectedAncestry);
