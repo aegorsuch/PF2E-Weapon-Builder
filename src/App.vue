@@ -28,14 +28,14 @@
 
       <div class="d-flex flex-wrap gap-3 mt-2">
         <label class="me-2 mb-2">Proficiency
-          <select class="form-select block" v-model="adjustements.proficiency">
+          <select class="form-select" v-model="adjustements.proficiency">
             <option :value="0">Simple</option>
             <option :value="3">Martial</option>
             <option :value="5">Advanced</option>
           </select>
         </label>
         <label class="me-2 mb-2">Hands
-          <select class="form-select block" v-model="adjustements.hands">
+          <select class="form-select" v-model="adjustements.hands">
             <option :value="0">1</option>
             <option v-if="!isMelee" :value="1">1+</option>
             <option :value="6">2</option>
@@ -126,8 +126,9 @@
 </template>
 
 <script>
+// Alphabetized Whitelist for Group Filtering
 const groupTraitWhitelist = {
-  'Axe': ['Agile', 'Climbing', 'Combination', 'Critical Fusion', 'Deadly', 'Disarm', 'Dwarf', 'Finesse', 'Forceful', 'Orc', 'Parry', 'Shove', 'Sweep', 'Thrown 10', 'Thrown 20', 'Two-Hand', 'Trip', 'Versatile P'],
+  'Axe': ['Agile', 'Climbing', 'Combination', 'Critical Fusion', 'Deadly', 'Disarm', 'Dwarf', 'Finesse', 'Forceful', 'Orc', 'Parry', 'Shove', 'Sweep', 'Thrown', 'Trip', 'Versatile P'],
   'Bow': ['Deadly', 'Finesse', 'Propulsive', 'Volley'],
   'Brawling': ['Agile', 'Disarm', 'Fatal', 'Finesse', 'Grapple', 'Shove', 'Trip', 'Unarmed'],
   'Crossbow': ['Agile', 'Backstabber', 'Combination', 'Deadly', 'Fatal Aim', 'Finesse', 'Parry', 'Repeating'],
@@ -146,3 +147,61 @@ export default {
     traits: { onePoint: [], twoPoint: [], threePoint: [] },
     selectedAncestry: '',
     selectedGroup: '',
+    groups: ['Axe','Bomb','Bow','Brawling','Club','Crossbow','Dart','Firearm','Flail','Hammer','Knife','Mace','Pick','Polearm','Shield','Sling','Spear','Sword'],
+    ancestries: ['Dwarf', 'Elf', 'Gnome', 'Goblin', 'Halfling', 'Orc', 'Azarketi'],
+    traitCategories: {
+      onePoint: ['Backstabber', 'Backswing', 'Brace', 'Capacity 3', 'Climbing', 'Combination', 'Concealable', 'Disarm', 'Finesse', 'Forceful', 'Free-Hand', 'Grapple', 'Kickback', 'Parry', 'Propulsive', 'Shove', 'Sweep', 'Tearing', 'Thrown 10', 'Trip', 'Twin', 'Two-Hand', 'Versatile B', 'Versatile P', 'Versatile S'],
+      twoPoint: ['Agile', 'Attached to Crossbow or Firearm', 'Attached to Shield', 'Capacity 5', 'Concussive', 'Deadly', 'Hampering', 'Jousting', 'Modular', 'Ranged Trip', 'Razing', 'Resonant', 'Thrown 20', 'Training'],
+      threePoint: ['Critical Fusion', 'Double Barrel', 'Fatal', 'Fatal Aim', 'Injection', 'Reach', 'Recovery', 'Repeating', 'Scatter 10', 'Tethered', 'Unarmed']
+    }
+  }),
+  computed: {
+    isMelee () { return this.range === 'melee'; },
+    total () {
+      let bonusPoint = 2;
+      let baseCost = this.adjustements.proficiency + this.adjustements.die + this.adjustements.hands;
+      if(!this.isMelee) baseCost = baseCost - 3 + this.adjustements.reload + this.adjustements.volley + this.adjustements.range;
+      let traitsCost = this.traits.onePoint.length + this.traits.twoPoint.length * 2 + this.traits.threePoint.length * 3;
+      return bonusPoint + baseCost - traitsCost;
+    },
+    allTraits() {
+      let combined = ['Uncommon'];
+      const traitDieMap = { 3: 'd8', 0: 'd10', '-3': 'd12', '-6': 'd12', '-9': 'd12' };
+      const baseDieMap = { 3: 'd4', 0: 'd6', '-3': 'd8', '-6': 'd10', '-9': 'd12' };
+      const stepUp = { 'd4': 'd6', 'd6': 'd8', 'd8': 'd10', 'd10': 'd12', 'd12': 'd12' };
+      const stepDown = { 'd12': 'd10', 'd10': 'd8', 'd8': 'd6', 'd6': 'd4', 'd4': 'd4' };
+      
+      const traitDie = traitDieMap[this.adjustements.die] || 'd12';
+      const currentBaseDie = baseDieMap[this.adjustements.die] || 'd12';
+      const hasDoubleBarrel = this.traits.threePoint.includes('Double Barrel');
+
+      this.traits.onePoint.forEach(t => combined.push(t === 'Two-Hand' ? `Two-Hand ${traitDie}` : t));
+      this.traits.twoPoint.forEach(t => {
+        if (t === 'Deadly') combined.push(`Deadly ${traitDie}`);
+        else if (t === 'Jousting') combined.push(`Jousting ${stepDown[currentBaseDie]}`);
+        else combined.push(t);
+      });
+      this.traits.threePoint.forEach(t => {
+        if (t === 'Fatal' || t === 'Fatal Aim') {
+            const finalDie = hasDoubleBarrel ? stepUp[traitDie] : traitDie;
+            combined.push(`${t} ${finalDie}`);
+        } else combined.push(t);
+      });
+
+      if (!this.isMelee && this.adjustements.volley === 3) combined.push('Volley 30');
+      if (this.selectedAncestry) combined.push(this.selectedAncestry);
+      return combined.sort();
+    }
+  },
+  methods: {
+    isTraitAllowed(traitName) {
+      if (!this.selectedGroup) return true;
+      const allowed = groupTraitWhitelist[this.selectedGroup];
+      if (!allowed) return true;
+      // Normalizes naming to ensure 'Thrown 10' matches 'Thrown'
+      return allowed.some(a => traitName.toLowerCase().includes(a.toLowerCase()));
+    },
+    toggleTrait(group, trait) {
+      if (!this.isTraitAllowed(trait)) return;
+      const index = this.traits[group].indexOf(trait);
+      if (index > -1) this.
