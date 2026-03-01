@@ -145,8 +145,7 @@ const groupTraitWhitelist = {
   'Sling': ['Agile', 'Combination', 'Concussive', 'Propulsive', 'Ranged Trip', 'Razing', 'Scatter 5', 'Thrown 20'],
   'Spear': ['Agile', 'Backstabber', 'Backswing', 'Combination', 'Deadly', 'Disarm', 'Finesse', 'Grapple', 'Injection', 'Jousting', 'Monk', 'Parry', 'Razing', 
   'Reach', 'Shove', 'Sweep', 'Tethered', 'Thrown 20', 'Versatile B', 'Versatile S'],
-
-  'Sword': ['Agile', 'Deadly', 'Disarm', 'Finesse', 'Forceful', 'Parry', 'Twin', 'Versatile']
+  'Sword': ['Agile', 'Backstabber', 'Backswing', 'Brace', 'Combination', 'Concealable', 'Deadly', 'Disarm', 'Fatal', 'Finesse', 'Forceful', 'Free-Hand', 'Injection', 'Modular (B P or S)', 'Monk', 'Parry', 'Reach', 'Resonant', 'Sweep', 'Trip', 'Two-Hand', 'Twin', 'Versatile P', 'Versatile S']
 };
 
 export default {
@@ -159,7 +158,7 @@ export default {
       selectedAncestry: '',
       selectedGroup: '',
       groups: ['Axe','Bow','Brawling','Club','Crossbow','Dart','Firearm','Flail','Hammer','Knife','Mace','Pick','Polearm','Shield','Sling','Spear','Sword'],
-      ancestries: ['Dwarf', 'Elf', 'Gnome', 'Goblin', 'Halfling', 'Orc', 'Azarketi'],
+      ancestries: ['Dwarf', 'Elf', 'Gnome', 'Goblin', 'Halfling', 'Jotunborn', 'Orc', 'Azarketi'],
       traitCategories: {
         onePoint: ['Backstabber', 'Backswing', 'Brace', 'Capacity 3', 'Climbing', 'Combination', 'Concealable', 'Disarm', 'Finesse', 'Forceful', 'Free-Hand', 'Grapple', 'Kickback', 'Parry', 'Propulsive', 'Shove', 'Sweep', 'Tearing', 'Thrown 10', 'Trip', 'Twin', 'Two-Hand', 'Vehicular', 'Versatile B', 'Versatile P', 'Versatile S'],
         twoPoint: ['Agile', 'Attached to Crossbow or Firearm', 'Attached to Shield', 'Capacity 5', 'Concussive', 'Deadly', 'Hampering', 'Jousting', 'Modular (B P or S)', 'Modular (P and grapple or S and sweep)', 'Monk', 'Ranged Trip', 'Razing', 'Resonant', 'Scatter 5', 'Thrown 20', 'Training'],
