@@ -130,8 +130,8 @@
 <script>
 const groupTraitWhitelist = {
   'Axe': ['Agile', 'Climbing', 'Combination', 'Critical Fusion', 'Deadly', 'Disarm', 'Finesse', 'Forceful', 'Parry', 'Shove', 'Sweep', 'Thrown 10', 'Thrown 20', 'Trip', 'Two-Hand', 'Versatile P'],
-  'Bow': ['Deadly', 'Finesse', 'Propulsive', 'Volley'],
-  'Brawling': ['Agile', 'Disarm', 'Fatal', 'Finesse', 'Grapple', 'Shove', 'Trip', 'Unarmed'],
+  'Bow': ['Capacity 3', 'Combination', 'Deadly', 'Finesse', 'Forceful', 'Modular (B, P, or S)', 'Parry', 'Propulsive','Razing'],
+  'Brawling': ['Agile', 'Backstabber', 'Deadly', 'Disarm', 'Fatal', 'Finesse', 'Free-Hand', 'Grapple', 'Reach', 'Shove', 'Trip', 'Twin', 'Unarmed'],
   'Crossbow': ['Agile', 'Backstabber', 'Combination', 'Deadly', 'Fatal Aim', 'Finesse', 'Parry', 'Repeating'],
   'Hammer': ['Fatal', 'Shove', 'Thrown', 'Versatile'],
   'Knife': ['Agile', 'Backstabber', 'Concealable', 'Deadly', 'Finesse', 'Thrown', 'Twin', 'Versatile'],
