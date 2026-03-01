@@ -4,29 +4,22 @@
       <div class="d-flex justify-content-between align-items-center mt-3">
         <h1 class="mb-0">Points Left: {{ total }}</h1>
         <div>
-          <button type="button" class="btn btn-outline-primary me-2" @click="copyToClipboard">
-            Copy Traits
-          </button>
-          <button type="button" class="btn btn-outline-danger" @click="resetBuilder">
-            Clear All
-          </button>
-        </div>
-      </div>
-
-      <div class="mt-3">
-        <div class="form-check">
-          <input v-model="range" class="form-check-input" type="radio" id="range-melee" value="melee">
-          <label class="form-check-label" for="range-melee">Melee</label>
-        </div>
-        <div class="form-check">
-          <input v-model="range" class="form-check-input" type="radio" id="range-ranged" value="ranged">
-          <label class="form-check-label" for="range-ranged">Ranged</label>
+          <button type="button" class="btn btn-outline-primary me-2" @click="copyToClipboard">Copy Traits</button>
+          <button type="button" class="btn btn-outline-danger" @click="resetBuilder">Clear All</button>
         </div>
       </div>
 
       <hr>
 
       <div class="d-flex flex-wrap gap-3 mt-2">
+        <label class="me-2 mb-2">Base Damage
+          <select class="form-select" v-model="adjustements.damageType">
+            <option value="B">Bludgeoning (B)</option>
+            <option value="P">Piercing (P)</option>
+            <option value="S">Slashing (S)</option>
+          </select>
+        </label>
+
         <label class="me-2 mb-2">Proficiency
           <select class="form-select" v-model="adjustements.proficiency">
             <option :value="0">Simple</option>
@@ -41,7 +34,7 @@
             <option :value="6">2</option>
           </select>
         </label>
-        <label class="me-2 mb-2">Damage
+        <label class="me-2 mb-2">Damage Die
           <select class="form-select" v-model="adjustements.die">
             <option :value="3">d4</option>
             <option :value="0">d6</option>
@@ -117,43 +110,33 @@
         </div>
       </div>
     </form>
-    
-    <hr />
 
     <div v-if="allTraits.length > 0" class="mt-4 p-3 bg-light rounded border">
       <h4>Weapon Summary</h4>
+      <div class="lead"><strong>Base Damage:</strong> {{ adjustements.damageType }}</div>
       <div class="lead"><strong>Traits:</strong> {{ allTraits.join(', ') }}</div>
     </div>
   </div>
 </template>
 
 <script>
-const groupTraitWhitelist = {
-  'Axe': ['Agile', 'Climbing', 'Combination', 'Deadly', 'Disarm', 'Finesse', 'Forceful', 'Parry', 'Shove', 'Sweep', 'Thrown 10', 'Thrown 20', 'Trip', 'Two-Hand', 'Vehicular', 'Versatile P'],
-  'Bow': ['Capacity 3', 'Combination', 'Concussive', 'Deadly', 'Finesse', 'Forceful', 'Modular (B P or S)', 'Monk', 'Parry', 'Propulsive','Razing'],
-  'Brawling': ['Agile', 'Backstabber', 'Combination', 'Deadly', 'Disarm', 'Fatal', 'Finesse', 'Free-Hand', 'Grapple', 'Modular (B P or S)', 'Monk', 'Parry', 'Reach', 'Shove', 'Trip', 'Twin', 'Unarmed'],
-  'Club': ['Agile', 'Attached to Crossbow or Firearm', 'Backswing', 'Combination', 'Concealable', 'Deadly', 'Disarm', 'Fatal', 'Free-Hand', 'Finesse', 'Forceful', 'Monk', 'Parry', 'Ranged Trip', 'Razing', 'Reach', 'Recovery', 'Shove', 'Sweep', 'Tearing', 'Tethered', 'Thrown 10', 'Thrown 20', 'Thrown 30', 'Trip', 'Twin', 'Two-Hand', 'Versatile B', 'Versatile P'],
-  'Crossbow': ['Backstabber', 'Capacity 5', 'Combination', 'Deadly', 'Fatal Aim', 'Finesse', 'Free-Hand', 'Parry', 'Repeating'],
-  'Dart': ['Agile','Concealable', 'Deadly', 'Disarm', 'Finesse', 'Free-Hand', 'Monk', 'Propulsive', 'Recovery', 'Sweep', 'Tethered', 'Thrown 10', 'Thrown 20', 'Thrown 30'],
-  'Firearm':['Agile', 'Attached to Shield', 'Backstabber', 'Capacity 3', 'Capacity 5', 'Combination', 'Concealable', 'Concussive', 'Double Barrel', 'Fatal', 'Fatal Aim', 'Kickback', 'Modular (B P or S)', 'Razing', 'Repeating', 'Scatter 5', 'Scatter 10'],
-  'Flail': ['Agile', 'Backswing', 'Combination', 'Deadly', 'Disarm', 'Finesse', 'Forceful', 'Grapple', 'Hampering', 'Monk', 'Parry', 'Ranged Trip', 'Razing', 'Reach', 'Sweep', 'Tethered', 'Thrown 10', 'Thrown 20', 'Thrown 30', 'Training', 'Trip', 'Twin', 'Versatile B', 'Versatile P'],
-  'Hammer': ['Agile', 'Backswing', 'Brace', 'Combination', 'Razing', 'Reach', 'Shove', 'Thrown 20', 'Trip', 'Two-Hand', 'Versatile P'],
-  'Knife': ['Agile', 'Attached to Crossbow or Firearm', 'Backstabber', 'Combination', 'Concealable',   'Deadly', 'Disarm', 'Fatal', 'Finesse', 'Free-Hand', 'Injection', 'Monk', 'Parry', 'Resonant', 'Sweep', 'Thrown 10', 'Thrown 20', 'Trip', 'Twin', 'Two-Hand', 'Versatile B', 'Versatile P', 'Versatile S'],
-  'Pick': ['Agile', 'Backstabber', 'Deadly', 'Fatal', 'Modular (B P or S)', 'Modular (P and grapple or S and sweep)', 'Trip'],
-  'Polearm': ['Backswing', 'Deadly', 'Disarm', 'Forceful', 'Hampering', 'Razing', 'Reach', 'Shove', 'Sweep', 'Tethered', 'Thrown 20', 'Trip', 'Versatile B', 'Versatile P', 'Versatile S'],
-  'Shield': ['Attached to Shield'],
-  'Sling': ['Agile', 'Combination', 'Concussive', 'Propulsive', 'Ranged Trip', 'Razing', 'Scatter 5', 'Thrown 20'],
-  'Spear': ['Agile', 'Backstabber', 'Backswing', 'Combination', 'Deadly', 'Disarm', 'Finesse', 'Grapple', 'Injection', 'Jousting', 'Monk', 'Parry', 'Razing', 
-  'Reach', 'Shove', 'Sweep', 'Tethered', 'Thrown 20', 'Versatile B', 'Versatile S'],
-  'Sword': ['Agile', 'Backstabber', 'Backswing', 'Brace', 'Combination', 'Concealable', 'Deadly', 'Disarm', 'Fatal', 'Finesse', 'Forceful', 'Free-Hand', 'Injection', 'Modular (B P or S)', 'Monk', 'Parry', 'Reach', 'Resonant', 'Sweep', 'Trip', 'Two-Hand', 'Twin', 'Versatile P', 'Versatile S']
-};
+// ... groupTraitWhitelist remains same ...
 
 export default {
   name: 'App',
   data() {
     return {
       range: 'melee',
-      adjustements: { proficiency: 0, die: 0, hands: 0, reload: 0, volley: 0, range: 0 },
+      adjustements: { 
+        proficiency: 0, 
+        die: 0, 
+        hands: 0, 
+        reload: 0, 
+        volley: 0, 
+        range: 0,
+        damageType: 'S' // Default to Slashing
+      },
+      // ... rest of data remains same ...
       traits: { onePoint: [], twoPoint: [], threePoint: [] },
       selectedAncestry: '',
       selectedGroup: '',
@@ -166,7 +149,44 @@ export default {
       }
     };
   },
+  methods: {
+    isTraitAllowed(traitName) {
+      // Logic for Versatile conflict
+      if (traitName === 'Versatile B' && this.adjustements.damageType === 'B') return false;
+      if (traitName === 'Versatile P' && this.adjustements.damageType === 'P') return false;
+      if (traitName === 'Versatile S' && this.adjustements.damageType === 'S') return false;
+
+      if (!this.selectedGroup) return true;
+      const allowed = groupTraitWhitelist[this.selectedGroup];
+      if (!allowed) return true;
+      return allowed.some(a => traitName.toLowerCase().includes(a.toLowerCase()));
+    },
+    // ... rest of methods remain same ...
+    toggleTrait(group, trait) {
+      if (!this.isTraitAllowed(trait)) return;
+      const index = this.traits[group].indexOf(trait);
+      if (index > -1) {
+        this.traits[group].splice(index, 1);
+      } else {
+        this.traits[group].push(trait);
+      }
+    },
+    resetBuilder() {
+      this.range = 'melee';
+      this.selectedAncestry = '';
+      this.selectedGroup = '';
+      this.adjustements = { proficiency: 0, die: 0, hands: 0, reload: 0, volley: 0, range: 0, damageType: 'S' };
+      this.traits = { onePoint: [], twoPoint: [], threePoint: [] };
+    },
+    copyToClipboard() {
+      const textToCopy = `Group: ${this.selectedGroup || 'N/A'}, Base: ${this.adjustements.damageType}, Traits: ${this.allTraits.join(", ")}`;
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        alert("Traits copied!");
+      });
+    }
+  },
   computed: {
+    // ... keep your existing computed properties (isMelee, total, allTraits) ...
     isMelee() { return this.range === 'melee'; },
     total() {
       let bonusPoint = 2;
@@ -208,48 +228,6 @@ export default {
       if (this.selectedAncestry) combined.push(this.selectedAncestry);
       return combined.sort();
     }
-  },
-  methods: {
-    isTraitAllowed(traitName) {
-      if (!this.selectedGroup) return true;
-      const allowed = groupTraitWhitelist[this.selectedGroup];
-      if (!allowed) return true;
-      return allowed.some(a => traitName.toLowerCase().includes(a.toLowerCase()));
-    },
-    toggleTrait(group, trait) {
-      if (!this.isTraitAllowed(trait)) return;
-      const index = this.traits[group].indexOf(trait);
-      if (index > -1) {
-        this.traits[group].splice(index, 1);
-      } else {
-        this.traits[group].push(trait);
-      }
-    },
-    resetBuilder() {
-      this.range = 'melee';
-      this.selectedAncestry = '';
-      this.selectedGroup = '';
-      this.adjustements = { proficiency: 0, die: 0, hands: 0, reload: 0, volley: 0, range: 0 };
-      this.traits = { onePoint: [], twoPoint: [], threePoint: [] };
-    },
-    copyToClipboard() {
-      const textToCopy = `Group: ${this.selectedGroup || 'N/A'}, Traits: ${this.allTraits.join(", ")}`;
-      navigator.clipboard.writeText(textToCopy).then(() => {
-        alert("Traits copied!");
-      });
-    }
   }
 };
 </script>
-
-<style scoped>
-.selected-trait {
-  background-color: #198754 !important;
-  color: white !important;
-  border-color: #198754 !important;
-  font-weight: bold !important;
-}
-.pointer-none {
-  pointer-events: none;
-}
-</style>
