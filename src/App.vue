@@ -136,6 +136,7 @@ const groupTraitWhitelist = {
   'Crossbow': ['Backstabber', 'Capacity 5', 'Combination', 'Deadly', 'Fatal Aim', 'Finesse', 'Free-Hand', 'Parry', 'Repeating'],
   'Dart': ['Agile','Concealable', 'Deadly', 'Disarm', 'Finesse', 'Free-Hand', 'Monk', 'Propulsive', 'Recovery', 'Sweep', 'Tethered', 'Thrown 10', 'Thrown 20', 'Thrown 30'],
   'Firearm':['Agile', 'Attached to Shield', 'Backstabber', 'Capacity 3', 'Capacity 5', 'Combination', 'Concealable', 'Concussive', 'Double Barrel', 'Fatal', 'Fatal Aim', 'Kickback', 'Modular (B P or S)', 'Razing', 'Repeating', 'Scatter 5', 'Scatter 10'],
+  'Flail': ['Agile', 'Backswing', 'Combination', 'Deadly', 'Disarm', 'Finesse', 'Forceful', 'Grapple', 'Hampering', 'Monk', 'Parry', 'Ranged Trip', 'Razing', 'Reach', 'Sweep', 'Tethered', 'Thrown 10', 'Thrown 20', 'Thrown 30', 'Training', 'Trip', 'Twin', 'Versatile B', 'Versatile P'],
 
   'Hammer': ['Fatal', 'Shove', 'Thrown 10', 'Versatile'],
   'Knife': ['Agile', 'Backstabber', 'Concealable', 'Deadly', 'Finesse', 'Thrown 10', 'Twin', 'Versatile'],
