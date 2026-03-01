@@ -174,7 +174,7 @@ export default {
     },
     selectedAncestry: '',
     selectedGroup: '',
-    groups: ['Axe','Bomb','Bow','Brawling','Club','Dart','Firearm','Flail','Hammer','Knife','Mace','Pick','Polearm','Shield','Sling','Spear','Sword'],
+    groups: ['Axe','Bomb','Bow','Brawling','Club','Crossbow','Dart','Firearm','Flail','Hammer','Knife','Mace','Pick','Polearm','Shield','Sling','Spear','Sword'],
   }),
   computed: {
     isMelee () { return this.range === 'melee'; },
