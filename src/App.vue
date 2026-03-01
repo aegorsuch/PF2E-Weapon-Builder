@@ -135,6 +135,7 @@ const groupTraitWhitelist = {
   'Club': ['Agile', 'Attached to Crossbow or Firearm', 'Backswing', 'Combination', 'Concealable', 'Deadly', 'Disarm', 'Fatal', 'Free-Hand', 'Finesse', 'Forceful', 'Monk', 'Parry', 'Ranged Trip', 'Razing', 'Reach', 'Recovery', 'Shove', 'Sweep', 'Tearing', 'Tethered', 'Thrown 10', 'Thrown 20', 'Thrown 30', 'Trip', 'Twin', 'Two-Hand', 'Versatile B', 'Versatile P'],
   'Crossbow': ['Backstabber', 'Capacity 5', 'Combination', 'Deadly', 'Fatal Aim', 'Finesse', 'Free-Hand', 'Parry', 'Repeating'],
   'Dart': ['Agile','Concealable', 'Deadly', 'Disarm', 'Finesse', 'Free-Hand', 'Monk', 'Propulsive', 'Recovery', 'Sweep', 'Tethered', 'Thrown 10', 'Thrown 20', 'Thrown 30'],
+  'Firearm':['Agile', 'Attached to Shield', 'Backstabber', 'Capacity 3', 'Capacity 5', 'Combination', 'Concealable', 'Concussive', 'Double Barrel', 'Fatal', 'Fatal Aim', 'Kickback', 'Modular (B P or S)', 'Razing', 'Repeating', 'Scatter 5', 'Scatter 10'],
 
   'Hammer': ['Fatal', 'Shove', 'Thrown 10', 'Versatile'],
   'Knife': ['Agile', 'Backstabber', 'Concealable', 'Deadly', 'Finesse', 'Thrown 10', 'Twin', 'Versatile'],
