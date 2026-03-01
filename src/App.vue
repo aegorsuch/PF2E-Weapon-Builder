@@ -139,10 +139,14 @@ const groupTraitWhitelist = {
   'Flail': ['Agile', 'Backswing', 'Combination', 'Deadly', 'Disarm', 'Finesse', 'Forceful', 'Grapple', 'Hampering', 'Monk', 'Parry', 'Ranged Trip', 'Razing', 'Reach', 'Sweep', 'Tethered', 'Thrown 10', 'Thrown 20', 'Thrown 30', 'Training', 'Trip', 'Twin', 'Versatile B', 'Versatile P'],
   'Hammer': ['Agile', 'Backswing', 'Brace', 'Combination', 'Razing', 'Reach', 'Shove', 'Thrown 20', 'Trip', 'Two-Hand', 'Versatile P'],
 
-  'Knife': ['Agile', 'Backstabber', 'Concealable', 'Deadly', 'Finesse', 'Thrown 10', 'Twin', 'Versatile'],
+
+  'Knife': ['Agile', 'Attached to Crossbow or Firearm', 'Backstabber', 'Combination', 'Concealable',   'Deadly', 'Disarm', 'Fatal', 'Finesse', 'Free-Hand', 'Injection', 'Monk', 'Parry', 'Resonant', 'Sweep', 'Thrown 10', 'Thrown 20', 'Trip', 'Twin', 'Two-Hand', 'Versatile B', 'Versatile P', 'Versatile S'],
+
+
   'Pick': ['Fatal', 'Forceful', 'Shove'],
   'Polearm': ['Forceful', 'Reach', 'Shove', 'Sweep', 'Trip'],
   'Sword': ['Agile', 'Deadly', 'Disarm', 'Finesse', 'Forceful', 'Parry', 'Twin', 'Versatile']
+  Resonant
 };
 
 export default {
