@@ -96,7 +96,9 @@
 
       <div class="row mt-4">
         <div v-for="(traitList, pointKey) in traitCategories" :key="pointKey" class="col-md-4">
-          <label class="fw-bold mb-2">{{ pointKey === 'onePoint' ? '1-Point' : pointKey === 'twoPoint' ? '2-Point' : '3-Point' }} Traits</label>
+          <label class="fw-bold mb-2">
+            {{ pointKey === 'onePoint' ? '1-Point' : pointKey === 'twoPoint' ? '2-Point' : '3-Point' }} Traits
+          </label>
           <div class="d-flex flex-wrap gap-2">
             <button v-for="t in traitList" 
                     :key="t" 
@@ -126,7 +128,6 @@
 </template>
 
 <script>
-// Alphabetized Whitelist for Group Filtering
 const groupTraitWhitelist = {
   'Axe': ['Agile', 'Climbing', 'Combination', 'Critical Fusion', 'Deadly', 'Disarm', 'Dwarf', 'Finesse', 'Forceful', 'Orc', 'Parry', 'Shove', 'Sweep', 'Thrown', 'Trip', 'Versatile P'],
   'Bow': ['Deadly', 'Finesse', 'Propulsive', 'Volley'],
@@ -141,27 +142,31 @@ const groupTraitWhitelist = {
 
 export default {
   name: 'App',
-  data: () => ({
-    range: 'melee',
-    adjustements: { proficiency: 0, die: 0, hands: 0, reload: 0, volley: 0, range: 0 },
-    traits: { onePoint: [], twoPoint: [], threePoint: [] },
-    selectedAncestry: '',
-    selectedGroup: '',
-    groups: ['Axe','Bomb','Bow','Brawling','Club','Crossbow','Dart','Firearm','Flail','Hammer','Knife','Mace','Pick','Polearm','Shield','Sling','Spear','Sword'],
-    ancestries: ['Dwarf', 'Elf', 'Gnome', 'Goblin', 'Halfling', 'Orc', 'Azarketi'],
-    traitCategories: {
-      onePoint: ['Backstabber', 'Backswing', 'Brace', 'Capacity 3', 'Climbing', 'Combination', 'Concealable', 'Disarm', 'Finesse', 'Forceful', 'Free-Hand', 'Grapple', 'Kickback', 'Parry', 'Propulsive', 'Shove', 'Sweep', 'Tearing', 'Thrown 10', 'Trip', 'Twin', 'Two-Hand', 'Versatile B', 'Versatile P', 'Versatile S'],
-      twoPoint: ['Agile', 'Attached to Crossbow or Firearm', 'Attached to Shield', 'Capacity 5', 'Concussive', 'Deadly', 'Hampering', 'Jousting', 'Modular', 'Ranged Trip', 'Razing', 'Resonant', 'Thrown 20', 'Training'],
-      threePoint: ['Critical Fusion', 'Double Barrel', 'Fatal', 'Fatal Aim', 'Injection', 'Reach', 'Recovery', 'Repeating', 'Scatter 10', 'Tethered', 'Unarmed']
-    }
-  }),
+  data() {
+    return {
+      range: 'melee',
+      adjustements: { proficiency: 0, die: 0, hands: 0, reload: 0, volley: 0, range: 0 },
+      traits: { onePoint: [], twoPoint: [], threePoint: [] },
+      selectedAncestry: '',
+      selectedGroup: '',
+      groups: ['Axe','Bomb','Bow','Brawling','Club','Crossbow','Dart','Firearm','Flail','Hammer','Knife','Mace','Pick','Polearm','Shield','Sling','Spear','Sword'],
+      ancestries: ['Dwarf', 'Elf', 'Gnome', 'Goblin', 'Halfling', 'Orc', 'Azarketi'],
+      traitCategories: {
+        onePoint: ['Backstabber', 'Backswing', 'Brace', 'Capacity 3', 'Climbing', 'Combination', 'Concealable', 'Disarm', 'Finesse', 'Forceful', 'Free-Hand', 'Grapple', 'Kickback', 'Parry', 'Propulsive', 'Shove', 'Sweep', 'Tearing', 'Thrown 10', 'Trip', 'Twin', 'Two-Hand', 'Versatile B', 'Versatile P', 'Versatile S'],
+        twoPoint: ['Agile', 'Attached to Crossbow or Firearm', 'Attached to Shield', 'Capacity 5', 'Concussive', 'Deadly', 'Hampering', 'Jousting', 'Modular', 'Ranged Trip', 'Razing', 'Resonant', 'Thrown 20', 'Training'],
+        threePoint: ['Critical Fusion', 'Double Barrel', 'Fatal', 'Fatal Aim', 'Injection', 'Reach', 'Recovery', 'Repeating', 'Scatter 10', 'Tethered', 'Unarmed']
+      }
+    };
+  },
   computed: {
-    isMelee () { return this.range === 'melee'; },
-    total () {
+    isMelee() { return this.range === 'melee'; },
+    total() {
       let bonusPoint = 2;
       let baseCost = this.adjustements.proficiency + this.adjustements.die + this.adjustements.hands;
-      if(!this.isMelee) baseCost = baseCost - 3 + this.adjustements.reload + this.adjustements.volley + this.adjustements.range;
-      let traitsCost = this.traits.onePoint.length + this.traits.twoPoint.length * 2 + this.traits.threePoint.length * 3;
+      if (!this.isMelee) {
+        baseCost = baseCost - 3 + this.adjustements.reload + this.adjustements.volley + this.adjustements.range;
+      }
+      let traitsCost = this.traits.onePoint.length + (this.traits.twoPoint.length * 2) + (this.traits.threePoint.length * 3);
       return bonusPoint + baseCost - traitsCost;
     },
     allTraits() {
@@ -198,10 +203,42 @@ export default {
       if (!this.selectedGroup) return true;
       const allowed = groupTraitWhitelist[this.selectedGroup];
       if (!allowed) return true;
-      // Normalizes naming to ensure 'Thrown 10' matches 'Thrown'
       return allowed.some(a => traitName.toLowerCase().includes(a.toLowerCase()));
     },
     toggleTrait(group, trait) {
       if (!this.isTraitAllowed(trait)) return;
       const index = this.traits[group].indexOf(trait);
-      if (index > -1) this.
+      if (index > -1) {
+        this.traits[group].splice(index, 1);
+      } else {
+        this.traits[group].push(trait);
+      }
+    },
+    resetBuilder() {
+      this.range = 'melee';
+      this.selectedAncestry = '';
+      this.selectedGroup = '';
+      this.adjustements = { proficiency: 0, die: 0, hands: 0, reload: 0, volley: 0, range: 0 };
+      this.traits = { onePoint: [], twoPoint: [], threePoint: [] };
+    },
+    copyToClipboard() {
+      const textToCopy = `Group: ${this.selectedGroup || 'N/A'}, Traits: ${this.allTraits.join(", ")}`;
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        alert("Traits copied!");
+      });
+    }
+  }
+};
+</script>
+
+<style scoped>
+.selected-trait {
+  background-color: #198754 !important;
+  color: white !important;
+  border-color: #198754 !important;
+  font-weight: bold !important;
+}
+.pointer-none {
+  pointer-events: none;
+}
+</style>
