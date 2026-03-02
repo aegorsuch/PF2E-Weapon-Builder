@@ -30,7 +30,10 @@
       <div class="d-flex flex-wrap gap-3 mt-2">
         <label class="me-2 mb-2">Proficiency
           <select class="form-select" v-model="adjustements.proficiency">
-            <option v-if="!isCombo" :value="0">Simple (+0)</option>
+            <template v-if="!isCombo">
+              <option :value="-2">Unarmed (-2)</option>
+              <option :value="0">Simple (+0)</option>
+            </template>
             <option :value="isCombo ? 6 : 3">Martial (+{{ isCombo ? 6 : 3 }})</option>
             <option :value="isCombo ? 10 : 5">Advanced (+{{ isCombo ? 10 : 5 }})</option>
           </select>
@@ -178,10 +181,10 @@
 <script>
 const groupTraitWhitelist = {
   'Axe': ['Agile', 'Climbing', 'Deadly', 'Disarm', 'Finesse', 'Forceful', 'Parry', 'Shove', 'Sweep', 'Thrown 10', 'Thrown 20', 'Trip', 'Two-Hand', 'Vehicular', 'Versatile P'],
-  'Bow': ['Capacity 3', 'Concussive', 'Deadly', 'Finesse', 'Forceful', 'Modular (B P or S)', 'Monk', 'Parry', 'Propulsive','Razing'],
-  'Brawling': ['Agile', 'Backstabber', 'Deadly', 'Disarm', 'Fatal', 'Finesse', 'Free-Hand', 'Grapple', 'Modular (B P or S)', 'Monk', 'Parry', 'Reach', 'Shove', 'Trip', 'Twin'],
+  'Bow': ['Agile', 'Capacity 3', 'Concussive', 'Deadly', 'Finesse', 'Forceful', 'Modular (B P or S)', 'Monk', 'Parry', 'Propulsive','Razing'],
+  'Brawling': ['Agile', 'Backstabber', 'Deadly', 'Disarm', 'Fatal', 'Finesse', 'Free-Hand', 'Grapple', 'Modular (B P or S)', 'Monk', 'Parry', 'Reach', 'Shove', 'Trip', 'Twin', 'Unarmed'],
   'Club': ['Agile', 'Attached to Crossbow or Firearm', 'Backswing', 'Concealable', 'Deadly', 'Disarm', 'Fatal', 'Free-Hand', 'Finesse', 'Forceful', 'Monk', 'Parry', 'Ranged Trip', 'Razing', 'Reach', 'Recovery', 'Shove', 'Sweep', 'Tearing', 'Tethered', 'Thrown 10', 'Thrown 20', 'Thrown 30', 'Trip', 'Twin', 'Twin (Sheath)', 'Two-Hand', 'Vehicular', 'Versatile B', 'Versatile P'],
-  'Crossbow': ['Backstabber', 'Capacity 5', 'Fatal Aim', 'Free-Hand', 'Parry', 'Repeating'],
+  'Crossbow': ['Backstabber', 'Capacity 5', 'Deadly', 'Fatal Aim', 'Free-Hand', 'Parry', 'Repeating'],
   'Dart': ['Agile','Concealable', 'Deadly', 'Disarm', 'Finesse', 'Free-Hand', 'Monk', 'Propulsive', 'Recovery', 'Sweep', 'Tethered', 'Thrown 10', 'Thrown 20', 'Thrown 30'],
   'Firearm':['Agile', 'Attached to Shield', 'Backstabber', 'Capacity 3', 'Capacity 5', 'Concealable', 'Concussive', 'Double Barrel', 'Fatal', 'Fatal Aim', 'Kickback', 'Modular (B P or S)', 'Razing', 'Repeating', 'Scatter 5', 'Scatter 10'],
   'Flail': ['Agile', 'Backswing', 'Deadly', 'Disarm', 'Finesse', 'Forceful', 'Grapple', 'Hampering', 'Monk', 'Parry', 'Ranged Trip', 'Razing', 'Reach', 'Sweep', 'Tethered', 'Thrown 10', 'Thrown 20', 'Thrown 30', 'Training', 'Trip', 'Twin', 'Versatile B', 'Versatile P'],
@@ -216,7 +219,8 @@ export default {
   },
   watch: {
     range(newVal) {
-      if (newVal === 'combination' && this.adjustements.proficiency === 0) {
+      // If switching to combination, proficiency can't be Simple or Unarmed (0 or -2)
+      if (newVal === 'combination' && this.adjustements.proficiency <= 0) {
         this.adjustements.proficiency = 6;
       }
     }
@@ -236,13 +240,12 @@ export default {
       if (this.range !== 'ranged') {
         points += (this.meleeForm.die - 3);
         points -= this.calcTraitPoints(this.meleeForm.traits);
-        if (this.isCombo) points -= 3; // Critical Fusion cost
+        if (this.isCombo) points -= 3;
       }
 
       // 4. Ranged logic
       if (this.range !== 'melee') {
         points += (this.rangedForm.die - 3);
-        // NO -3 PENALTY HERE (Per your request to remove it)
         points += this.rangedForm.reload;
         points += this.rangedForm.volley;
         points += (this.rangedForm.range - 4);
@@ -258,6 +261,7 @@ export default {
       const stepUp = { 'd4': 'd6', 'd6': 'd8', 'd8': 'd10', 'd10': 'd12', 'd12': 'd12' };
       const tDie = traitDieMap[form.die] || 'd12';
       const hasDouble = form.traits.threePoint.includes('Double Barrel');
+      
       Object.keys(form.traits).forEach(key => {
         form.traits[key].forEach(t => {
           let label = t;
@@ -269,10 +273,16 @@ export default {
           if (!list.includes(label)) list.push(label);
         });
       });
+
+      if (this.adjustements.proficiency === -2 && !list.includes('Unarmed')) {
+        list.push('Unarmed');
+      }
+
       if (this.isCombo) {
         if (!list.includes('Combination')) list.push('Combination');
         if (!isRangedForm && !list.includes('Critical Fusion')) list.push('Critical Fusion');
       }
+
       if (isRangedForm && form.volley === 3) list.push('Volley 30');
       if (this.selectedAncestry) list.push(this.selectedAncestry);
       return list.sort();
