@@ -233,7 +233,7 @@ export default {
       if (this.range !== 'ranged') {
         points += this.meleeForm.die;
         points -= this.calcTraitPoints(this.meleeForm.traits);
-        if (this.isCombo) points -= 3; // The cost of Critical Fusion
+        if (this.isCombo) points -= 3;
       }
       if (this.range !== 'melee') {
         points += this.rangedForm.die;
