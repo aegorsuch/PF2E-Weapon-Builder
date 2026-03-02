@@ -169,6 +169,9 @@ export default {
     isMelee() { return this.range === 'melee'; },
     total() {
       let bonusPoint = 2;
+      if (this.selectedGroup === 'Firearm') {
+        bonusPoint += 1;
+      }
       let baseCost = this.adjustements.proficiency + this.adjustements.die + this.adjustements.hands;
       if (!this.isMelee) {
         baseCost = baseCost - 3 + this.adjustements.reload + this.adjustements.volley + this.adjustements.range;
