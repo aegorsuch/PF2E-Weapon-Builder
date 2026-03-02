@@ -30,14 +30,14 @@
       <div class="d-flex flex-wrap gap-3 mt-2">
         <label class="me-2 mb-2">Proficiency
           <select class="form-select" v-model="adjustements.proficiency">
-            <option :value="0">Simple</option>
-            <option :value="isCombo ? 6 : 3">Martial</option>
-            <option :value="isCombo ? 10 : 5">Advanced</option>
+            <option v-if="!isCombo" :value="0">Simple (+0)</option>
+            <option :value="isCombo ? 6 : 3">Martial (+{{ isCombo ? 6 : 3 }})</option>
+            <option :value="isCombo ? 10 : 5">Advanced (+{{ isCombo ? 10 : 5 }})</option>
           </select>
         </label>
         <label class="me-2 mb-2">Hands
           <select class="form-select" v-model="adjustements.hands">
-            <option :value="0">1 / 1 Hand (+0)</option>
+            <option :value="0">{{ isCombo ? '1 / 1 Hand (+0)' : '1 Hand (+0)' }}</option>
             <option v-if="isCombo" :value="7">1+ / 2 Hands (+7)</option>
             <option v-if="range === 'ranged'" :value="1">1+ Hand (+1)</option>
             <option :value="isCombo ? 8 : 6">{{ isCombo ? '2 / 2 Hands (+8)' : '2 Hands (+6)' }}</option>
@@ -214,22 +214,37 @@ export default {
       }
     };
   },
+  watch: {
+    // When switching to Combination, if proficiency was Simple (0), reset it to Martial
+    range(newVal) {
+      if (newVal === 'combination' && this.adjustements.proficiency === 0) {
+        this.adjustements.proficiency = 6;
+      }
+    }
+  },
   computed: {
     isCombo() { return this.range === 'combination'; },
     total() {
-      // Combination weapons start with 3 base WP per guide
-      let points = this.isCombo ? 4 : 5; // +1 added for 13gp+ price
-      points += this.adjustements.proficiency; // Scale Martial/Advanced higher for combos
-      points += this.adjustements.hands; // +7 or +8 for combos
+      // 1. Starting Budget: 4 base + 1 expensive = 5.
+      // Note: Combination start is typically 3 base per your guide, but we apply 4 base here to keep total alignment.
+      let points = this.isCombo ? 4 : 5; 
+
+      // 2. Global Bonuses
+      points += this.adjustements.proficiency;
+      points += this.adjustements.hands;
       if (this.rangedForm.group === 'Firearm') points += 1;
+
+      // 3. Melee Logic
       if (this.range !== 'ranged') {
         points += (this.meleeForm.die - 3);
         points -= this.calcTraitPoints(this.meleeForm.traits);
-        if (this.isCombo) points -= 3; // Critical Fusion cost
+        if (this.isCombo) points -= 3;
       }
+
+      // 4. Ranged Logic
       if (this.range !== 'melee') {
         points += (this.rangedForm.die - 3);
-        points -= 3; 
+        points -= 3; // The -3 penalty for ranged utility per guide
         points += this.rangedForm.reload;
         points += this.rangedForm.volley;
         points += (this.rangedForm.range - 4);
