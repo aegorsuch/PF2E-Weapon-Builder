@@ -2,7 +2,7 @@
   <div id="app" class="container pb-5">
     <form>
       <div class="d-flex justify-content-between align-items-center mt-3">
-        <h1 class="mb-0">Points Left: {{ total }}</h1>
+        <h1 class="mb-0" :class="{'text-danger': total < 0}">Points Left: {{ total }}</h1>
         <div>
           <button type="button" class="btn btn-outline-primary me-2" @click="copyToClipboard">
             Copy Traits
@@ -14,13 +14,17 @@
       </div>
 
       <div class="mt-3">
-        <div class="form-check">
-          <input v-model="range" class="form-check-input" type="radio" id="range-melee" value="melee">
-          <label class="form-check-label" for="range-melee">Melee</label>
+        <div class="form-check form-check-inline">
+          <input v-model="range" class="form-check-input" type="radio" id="mode-melee" value="melee">
+          <label class="form-check-label" for="mode-melee">Melee</label>
         </div>
-        <div class="form-check">
-          <input v-model="range" class="form-check-input" type="radio" id="range-ranged" value="ranged">
-          <label class="form-check-label" for="range-ranged">Ranged</label>
+        <div class="form-check form-check-inline">
+          <input v-model="range" class="form-check-input" type="radio" id="mode-ranged" value="ranged">
+          <label class="form-check-label" for="mode-ranged">Ranged</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input v-model="range" class="form-check-input" type="radio" id="mode-combo" value="combination">
+          <label class="form-check-label" for="mode-combo">Combination</label>
         </div>
       </div>
 
@@ -30,30 +34,15 @@
         <label class="me-2 mb-2">Proficiency
           <select class="form-select" v-model="adjustements.proficiency">
             <option :value="0">Simple</option>
-            <option :value="3">Martial</option>
-            <option :value="5">Advanced</option>
+            <option :value="isCombo ? 6 : 3">Martial</option>
+            <option :value="isCombo ? 10 : 5">Advanced</option>
           </select>
         </label>
         <label class="me-2 mb-2">Hands
           <select class="form-select" v-model="adjustements.hands">
             <option :value="0">1</option>
-            <option v-if="!isMelee" :value="1">1+</option>
-            <option :value="6">2</option>
-          </select>
-        </label>
-        <label class="me-2 mb-2">Damage
-          <select class="form-select" v-model="adjustements.die">
-            <option :value="3">d4</option>
-            <option :value="0">d6</option>
-            <option :value="-3">d8</option>
-            <option :value="-6">d10</option>
-            <option :value="-9">d12</option>
-          </select>
-        </label>
-        <label class="me-2 mb-2">Weapon Group
-          <select class="form-select" v-model="selectedGroup">
-            <option value="">None</option>
-            <option v-for="g in groups" :key="g" :value="g">{{ g }}</option>
+            <option v-if="range === 'ranged'" :value="1">1+</option>
+            <option :value="isCombo ? 8 : 6">2</option>
           </select>
         </label>
         <label class="me-2 mb-2">Ancestry
@@ -64,55 +53,102 @@
         </label>
       </div>
 
-      <template v-if="!isMelee">
-        <div class="d-flex flex-wrap gap-2 align-items-end mt-2">
-          <label>Reload
-            <select class="form-select" v-model="adjustements.reload">
-              <option :value="0">Reload 0</option>
-              <option :value="3">Reload 1</option>
-              <option :value="6">Reload 2</option>
-            </select>
-          </label>
-          <label>Range
-            <select class="form-select" v-model="adjustements.range">
-              <option :value="4">20</option>
-              <option :value="3">30</option>
-              <option :value="1">50</option>
-              <option :value="0">60</option>
-              <option :value="-2">100</option>
-              <option :value="-3">120</option>
-            </select>
-          </label>
-          <label>Volley
-            <select class="form-select" v-model="adjustements.volley">
-              <option :value="0">None</option>
-              <option :value="3">Volley 30</option>
-            </select>
-          </label>
-        </div>
-      </template>
-
       <hr>
 
-      <div class="row mt-4">
-        <div v-for="(traitList, pointKey) in traitCategories" :key="pointKey" class="col-md-4">
-          <label class="fw-bold mb-2">
-            {{ pointKey === 'onePoint' ? '1-Point' : pointKey === 'twoPoint' ? '2-Point' : '3-Point' }} Traits
-          </label>
-          <div class="d-flex flex-wrap gap-2">
-            <button v-for="t in traitList" 
-                    :key="t" 
-                    type="button" 
-                    @click="toggleTrait(pointKey, t)"
-                    class="btn btn-sm"
-                    :disabled="!isTraitAllowed(t)"
-                    :class="{
-                      'selected-trait': traits[pointKey].includes(t),
-                      'btn-outline-secondary opacity-75': !traits[pointKey].includes(t),
-                      'opacity-25 pointer-none': !isTraitAllowed(t) && !traits[pointKey].includes(t)
-                    }">
-              {{ t }}
-            </button>
+      <div class="row">
+        <div v-if="range !== 'ranged'" :class="isCombo ? 'col-md-6 border-end' : 'col-12'">
+          <h3 v-if="isCombo" class="text-primary mb-3">Melee Form</h3>
+          
+          <div class="d-flex gap-3 mb-3">
+            <label class="flex-grow-1">Melee Group
+              <select class="form-select" v-model="meleeForm.group">
+                <option value="">None</option>
+                <option v-for="g in groups" :key="g" :value="g">{{ g }}</option>
+              </select>
+            </label>
+            <label class="flex-grow-1">Melee Die
+              <select class="form-select" v-model="meleeForm.die">
+                <option :value="3">d4</option>
+                <option :value="0">d6</option>
+                <option :value="-3">d8</option>
+                <option :value="-6">d10</option>
+                <option :value="-9">d12</option>
+              </select>
+            </label>
+          </div>
+
+          <div v-for="(traitList, pointKey) in traitCategories" :key="'m'+pointKey" class="mb-3">
+            <label class="fw-bold small">{{ formatPointLabel(pointKey) }} Melee Traits</label>
+            <div class="d-flex flex-wrap gap-2 mt-1">
+              <button v-for="t in traitList" :key="t" type="button"
+                @click="toggleTrait('melee', pointKey, t)"
+                class="btn btn-sm"
+                :disabled="!isTraitAllowed(t, meleeForm.group)"
+                :class="getTraitClass(t, 'melee', pointKey, meleeForm.group)">
+                {{ t }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="range !== 'melee'" :class="isCombo ? 'col-md-6' : 'col-12'">
+          <h3 v-if="isCombo" class="text-success mb-3">Ranged Form</h3>
+          
+          <div class="d-flex flex-wrap gap-3 mb-3">
+            <label class="flex-grow-1">Ranged Group
+              <select class="form-select" v-model="rangedForm.group">
+                <option value="">None</option>
+                <option v-for="g in groups" :key="g" :value="g">{{ g }}</option>
+              </select>
+            </label>
+            <label class="flex-grow-1">Ranged Die
+              <select class="form-select" v-model="rangedForm.die">
+                <option :value="3">d4</option>
+                <option :value="0">d6</option>
+                <option :value="-3">d8</option>
+                <option :value="-6">d10</option>
+                <option :value="-9">d12</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="d-flex flex-wrap gap-2 mb-3">
+            <label class="small">Reload
+              <select class="form-select form-select-sm" v-model="rangedForm.reload">
+                <option :value="0">0</option>
+                <option :value="3">1</option>
+                <option :value="6">2</option>
+              </select>
+            </label>
+            <label class="small">Range
+              <select class="form-select form-select-sm" v-model="rangedForm.range">
+                <option :value="4">20</option>
+                <option :value="3">30</option>
+                <option :value="1">50</option>
+                <option :value="0">60</option>
+                <option :value="-2">100</option>
+                <option :value="-3">120</option>
+              </select>
+            </label>
+            <label class="small">Volley
+              <select class="form-select form-select-sm" v-model="rangedForm.volley">
+                <option :value="0">None</option>
+                <option :value="3">30ft</option>
+              </select>
+            </label>
+          </div>
+
+          <div v-for="(traitList, pointKey) in traitCategories" :key="'r'+pointKey" class="mb-3">
+            <label class="fw-bold small">{{ formatPointLabel(pointKey) }} Ranged Traits</label>
+            <div class="d-flex flex-wrap gap-2 mt-1">
+              <button v-for="t in traitList" :key="t" type="button"
+                @click="toggleTrait('ranged', pointKey, t)"
+                class="btn btn-sm"
+                :disabled="!isTraitAllowed(t, rangedForm.group)"
+                :class="getTraitClass(t, 'ranged', pointKey, rangedForm.group)">
+                {{ t }}
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -120,8 +156,9 @@
     
     <hr />
 
-    <div v-if="allTraits.length > 0" class="mt-4 p-3 bg-light rounded border">
+    <div v-if="allTraits.length > 0" class="mt-4 p-3 bg-light rounded border shadow-sm">
       <h4>Weapon Summary</h4>
+      <div v-if="isCombo" class="mb-2"><strong>Mode:</strong> Combination Weapon</div>
       <div class="lead"><strong>Traits:</strong> {{ allTraits.join(', ') }}</div>
     </div>
   </div>
@@ -138,7 +175,7 @@ const groupTraitWhitelist = {
   'Firearm':['Agile', 'Attached to Shield', 'Backstabber', 'Capacity 3', 'Capacity 5', 'Combination', 'Concealable', 'Concussive', 'Double Barrel', 'Fatal', 'Fatal Aim', 'Kickback', 'Modular (B P or S)', 'Razing', 'Repeating', 'Scatter 5', 'Scatter 10'],
   'Flail': ['Agile', 'Backswing', 'Combination', 'Deadly', 'Disarm', 'Finesse', 'Forceful', 'Grapple', 'Hampering', 'Monk', 'Parry', 'Ranged Trip', 'Razing', 'Reach', 'Sweep', 'Tethered', 'Thrown 10', 'Thrown 20', 'Thrown 30', 'Training', 'Trip', 'Twin', 'Versatile B', 'Versatile P'],
   'Hammer': ['Agile', 'Backswing', 'Brace', 'Combination', 'Razing', 'Reach', 'Shove', 'Thrown 20', 'Trip', 'Two-Hand', 'Versatile P'],
-  'Knife': ['Agile', 'Attached to Crossbow or Firearm', 'Backstabber', 'Combination', 'Concealable',   'Deadly', 'Disarm', 'Fatal', 'Finesse', 'Free-Hand', 'Injection', 'Monk', 'Parry', 'Resonant', 'Sweep', 'Thrown 10', 'Thrown 20', 'Trip', 'Twin', 'Two-Hand', 'Vehicular', 'Versatile B', 'Versatile P', 'Versatile S'],
+  'Knife': ['Agile', 'Attached to Crossbow or Firearm', 'Backstabber', 'Combination', 'Concealable', 'Deadly', 'Disarm', 'Fatal', 'Finesse', 'Free-Hand', 'Injection', 'Monk', 'Parry', 'Resonant', 'Sweep', 'Thrown 10', 'Thrown 20', 'Trip', 'Twin', 'Two-Hand', 'Vehicular', 'Versatile B', 'Versatile P', 'Versatile S'],
   'Pick': ['Agile', 'Backstabber', 'Deadly', 'Fatal', 'Modular (B P or S)', 'Modular (P and grapple or S and sweep)', 'Trip'],
   'Polearm': ['Backswing', 'Deadly', 'Disarm', 'Forceful', 'Hampering', 'Razing', 'Reach', 'Shove', 'Sweep', 'Tethered', 'Thrown 20', 'Trip', 'Versatile B', 'Versatile P', 'Versatile S'],
   'Shield': ['Attached to Shield'],
@@ -151,11 +188,22 @@ export default {
   name: 'App',
   data() {
     return {
-      range: 'melee',
-      adjustements: { proficiency: 0, die: 0, hands: 0, reload: 0, volley: 0, range: 0 },
-      traits: { onePoint: [], twoPoint: [], threePoint: [] },
+      range: 'melee', // melee, ranged, combination
       selectedAncestry: '',
-      selectedGroup: '',
+      adjustements: { proficiency: 0, hands: 0 },
+      meleeForm: {
+        group: '',
+        die: 0,
+        traits: { onePoint: [], twoPoint: [], threePoint: [] }
+      },
+      rangedForm: {
+        group: '',
+        die: 0,
+        reload: 0,
+        volley: 0,
+        range: 4, // default 20ft
+        traits: { onePoint: [], twoPoint: [], threePoint: [] }
+      },
       groups: ['Axe','Bow','Brawling','Club','Crossbow','Dart','Firearm','Flail','Hammer','Knife','Mace','Pick','Polearm','Shield','Sling','Spear','Sword'],
       ancestries: ['Dwarf', 'Elf', 'Gnome', 'Goblin', 'Halfling', 'Jotunborn', 'Orc', 'Tengu'],
       traitCategories: {
@@ -166,79 +214,112 @@ export default {
     };
   },
   computed: {
-    isMelee() { return this.range === 'melee'; },
+    isCombo() { return this.range === 'combination'; },
     total() {
-      let bonusPoint = 2;
-      if (this.selectedGroup === 'Firearm') {
-        bonusPoint += 1;
+      // 1. Starting Budget
+      let points = this.isCombo ? 3 : 4;
+
+      // 2. Global Bonuses
+      points += this.adjustements.proficiency;
+      points += this.adjustements.hands;
+      if (this.rangedForm.group === 'Firearm') points += 1;
+
+      // 3. Melee Costs
+      if (this.range !== 'ranged') {
+        points += this.meleeForm.die;
+        points -= this.calcTraitPoints(this.meleeForm.traits);
+        if (this.isCombo) points -= 3; // Critical Fusion cost
       }
-      let baseCost = this.adjustements.proficiency + this.adjustements.die + this.adjustements.hands;
-      if (!this.isMelee) {
-        baseCost = baseCost - 3 + this.adjustements.reload + this.adjustements.volley + this.adjustements.range;
+
+      // 4. Ranged Costs/Bonuses
+      if (this.range !== 'melee') {
+        points += this.rangedForm.die;
+        points -= 3; // base ranged penalty from guide logic
+        points += this.rangedForm.reload;
+        points += this.rangedForm.volley;
+        points += (this.rangedForm.range - 4); // range cost/gain
+        points -= this.calcTraitPoints(this.rangedForm.traits);
       }
-      let traitsCost = this.traits.onePoint.length + (this.traits.twoPoint.length * 2) + (this.traits.threePoint.length * 3);
-      return bonusPoint + baseCost - traitsCost;
+
+      return points;
     },
     allTraits() {
       let combined = ['Uncommon'];
       const traitDieMap = { 3: 'd8', 0: 'd10', '-3': 'd12', '-6': 'd12', '-9': 'd12' };
-      const baseDieMap = { 3: 'd4', 0: 'd6', '-3': 'd8', '-6': 'd10', '-9': 'd12' };
       const stepUp = { 'd4': 'd6', 'd6': 'd8', 'd8': 'd10', 'd10': 'd12', 'd12': 'd12' };
-      const stepDown = { 'd12': 'd10', 'd10': 'd8', 'd8': 'd6', 'd6': 'd4', 'd4': 'd4' };
+
+      const processForm = (form, isRangedForm) => {
+        const tDie = traitDieMap[form.die] || 'd12';
+        const hasDouble = form.traits.threePoint.includes('Double Barrel');
+
+        Object.keys(form.traits).forEach(key => {
+          form.traits[key].forEach(t => {
+            let label = t;
+            if (t === 'Two-Hand') label = `Two-Hand ${tDie}`;
+            if (t === 'Deadly') label = `Deadly ${tDie}`;
+            if (t === 'Fatal' || t === 'Fatal Aim') {
+              label = `${t} ${hasDouble ? stepUp[tDie] : tDie}`;
+            }
+            if (!combined.includes(label)) combined.push(label);
+          });
+        });
+        
+        if (this.isCombo && !isRangedForm && form.traits.onePoint.includes('Combination')) {
+          if (!combined.includes('Critical Fusion')) combined.push('Critical Fusion');
+        }
+        if (isRangedForm && form.volley === 3) combined.push('Volley 30');
+      };
+
+      if (this.range !== 'ranged') processForm(this.meleeForm, false);
+      if (this.range !== 'melee') processForm(this.rangedForm, true);
       
-      const traitDie = traitDieMap[this.adjustements.die] || 'd12';
-      const currentBaseDie = baseDieMap[this.adjustements.die] || 'd12';
-      const hasDoubleBarrel = this.traits.threePoint.includes('Double Barrel');
-
-      this.traits.onePoint.forEach(t => combined.push(t === 'Two-Hand' ? `Two-Hand ${traitDie}` : t));
-      this.traits.twoPoint.forEach(t => {
-        if (t === 'Deadly') combined.push(`Deadly ${traitDie}`);
-        else if (t === 'Jousting') combined.push(`Jousting ${stepDown[currentBaseDie]}`);
-        else combined.push(t);
-      });
-      this.traits.threePoint.forEach(t => {
-        if (t === 'Fatal' || t === 'Fatal Aim') {
-            const finalDie = hasDoubleBarrel ? stepUp[traitDie] : traitDie;
-            combined.push(`${t} ${finalDie}`);
-        } else combined.push(t);
-      });
-      if (this.isMelee && this.traits.onePoint.includes('Combination')) {
-        combined.push('Critical Fusion');
-      }
-
-      if (!this.isMelee && this.adjustements.volley === 3) combined.push('Volley 30');
       if (this.selectedAncestry) combined.push(this.selectedAncestry);
       return combined.sort();
     }
   },
   methods: {
-    isTraitAllowed(traitName) {
-      if (!this.selectedGroup) return true;
-      const allowed = groupTraitWhitelist[this.selectedGroup];
-      if (!allowed) return true;
-      return allowed.some(a => traitName.toLowerCase().includes(a.toLowerCase()));
+    calcTraitPoints(traits) {
+      return traits.onePoint.length + (traits.twoPoint.length * 2) + (traits.threePoint.length * 3);
     },
-    toggleTrait(group, trait) {
-      if (!this.isTraitAllowed(trait)) return;
-      const index = this.traits[group].indexOf(trait);
+    isTraitAllowed(traitName, group) {
+      if (!group) return true;
+      const allowed = groupTraitWhitelist[group];
+      return allowed ? allowed.some(a => traitName.toLowerCase().includes(a.toLowerCase())) : true;
+    },
+    toggleTrait(formKey, pointKey, trait) {
+      const target = formKey === 'melee' ? this.meleeForm : this.rangedForm;
+      const index = target.traits[pointKey].indexOf(trait);
       if (index > -1) {
-        this.traits[group].splice(index, 1);
+        target.traits[pointKey].splice(index, 1);
       } else {
-        this.traits[group].push(trait);
+        target.traits[pointKey].push(trait);
       }
+    },
+    getTraitClass(t, formKey, pointKey, group) {
+      const target = formKey === 'melee' ? this.meleeForm : this.rangedForm;
+      const isSelected = target.traits[pointKey].includes(t);
+      const isAllowed = this.isTraitAllowed(t, group);
+      return {
+        'selected-trait': isSelected,
+        'btn-outline-secondary opacity-75': !isSelected,
+        'opacity-25 pointer-none': !isAllowed && !isSelected
+      };
+    },
+    formatPointLabel(key) {
+      if (key === 'onePoint') return '1-Point';
+      if (key === 'twoPoint') return '2-Point';
+      return '3-Point';
     },
     resetBuilder() {
       this.range = 'melee';
       this.selectedAncestry = '';
-      this.selectedGroup = '';
-      this.adjustements = { proficiency: 0, die: 0, hands: 0, reload: 0, volley: 0, range: 0 };
-      this.traits = { onePoint: [], twoPoint: [], threePoint: [] };
+      this.adjustements = { proficiency: 0, hands: 0 };
+      this.meleeForm = { group: '', die: 0, traits: { onePoint: [], twoPoint: [], threePoint: [] } };
+      this.rangedForm = { group: '', die: 0, reload: 0, volley: 0, range: 4, traits: { onePoint: [], twoPoint: [], threePoint: [] } };
     },
     copyToClipboard() {
-      const textToCopy = `Group: ${this.selectedGroup || 'N/A'}, Traits: ${this.allTraits.join(", ")}`;
-      navigator.clipboard.writeText(textToCopy).then(() => {
-        alert("Traits copied!");
-      });
+      const text = `Weapon Type: ${this.range}, Traits: ${this.allTraits.join(", ")}`;
+      navigator.clipboard.writeText(text).then(() => alert("Copied!"));
     }
   }
 };
@@ -251,7 +332,5 @@ export default {
   border-color: #198754 !important;
   font-weight: bold !important;
 }
-.pointer-none {
-  pointer-events: none;
-}
+.pointer-none { pointer-events: none; }
 </style>
