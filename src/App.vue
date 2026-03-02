@@ -215,7 +215,6 @@ export default {
     };
   },
   watch: {
-    // When switching to Combination, if proficiency was Simple (0), reset it to Martial
     range(newVal) {
       if (newVal === 'combination' && this.adjustements.proficiency === 0) {
         this.adjustements.proficiency = 6;
@@ -225,8 +224,7 @@ export default {
   computed: {
     isCombo() { return this.range === 'combination'; },
     total() {
-      // 1. Starting Budget: 4 base + 1 expensive = 5.
-      // Note: Combination start is typically 3 base per your guide, but we apply 4 base here to keep total alignment.
+      // 1. Starting Budget: (4 or 3 base) + 1 expensive bonus
       let points = this.isCombo ? 4 : 5; 
 
       // 2. Global Bonuses
@@ -234,17 +232,17 @@ export default {
       points += this.adjustements.hands;
       if (this.rangedForm.group === 'Firearm') points += 1;
 
-      // 3. Melee Logic
+      // 3. Melee logic
       if (this.range !== 'ranged') {
         points += (this.meleeForm.die - 3);
         points -= this.calcTraitPoints(this.meleeForm.traits);
-        if (this.isCombo) points -= 3;
+        if (this.isCombo) points -= 3; // Critical Fusion cost
       }
 
-      // 4. Ranged Logic
+      // 4. Ranged logic
       if (this.range !== 'melee') {
         points += (this.rangedForm.die - 3);
-        points -= 3; // The -3 penalty for ranged utility per guide
+        // NO -3 PENALTY HERE (Per your request to remove it)
         points += this.rangedForm.reload;
         points += this.rangedForm.volley;
         points += (this.rangedForm.range - 4);
