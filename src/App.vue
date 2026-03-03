@@ -233,8 +233,8 @@ export default {
       rangedGroups: ['Bow', 'Crossbow', 'Dart', 'Sling', 'Firearm', 'Knife'],
       ancestries: ['Dwarf', 'Elf', 'Gnome', 'Goblin', 'Halfling', 'Jotunborn', 'Orc', 'Tengu'],
       traitCategories: {
-        onePoint: ['Backstabber', 'Backswing', 'Brace', 'Capacity 3', 'Climbing', 'Concealable', 'Disarm', 'Finesse', 'Forceful', 'Free-Hand', 'Grapple', 'Kickback', 'Parry', 'Shove', 'Sweep', 'Tearing', 'Thrown 10', 'Trip', 'Twin', 'Twin (Sheath)', 'Twin (Sword)', 'Two-Hand', 'Vehicular', 'Versatile B', 'Versatile P', 'Versatile S'],
-        twoPoint: ['Agile', 'Attached to Crossbow or Firearm', 'Attached to Shield', 'Capacity 5', 'Concussive', 'Deadly', 'Hampering', 'Jousting', 'Modular (B P or S)', 'Modular (P and grapple or S and sweep)', 'Monk', 'Ranged Trip', 'Razing', 'Resonant', 'Scatter 5', 'Thrown 20', 'Training', 'Versatile P'],
+        onePoint: ['Agile', 'Finesse', 'Backstabber', 'Backswing', 'Brace', 'Capacity 3', 'Climbing', 'Concealable', 'Disarm', 'Forceful', 'Free-Hand', 'Grapple', 'Kickback', 'Parry', 'Shove', 'Sweep', 'Tearing', 'Thrown 10', 'Trip', 'Twin', 'Twin (Sheath)', 'Twin (Sword)', 'Two-Hand', 'Vehicular', 'Versatile B', 'Versatile P', 'Versatile S'],
+        twoPoint: ['Attached to Crossbow or Firearm', 'Attached to Shield', 'Capacity 5', 'Concussive', 'Deadly', 'Hampering', 'Jousting', 'Modular (B P or S)', 'Modular (P and grapple or S and sweep)', 'Monk', 'Ranged Trip', 'Razing', 'Resonant', 'Scatter 5', 'Thrown 20', 'Training', 'Versatile P'],
         threePoint: ['Double Barrel', 'Fatal', 'Fatal Aim', 'Injection', 'Reach', 'Recovery', 'Repeating', 'Scatter 10', 'Tethered', 'Thrown 30']
       }
     };
@@ -293,11 +293,16 @@ export default {
   methods: {
     calcTraitPoints(traits, die) {
       let sum = 0;
+      // Agile and Finesse are now in the onePoint array
       traits.onePoint.forEach(t => {
-        // Fix: d4 is die value 3. Agile/Finesse only cost 1 at d4.
-        if ((t === 'Agile' || t === 'Finesse') && die < 3) sum += 2;
-        else sum += 1;
+        // Logic check: die 3 is d4. Emboar Bof: cost 1 if d4, else 2.
+        if ((t === 'Agile' || t === 'Finesse') && die < 3) {
+          sum += 2;
+        } else {
+          sum += 1;
+        }
       });
+      // Fixed point traits
       sum += (traits.twoPoint.length * 2) + (traits.threePoint.length * 3);
       return sum;
     },
