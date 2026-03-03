@@ -253,11 +253,11 @@ export default {
     meleeQuota() {
       const prof = this.adjustements.proficiency;
       const hands = this.adjustements.hands;
-      if (hands === 0) return prof === 6 ? 4 : 6; // Martial 4, Advanced 6
-      return prof === 6 ? 7 : 9; // 2-Handed Martial 7, Advanced 9
+      if (hands === 0) return prof === 6 ? 4 : 6;
+      return prof === 6 ? 7 : 9;
     },
     rangedQuota() {
-      return this.adjustements.proficiency === 6 ? 6 : 8; // Martial 6, Advanced 8
+      return this.adjustements.proficiency === 6 ? 6 : 8;
     },
     meleeSpent() {
       let cost = Math.abs(this.meleeForm.die - 3);
@@ -274,7 +274,7 @@ export default {
       let points = this.isCombo ? 3 : 4; 
       points += this.adjustements.proficiency;
       points += this.adjustements.hands;
-      points += 1; // Expensive (Standard for custom)
+      points += 1; // Expensive
       if (this.range !== 'melee' && this.rangedForm.group === 'Firearm') points += 1;
 
       if (this.range !== 'ranged') {
@@ -293,8 +293,8 @@ export default {
   methods: {
     calcTraitPoints(traits, die) {
       let sum = 0;
-      // 1-Point logic (Agile/Finesse check)
       traits.onePoint.forEach(t => {
+        // Fix: d4 is die value 3. Agile/Finesse only cost 1 at d4.
         if ((t === 'Agile' || t === 'Finesse') && die < 3) sum += 2;
         else sum += 1;
       });
