@@ -33,9 +33,13 @@
             <template v-if="!isCombo">
               <option :value="-2">Unarmed (-2)</option>
               <option :value="0">Simple (+0)</option>
+              <option :value="3">Martial (+3)</option>
+              <option :value="5">Advanced (+5)</option>
             </template>
-            <option :value="isCombo ? 6 : 3">Martial (+{{ isCombo ? 6 : 3 }})</option>
-            <option :value="isCombo ? 10 : 5">Advanced (+{{ isCombo ? 10 : 5 }})</option>
+            <template v-else>
+              <option :value="6">Martial (+6)</option>
+              <option :value="10">Advanced (+10)</option>
+            </template>
           </select>
         </label>
 
@@ -181,15 +185,15 @@
       <div v-if="range !== 'ranged'" class="mb-2">
         <strong class="text-primary">{{ isCombo ? 'Melee Form:' : 'Traits:' }}</strong> 
         {{ getFormTraits(meleeForm, false).join(', ') }}
-        <div v-if="isCombo" class="small" :class="meleeSpent >= 4 ? 'text-success' : 'text-muted'">
-          Investment: {{ meleeSpent }} / 4 WP {{ meleeSpent >= 4 ? '✔' : '' }}
+        <div v-if="isCombo" class="small" :class="meleeSpent >= meleeQuota ? 'text-success' : 'text-muted'">
+          Investment: {{ meleeSpent }} / {{ meleeQuota }} WP {{ meleeSpent >= meleeQuota ? '✔' : '' }}
         </div>
       </div>
       <div v-if="range !== 'melee'">
         <strong class="text-success">{{ isCombo ? 'Ranged Form:' : 'Traits:' }}</strong> 
         {{ getFormTraits(rangedForm, true).join(', ') }}
-        <div v-if="isCombo" class="small" :class="rangedSpent >= 6 ? 'text-success' : 'text-muted'">
-          Investment: {{ rangedSpent }} / 6 WP {{ rangedSpent >= 6 ? '✔' : '' }}
+        <div v-if="isCombo" class="small" :class="rangedSpent >= rangedQuota ? 'text-success' : 'text-muted'">
+          Investment: {{ rangedSpent }} / {{ rangedQuota }} WP {{ rangedSpent >= rangedQuota ? '✔' : '' }}
         </div>
       </div>
     </div>
@@ -202,7 +206,7 @@ const groupTraitWhitelist = {
   'Bow': ['Agile', 'Capacity 3', 'Concussive', 'Deadly', 'Finesse', 'Forceful', 'Modular (B P or S)', 'Monk', 'Parry', 'Propulsive','Razing'],
   'Brawling': ['Agile', 'Backstabber', 'Deadly', 'Disarm', 'Fatal', 'Finesse', 'Free-Hand', 'Grapple', 'Modular (B P or S)', 'Monk', 'Parry', 'Reach', 'Shove', 'Trip', 'Twin', 'Unarmed', 'Versatile P'],
   'Club': ['Agile', 'Attached to Crossbow or Firearm', 'Backswing', 'Concealable', 'Deadly', 'Disarm', 'Fatal', 'Free-Hand', 'Finesse', 'Forceful', 'Monk', 'Parry', 'Ranged Trip', 'Razing', 'Reach', 'Recovery', 'Shove', 'Sweep', 'Tearing', 'Tethered', 'Thrown 10', 'Thrown 20', 'Thrown 30', 'Trip', 'Twin', 'Twin (Sheath)', 'Two-Hand', 'Vehicular', 'Versatile B', 'Versatile P'],
-  'Crossbow': ['Backstabber', 'Capacity 5', 'Deadly', 'Fatal Aim', 'Finesse', 'Free-Hand', 'Parry', 'Repeating'],
+  'Crossbow': ['Backstabber', 'Capacity 5', 'Deadly', 'Fatal Aim', 'Free-Hand', 'Parry', 'Repeating'],
   'Dart': ['Agile','Concealable', 'Deadly', 'Disarm', 'Finesse', 'Free-Hand', 'Monk', 'Propulsive', 'Recovery', 'Sweep', 'Tethered', 'Thrown 10', 'Thrown 20', 'Thrown 30'],
   'Firearm':['Agile', 'Attached to Shield', 'Backstabber', 'Capacity 3', 'Capacity 5', 'Concealable', 'Concussive', 'Double Barrel', 'Fatal', 'Fatal Aim', 'Kickback', 'Modular (B P or S)', 'Razing', 'Repeating', 'Scatter 5', 'Scatter 10'],
   'Flail': ['Agile', 'Backswing', 'Deadly', 'Disarm', 'Finesse', 'Forceful', 'Grapple', 'Hampering', 'Monk', 'Parry', 'Ranged Trip', 'Razing', 'Reach', 'Sweep', 'Tethered', 'Thrown 10', 'Thrown 20', 'Thrown 30', 'Training', 'Trip', 'Twin', 'Versatile B', 'Versatile P'],
@@ -222,22 +226,22 @@ export default {
     return {
       range: 'melee', 
       selectedAncestry: '',
-      adjustements: { proficiency: 0, hands: 0 },
+      adjustements: { proficiency: 3, hands: 0 },
       meleeForm: { group: '', die: 3, damageType: 'S', traits: { onePoint: [], twoPoint: [], threePoint: [] } },
       rangedForm: { group: '', die: 3, damageType: 'P', reload: 0, volley: 0, range: 0, traits: { onePoint: [], twoPoint: [], threePoint: [] } },
       meleeGroups: ['Axe','Brawling','Club','Dart','Flail','Knife','Hammer','Pick','Polearm','Shield','Spear','Sword'],
       rangedGroups: ['Bow', 'Crossbow', 'Dart', 'Sling', 'Firearm', 'Knife'],
       ancestries: ['Dwarf', 'Elf', 'Gnome', 'Goblin', 'Halfling', 'Jotunborn', 'Orc', 'Tengu'],
       traitCategories: {
-        onePoint: ['Backstabber', 'Backswing', 'Brace', 'Capacity 3', 'Climbing', 'Concealable', 'Disarm', 'Finesse', 'Forceful', 'Free-Hand', 'Grapple', 'Kickback', 'Parry', 'Propulsive', 'Shove', 'Sweep', 'Tearing', 'Thrown 10', 'Trip', 'Twin', 'Twin (Sheath)', 'Twin (Sword)', 'Two-Hand', 'Vehicular', 'Versatile B', 'Versatile P', 'Versatile S'],
-        twoPoint: ['Agile', 'Attached to Crossbow or Firearm', 'Attached to Shield', 'Capacity 5', 'Concussive', 'Deadly', 'Hampering', 'Jousting', 'Modular (B P or S)', 'Modular (P and grapple or S and sweep)', 'Monk', 'Ranged Trip', 'Razing', 'Resonant', 'Scatter 5', 'Thrown 20', 'Training'],
+        onePoint: ['Backstabber', 'Backswing', 'Brace', 'Capacity 3', 'Climbing', 'Concealable', 'Disarm', 'Finesse', 'Forceful', 'Free-Hand', 'Grapple', 'Kickback', 'Parry', 'Shove', 'Sweep', 'Tearing', 'Thrown 10', 'Trip', 'Twin', 'Twin (Sheath)', 'Twin (Sword)', 'Two-Hand', 'Vehicular', 'Versatile B', 'Versatile P', 'Versatile S'],
+        twoPoint: ['Agile', 'Attached to Crossbow or Firearm', 'Attached to Shield', 'Capacity 5', 'Concussive', 'Deadly', 'Hampering', 'Jousting', 'Modular (B P or S)', 'Modular (P and grapple or S and sweep)', 'Monk', 'Ranged Trip', 'Razing', 'Resonant', 'Scatter 5', 'Thrown 20', 'Training', 'Versatile P'],
         threePoint: ['Double Barrel', 'Fatal', 'Fatal Aim', 'Injection', 'Reach', 'Recovery', 'Repeating', 'Scatter 10', 'Tethered', 'Thrown 30']
       }
     };
   },
   watch: {
     range(newVal) {
-      if (newVal === 'combination' && this.adjustements.proficiency <= 0) {
+      if (newVal === 'combination' && (this.adjustements.proficiency !== 6 && this.adjustements.proficiency !== 10)) {
         this.adjustements.proficiency = 6;
       }
       if (newVal === 'melee' && this.adjustements.hands > 6) this.adjustements.hands = 0;
@@ -246,22 +250,32 @@ export default {
   },
   computed: {
     isCombo() { return this.range === 'combination'; },
+    meleeQuota() {
+      const prof = this.adjustements.proficiency;
+      const hands = this.adjustements.hands;
+      if (hands === 0) return prof === 6 ? 4 : 6; // Martial 4, Advanced 6
+      return prof === 6 ? 7 : 9; // 2-Handed Martial 7, Advanced 9
+    },
+    rangedQuota() {
+      return this.adjustements.proficiency === 6 ? 6 : 8; // Martial 6, Advanced 8
+    },
     meleeSpent() {
       let cost = Math.abs(this.meleeForm.die - 3);
-      cost += this.calcTraitPoints(this.meleeForm.traits);
+      cost += this.calcTraitPoints(this.meleeForm.traits, this.meleeForm.die);
       return cost;
     },
     rangedSpent() {
       let cost = Math.abs(this.rangedForm.die - 3);
-      cost += this.calcTraitPoints(this.rangedForm.traits);
+      cost += this.calcTraitPoints(this.rangedForm.traits, this.rangedForm.die);
       cost += Math.abs(this.rangedForm.range);
       return cost;
     },
     total() {
-      let points = this.isCombo ? 4 : 5; 
+      let points = this.isCombo ? 3 : 4; 
       points += this.adjustements.proficiency;
       points += this.adjustements.hands;
-      if (this.rangedForm.group === 'Firearm') points += 1;
+      points += 1; // Expensive (Standard for custom)
+      if (this.range !== 'melee' && this.rangedForm.group === 'Firearm') points += 1;
 
       if (this.range !== 'ranged') {
         points -= this.meleeSpent;
@@ -269,14 +283,24 @@ export default {
       }
 
       if (this.range !== 'melee') {
-        points -= this.rangedSpent;
         points += this.rangedForm.reload;
         points += this.rangedForm.volley;
+        points -= this.rangedSpent;
       }
       return points;
     }
   },
   methods: {
+    calcTraitPoints(traits, die) {
+      let sum = 0;
+      // 1-Point logic (Agile/Finesse check)
+      traits.onePoint.forEach(t => {
+        if ((t === 'Agile' || t === 'Finesse') && die < 3) sum += 2;
+        else sum += 1;
+      });
+      sum += (traits.twoPoint.length * 2) + (traits.threePoint.length * 3);
+      return sum;
+    },
     getFormTraits(form, isRangedForm) {
       let list = ['Uncommon'];
       const traitDieMap = { 3: 'd8', 0: 'd10', '-3': 'd12', '-6': 'd12', '-9': 'd12' };
@@ -296,9 +320,7 @@ export default {
         });
       });
 
-      if (this.adjustements.proficiency === -2 && !list.includes('Unarmed')) {
-        list.push('Unarmed');
-      }
+      if (this.adjustements.proficiency === -2 && !list.includes('Unarmed')) list.push('Unarmed');
 
       if (this.isCombo) {
         if (!list.includes('Combination')) list.push('Combination');
@@ -308,9 +330,6 @@ export default {
       if (isRangedForm && form.volley === 3) list.push('Volley 30');
       if (this.selectedAncestry) list.push(this.selectedAncestry);
       return list.sort();
-    },
-    calcTraitPoints(traits) {
-      return traits.onePoint.length + (traits.twoPoint.length * 2) + (traits.threePoint.length * 3);
     },
     isTraitAllowed(traitName, group, baseDamage) {
       if (traitName === 'Versatile B' && baseDamage === 'B') return false;
@@ -341,7 +360,7 @@ export default {
     resetBuilder() {
       this.range = 'melee';
       this.selectedAncestry = '';
-      this.adjustements = { proficiency: 0, hands: 0 };
+      this.adjustements = { proficiency: 3, hands: 0 };
       this.meleeForm = { group: '', die: 3, damageType: 'S', traits: { onePoint: [], twoPoint: [], threePoint: [] } };
       this.rangedForm = { group: '', die: 3, damageType: 'P', reload: 0, volley: 0, range: 0, traits: { onePoint: [], twoPoint: [], threePoint: [] } };
     }
