@@ -87,11 +87,11 @@
             </label>
             <label class="flex-grow-1">Melee Die
               <select class="form-select" v-model="meleeForm.die">
-                <option :value="3">d4</option>
-                <option :value="0">d6</option>
-                <option :value="-3">d8</option>
-                <option :value="-6">d10</option>
-                <option :value="-9">d12</option>
+                <option :value="3">d4 (0)</option>
+                <option :value="0">d6 (-3)</option>
+                <option :value="-3">d8 (-6)</option>
+                <option :value="-6">d10 (-9)</option>
+                <option :value="-9">d12 (-12)</option>
               </select>
             </label>
           </div>
@@ -127,11 +127,11 @@
             </label>
             <label class="flex-grow-1">Ranged Die
               <select class="form-select" v-model="rangedForm.die">
-                <option :value="3">d4</option>
-                <option :value="0">d6</option>
-                <option :value="-3">d8</option>
-                <option :value="-6">d10</option>
-                <option :value="-9">d12</option>
+                <option :value="3">d4 (0)</option>
+                <option :value="0">d6 (-3)</option>
+                <option :value="-3">d8 (-6)</option>
+                <option :value="-6">d10 (-9)</option>
+                <option :value="-9">d12 (-12)</option>
               </select>
             </label>
           </div>
@@ -156,7 +156,7 @@
             <label class="small">Volley
               <select class="form-select form-select-sm" v-model="rangedForm.volley">
                 <option :value="0">None (+0)</option>
-                <option :value="3">30ft (+3)</option>
+                <option :value="3">30 (+3)</option>
               </select>
             </label>
           </div>
@@ -200,7 +200,7 @@
 const groupTraitWhitelist = {
   'Axe': ['Agile', 'Climbing', 'Deadly', 'Disarm', 'Finesse', 'Forceful', 'Parry', 'Shove', 'Sweep', 'Thrown 10', 'Thrown 20', 'Trip', 'Two-Hand', 'Vehicular', 'Versatile P'],
   'Bow': ['Agile', 'Capacity 3', 'Concussive', 'Deadly', 'Finesse', 'Forceful', 'Modular (B P or S)', 'Monk', 'Parry', 'Propulsive','Razing'],
-  'Brawling': ['Agile', 'Backstabber', 'Deadly', 'Disarm', 'Fatal', 'Finesse', 'Free-Hand', 'Grapple', 'Modular (B P or S)', 'Monk', 'Parry', 'Reach', 'Shove', 'Trip', 'Twin', 'Unarmed'],
+  'Brawling': ['Agile', 'Backstabber', 'Deadly', 'Disarm', 'Fatal', 'Finesse', 'Free-Hand', 'Grapple', 'Modular (B P or S)', 'Monk', 'Parry', 'Reach', 'Shove', 'Trip', 'Twin', 'Unarmed', 'Versatile P'],
   'Club': ['Agile', 'Attached to Crossbow or Firearm', 'Backswing', 'Concealable', 'Deadly', 'Disarm', 'Fatal', 'Free-Hand', 'Finesse', 'Forceful', 'Monk', 'Parry', 'Ranged Trip', 'Razing', 'Reach', 'Recovery', 'Shove', 'Sweep', 'Tearing', 'Tethered', 'Thrown 10', 'Thrown 20', 'Thrown 30', 'Trip', 'Twin', 'Twin (Sheath)', 'Two-Hand', 'Vehicular', 'Versatile B', 'Versatile P'],
   'Crossbow': ['Backstabber', 'Capacity 5', 'Deadly', 'Fatal Aim', 'Free-Hand', 'Parry', 'Repeating'],
   'Dart': ['Agile','Concealable', 'Deadly', 'Disarm', 'Finesse', 'Free-Hand', 'Monk', 'Propulsive', 'Recovery', 'Sweep', 'Tethered', 'Thrown 10', 'Thrown 20', 'Thrown 30'],
@@ -234,15 +234,6 @@ export default {
         threePoint: ['Double Barrel', 'Fatal', 'Fatal Aim', 'Injection', 'Reach', 'Recovery', 'Repeating', 'Scatter 10', 'Tethered', 'Thrown 30']
       }
     };
-  },
-  watch: {
-    range(newVal) {
-      if (newVal === 'combination' && this.adjustements.proficiency <= 0) {
-        this.adjustements.proficiency = 6;
-      }
-      if (newVal === 'melee' && this.adjustements.hands > 6) this.adjustements.hands = 0;
-      if (newVal === 'ranged' && this.adjustements.hands > 2) this.adjustements.hands = 0;
-    }
   },
   computed: {
     isCombo() { return this.range === 'combination'; },
