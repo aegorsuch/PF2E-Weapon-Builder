@@ -145,12 +145,12 @@
             </label>
             <label class="small">Range
               <select class="form-select form-select-sm" v-model="rangedForm.range">
-                <option :value="4">20</option>
-                <option :value="3">30</option>
-                <option :value="1">50</option>
-                <option :value="0">60</option>
-                <option :value="-2">100</option>
-                <option :value="-3">120</option>
+                <option :value="0">10 / 20 (0)</option>
+                <option :value="-1">50 (-1)</option>
+                <option :value="-2">110 (-2)</option>
+                <option :value="-3">180 (-3)</option>
+                <option :value="-4">250 (-4)</option>
+                <option :value="-5">320 (-5)</option>
               </select>
             </label>
             <label class="small">Volley
@@ -202,7 +202,7 @@ const groupTraitWhitelist = {
   'Bow': ['Agile', 'Capacity 3', 'Concussive', 'Deadly', 'Finesse', 'Forceful', 'Modular (B P or S)', 'Monk', 'Parry', 'Propulsive','Razing'],
   'Brawling': ['Agile', 'Backstabber', 'Deadly', 'Disarm', 'Fatal', 'Finesse', 'Free-Hand', 'Grapple', 'Modular (B P or S)', 'Monk', 'Parry', 'Reach', 'Shove', 'Trip', 'Twin', 'Unarmed', 'Versatile P'],
   'Club': ['Agile', 'Attached to Crossbow or Firearm', 'Backswing', 'Concealable', 'Deadly', 'Disarm', 'Fatal', 'Free-Hand', 'Finesse', 'Forceful', 'Monk', 'Parry', 'Ranged Trip', 'Razing', 'Reach', 'Recovery', 'Shove', 'Sweep', 'Tearing', 'Tethered', 'Thrown 10', 'Thrown 20', 'Thrown 30', 'Trip', 'Twin', 'Twin (Sheath)', 'Two-Hand', 'Vehicular', 'Versatile B', 'Versatile P'],
-  'Crossbow': ['Backstabber', 'Capacity 5', 'Deadly', 'Fatal Aim', 'Free-Hand', 'Parry', 'Repeating'],
+  'Crossbow': ['Backstabber', 'Capacity 5', 'Deadly', 'Fatal Aim', 'Finesse', 'Free-Hand', 'Parry', 'Repeating'],
   'Dart': ['Agile','Concealable', 'Deadly', 'Disarm', 'Finesse', 'Free-Hand', 'Monk', 'Propulsive', 'Recovery', 'Sweep', 'Tethered', 'Thrown 10', 'Thrown 20', 'Thrown 30'],
   'Firearm':['Agile', 'Attached to Shield', 'Backstabber', 'Capacity 3', 'Capacity 5', 'Concealable', 'Concussive', 'Double Barrel', 'Fatal', 'Fatal Aim', 'Kickback', 'Modular (B P or S)', 'Razing', 'Repeating', 'Scatter 5', 'Scatter 10'],
   'Flail': ['Agile', 'Backswing', 'Deadly', 'Disarm', 'Finesse', 'Forceful', 'Grapple', 'Hampering', 'Monk', 'Parry', 'Ranged Trip', 'Razing', 'Reach', 'Sweep', 'Tethered', 'Thrown 10', 'Thrown 20', 'Thrown 30', 'Training', 'Trip', 'Twin', 'Versatile B', 'Versatile P'],
@@ -224,7 +224,7 @@ export default {
       selectedAncestry: '',
       adjustements: { proficiency: 0, hands: 0 },
       meleeForm: { group: '', die: 3, damageType: 'S', traits: { onePoint: [], twoPoint: [], threePoint: [] } },
-      rangedForm: { group: '', die: 3, damageType: 'P', reload: 0, volley: 0, range: 4, traits: { onePoint: [], twoPoint: [], threePoint: [] } },
+      rangedForm: { group: '', die: 3, damageType: 'P', reload: 0, volley: 0, range: 0, traits: { onePoint: [], twoPoint: [], threePoint: [] } },
       meleeGroups: ['Axe','Brawling','Club','Dart','Flail','Knife','Hammer','Pick','Polearm','Shield','Spear','Sword'],
       rangedGroups: ['Bow', 'Crossbow', 'Dart', 'Sling', 'Firearm', 'Knife'],
       ancestries: ['Dwarf', 'Elf', 'Gnome', 'Goblin', 'Halfling', 'Jotunborn', 'Orc', 'Tengu'],
@@ -234,6 +234,15 @@ export default {
         threePoint: ['Double Barrel', 'Fatal', 'Fatal Aim', 'Injection', 'Reach', 'Recovery', 'Repeating', 'Scatter 10', 'Tethered', 'Thrown 30']
       }
     };
+  },
+  watch: {
+    range(newVal) {
+      if (newVal === 'combination' && this.adjustements.proficiency <= 0) {
+        this.adjustements.proficiency = 6;
+      }
+      if (newVal === 'melee' && this.adjustements.hands > 6) this.adjustements.hands = 0;
+      if (newVal === 'ranged' && this.adjustements.hands > 2) this.adjustements.hands = 0;
+    }
   },
   computed: {
     isCombo() { return this.range === 'combination'; },
@@ -245,7 +254,7 @@ export default {
     rangedSpent() {
       let cost = Math.abs(this.rangedForm.die - 3);
       cost += this.calcTraitPoints(this.rangedForm.traits);
-      cost += Math.max(0, 4 - this.rangedForm.range);
+      cost += Math.abs(this.rangedForm.range);
       return cost;
     },
     total() {
@@ -334,7 +343,7 @@ export default {
       this.selectedAncestry = '';
       this.adjustements = { proficiency: 0, hands: 0 };
       this.meleeForm = { group: '', die: 3, damageType: 'S', traits: { onePoint: [], twoPoint: [], threePoint: [] } };
-      this.rangedForm = { group: '', die: 3, damageType: 'P', reload: 0, volley: 0, range: 4, traits: { onePoint: [], twoPoint: [], threePoint: [] } };
+      this.rangedForm = { group: '', die: 3, damageType: 'P', reload: 0, volley: 0, range: 0, traits: { onePoint: [], twoPoint: [], threePoint: [] } };
     }
   }
 };
