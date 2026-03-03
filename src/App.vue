@@ -202,16 +202,16 @@
 
 <script>
 const groupTraitWhitelist = {
-  'Axe': ['Agile', 'Climbing', 'Deadly', 'Disarm', 'Finesse', 'Forceful', 'Parry', 'Shove', 'Sweep', 'Thrown 10', 'Thrown 20', 'Thrown 30', 'Thrown 60', 'Trip', 'Two-Hand', 'Vehicular', 'Versatile P'],
+  'Axe': ['Agile', 'Climbing', 'Deadly', 'Disarm', 'Finesse', 'Forceful', 'Parry', 'Shove', 'Sweep', 'Thrown 30', 'Thrown 60', 'Trip', 'Two-Hand', 'Vehicular', 'Versatile P'],
   'Bow': ['Capacity 3', 'Concussive', 'Deadly', 'Forceful', 'Modular (B P or S)', 'Monk', 'Parry', 'Propulsive','Razing'],
   'Brawling': ['Agile', 'Backstabber', 'Deadly', 'Disarm', 'Fatal', 'Finesse', 'Free-Hand', 'Grapple', 'Modular (B P or S)', 'Monk', 'Parry', 'Reach', 'Shove', 'Trip', 'Twin', 'Unarmed', 'Versatile P'],
-  'Club': ['Agile', 'Attached to Crossbow or Firearm', 'Backswing', 'Concealable', 'Deadly', 'Disarm', 'Fatal', 'Free-Hand', 'Finesse', 'Forceful', 'Monk', 'Parry', 'Ranged Trip', 'Razing', 'Reach', 'Recovery', 'Shove', 'Sweep', 'Tearing', 'Tethered', 'Thrown 10', 'Thrown 20', 'Thrown 30', 'Thrown 60', 'Trip', 'Twin', 'Two-Hand', 'Vehicular', 'Versatile B', 'Versatile P'],
+  'Club': ['Agile', 'Attached to Crossbow or Firearm', 'Backswing', 'Concealable', 'Deadly', 'Disarm', 'Fatal', 'Free-Hand', 'Finesse', 'Forceful', 'Monk', 'Parry', 'Ranged Trip', 'Razing', 'Reach', 'Recovery', 'Shove', 'Sweep', 'Tearing', 'Tethered', 'Thrown 30', 'Thrown 60', 'Trip', 'Twin', 'Two-Hand', 'Vehicular', 'Versatile B', 'Versatile P'],
   'Crossbow': ['Backstabber', 'Capacity 5', 'Deadly', 'Fatal Aim', 'Free-Hand', 'Parry', 'Repeating'],
-  'Dart': ['Agile','Concealable', 'Deadly', 'Disarm', 'Finesse', 'Free-Hand', 'Monk', 'Propulsive', 'Recovery', 'Sweep', 'Tethered', 'Thrown 10', 'Thrown 20', 'Thrown 30', 'Thrown 60'],
+  'Dart': ['Agile','Concealable', 'Deadly', 'Disarm', 'Finesse', 'Free-Hand', 'Monk', 'Propulsive', 'Recovery', 'Sweep', 'Tethered', 'Thrown 30', 'Thrown 60'],
   'Firearm':['Attached to Shield', 'Capacity 3', 'Capacity 5', 'Concealable', 'Concussive', 'Double Barrel', 'Fatal', 'Fatal Aim', 'Kickback', 'Modular (B P or S)', 'Razing', 'Repeating', 'Scatter 5', 'Scatter 10'],
-  'Flail': ['Agile', 'Backswing', 'Deadly', 'Disarm', 'Finesse', 'Forceful', 'Grapple', 'Hampering', 'Monk', 'Parry', 'Ranged Trip', 'Razing', 'Reach', 'Sweep', 'Tethered', 'Thrown 10', 'Thrown 20', 'Thrown 30', 'Thrown 60', 'Training', 'Trip', 'Twin', 'Versatile B', 'Versatile P'],
+  'Flail': ['Agile', 'Backswing', 'Deadly', 'Disarm', 'Finesse', 'Forceful', 'Grapple', 'Hampering', 'Monk', 'Parry', 'Ranged Trip', 'Razing', 'Reach', 'Sweep', 'Tethered', 'Thrown 30', 'Thrown 60', 'Training', 'Trip', 'Twin', 'Versatile B', 'Versatile P'],
   'Hammer': ['Agile', 'Backswing', 'Brace', 'Razing', 'Reach', 'Shove', 'Thrown 20', 'Thrown 60', 'Trip', 'Two-Hand', 'Versatile P'],
-  'Knife': ['Agile', 'Attached to Crossbow or Firearm', 'Backstabber', 'Concealable', 'Deadly', 'Disarm', 'Fatal', 'Finesse', 'Free-Hand', 'Injection', 'Monk', 'Parry', 'Resonant', 'Sweep', 'Thrown 10', 'Thrown 20', 'Thrown 30', 'Thrown 60', 'Trip', 'Twin', 'Two-Hand', 'Vehicular', 'Versatile B', 'Versatile P', 'Versatile S'],
+  'Knife': ['Agile', 'Attached to Crossbow or Firearm', 'Backstabber', 'Concealable', 'Deadly', 'Disarm', 'Fatal', 'Finesse', 'Free-Hand', 'Injection', 'Monk', 'Parry', 'Resonant', 'Sweep', 'Thrown 30', 'Thrown 60', 'Trip', 'Twin', 'Two-Hand', 'Vehicular', 'Versatile B', 'Versatile P', 'Versatile S'],
   'Pick': ['Agile', 'Backstabber', 'Deadly', 'Fatal', 'Modular (B P or S)', 'Trip'],
   'Polearm': ['Backswing', 'Deadly', 'Disarm', 'Forceful', 'Hampering', 'Razing', 'Reach', 'Shove', 'Sweep', 'Tethered', 'Thrown 20', 'Thrown 60', 'Trip', 'Versatile B', 'Versatile P', 'Versatile S'],
   'Shield': ['Attached to Shield'],
@@ -233,7 +233,7 @@ export default {
       rangedGroups: ['Bow', 'Crossbow', 'Dart', 'Sling', 'Firearm', 'Knife'],
       ancestries: ['Dwarf', 'Elf', 'Gnome', 'Goblin', 'Halfling', 'Jotunborn', 'Orc', 'Tengu'],
       traitCategories: {
-        onePoint: ['Agile', 'Backstabber', 'Backswing', 'Brace', 'Climbing', 'Concealable', 'Disarm', 'Fatal Aim', 'Finesse', 'Forceful', 'Free-Hand', 'Grapple', 'Hampering', 'Kickback', 'Monk', 'Propulsive', 'Razing', 'Repeating', 'Shove', 'Sweep', 'Tearing', 'Tethered', 'Thrown 10', 'Thrown 20', 'Thrown 30', 'Training', 'Trip', 'Twin', 'Two-Hand', 'Vehicular', 'Versatile B', 'Versatile P', 'Versatile S'],
+        onePoint: ['Agile', 'Backstabber', 'Backswing', 'Brace', 'Climbing', 'Concealable', 'Disarm', 'Fatal Aim', 'Finesse', 'Forceful', 'Free-Hand', 'Grapple', 'Hampering', 'Kickback', 'Monk', 'Propulsive', 'Razing', 'Repeating', 'Shove', 'Sweep', 'Tearing', 'Tethered', 'Thrown 30', 'Training', 'Trip', 'Twin', 'Two-Hand', 'Vehicular', 'Versatile B', 'Versatile P', 'Versatile S'],
         twoPoint: ['Capacity 3', 'Thrown 60', 'Attached to Crossbow or Firearm', 'Attached to Shield', 'Concussive', 'Deadly', 'Jousting', 'Modular (B P or S)', 'Parry', 'Ranged Trip', 'Resonant', 'Scatter 5', 'Versatile P'],
         threePoint: ['Capacity 5', 'Double Barrel', 'Fatal', 'Injection', 'Reach', 'Recovery', 'Repeating', 'Scatter 10']
       }
