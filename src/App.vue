@@ -38,14 +38,26 @@
             <option :value="isCombo ? 10 : 5">Advanced (+{{ isCombo ? 10 : 5 }})</option>
           </select>
         </label>
+
         <label class="me-2 mb-2">Hands
           <select class="form-select" v-model="adjustements.hands">
-            <option :value="0">{{ isCombo ? '1 / 1 Hand (+0)' : '1 Hand (+0)' }}</option>
-            <option v-if="isCombo" :value="7">1+ / 2 Hands (+7)</option>
-            <option v-if="range === 'ranged'" :value="1">1+ Hand (+1)</option>
-            <option :value="isCombo ? 8 : 6">{{ isCombo ? '2 / 2 Hands (+8)' : '2 Hands (+6)' }}</option>
+            <template v-if="isCombo">
+              <option :value="0">1 / 1 Hand (+0)</option>
+              <option :value="7">1+ / 2 Hands (+7)</option>
+              <option :value="8">2 / 2 Hands (+8)</option>
+            </template>
+            <template v-else-if="range === 'ranged'">
+              <option :value="0">1 Hand (+0)</option>
+              <option :value="1">1+ Hand (+1)</option>
+              <option :value="2">2 Hands (+2)</option>
+            </template>
+            <template v-else>
+              <option :value="0">1 Hand (+0)</option>
+              <option :value="6">2 Hands (+6)</option>
+            </template>
           </select>
         </label>
+
         <label class="me-2 mb-2">Ancestry
           <select class="form-select" v-model="selectedAncestry">
             <option value="">None</option>
@@ -126,9 +138,9 @@
           <div class="d-flex flex-wrap gap-2 mb-3">
             <label class="small">Reload
               <select class="form-select form-select-sm" v-model="rangedForm.reload">
-                <option :value="0">0</option>
-                <option :value="3">1</option>
-                <option :value="6">2</option>
+                <option :value="0">0 (+0)</option>
+                <option :value="3">1 (+3)</option>
+                <option :value="6">2 (+6)</option>
               </select>
             </label>
             <label class="small">Range
@@ -143,8 +155,8 @@
             </label>
             <label class="small">Volley
               <select class="form-select form-select-sm" v-model="rangedForm.volley">
-                <option :value="0">None</option>
-                <option :value="3">30ft</option>
+                <option :value="0">None (+0)</option>
+                <option :value="3">30ft (+3)</option>
               </select>
             </label>
           </div>
@@ -169,10 +181,16 @@
       <div v-if="range !== 'ranged'" class="mb-2">
         <strong class="text-primary">{{ isCombo ? 'Melee Form:' : 'Traits:' }}</strong> 
         {{ getFormTraits(meleeForm, false).join(', ') }}
+        <div v-if="isCombo" class="small" :class="meleeSpent >= 4 ? 'text-success' : 'text-muted'">
+          Investment: {{ meleeSpent }} / 4 WP {{ meleeSpent >= 4 ? '✔' : '' }}
+        </div>
       </div>
       <div v-if="range !== 'melee'">
         <strong class="text-success">{{ isCombo ? 'Ranged Form:' : 'Traits:' }}</strong> 
         {{ getFormTraits(rangedForm, true).join(', ') }}
+        <div v-if="isCombo" class="small" :class="rangedSpent >= 6 ? 'text-success' : 'text-muted'">
+          Investment: {{ rangedSpent }} / 6 WP {{ rangedSpent >= 6 ? '✔' : '' }}
+        </div>
       </div>
     </div>
   </div>
@@ -181,8 +199,8 @@
 <script>
 const groupTraitWhitelist = {
   'Axe': ['Agile', 'Climbing', 'Deadly', 'Disarm', 'Finesse', 'Forceful', 'Parry', 'Shove', 'Sweep', 'Thrown 10', 'Thrown 20', 'Trip', 'Two-Hand', 'Vehicular', 'Versatile P'],
-  'Bow': ['Capacity 3', 'Concussive', 'Deadly', 'Finesse', 'Forceful', 'Modular (B P or S)', 'Monk', 'Parry', 'Propulsive','Razing'],
-  'Brawling': ['Agile', 'Backstabber', 'Deadly', 'Disarm', 'Fatal', 'Finesse', 'Free-Hand', 'Grapple', 'Modular (B P or S)', 'Monk', 'Parry', 'Reach', 'Shove', 'Trip', 'Twin', 'Versatile P'],
+  'Bow': ['Agile', 'Capacity 3', 'Concussive', 'Deadly', 'Finesse', 'Forceful', 'Modular (B P or S)', 'Monk', 'Parry', 'Propulsive','Razing'],
+  'Brawling': ['Agile', 'Backstabber', 'Deadly', 'Disarm', 'Fatal', 'Finesse', 'Free-Hand', 'Grapple', 'Modular (B P or S)', 'Monk', 'Parry', 'Reach', 'Shove', 'Trip', 'Twin', 'Unarmed'],
   'Club': ['Agile', 'Attached to Crossbow or Firearm', 'Backswing', 'Concealable', 'Deadly', 'Disarm', 'Fatal', 'Free-Hand', 'Finesse', 'Forceful', 'Monk', 'Parry', 'Ranged Trip', 'Razing', 'Reach', 'Recovery', 'Shove', 'Sweep', 'Tearing', 'Tethered', 'Thrown 10', 'Thrown 20', 'Thrown 30', 'Trip', 'Twin', 'Twin (Sheath)', 'Two-Hand', 'Vehicular', 'Versatile B', 'Versatile P'],
   'Crossbow': ['Backstabber', 'Capacity 5', 'Deadly', 'Fatal Aim', 'Free-Hand', 'Parry', 'Repeating'],
   'Dart': ['Agile','Concealable', 'Deadly', 'Disarm', 'Finesse', 'Free-Hand', 'Monk', 'Propulsive', 'Recovery', 'Sweep', 'Tethered', 'Thrown 10', 'Thrown 20', 'Thrown 30'],
@@ -208,7 +226,7 @@ export default {
       meleeForm: { group: '', die: 3, damageType: 'S', traits: { onePoint: [], twoPoint: [], threePoint: [] } },
       rangedForm: { group: '', die: 3, damageType: 'P', reload: 0, volley: 0, range: 4, traits: { onePoint: [], twoPoint: [], threePoint: [] } },
       meleeGroups: ['Axe','Brawling','Club','Dart','Flail','Knife','Hammer','Pick','Polearm','Shield','Spear','Sword'],
-      rangedGroups: ['Bow', 'Crossbow', 'Dart', 'Sling', 'Firearm'],
+      rangedGroups: ['Bow', 'Crossbow', 'Dart', 'Sling', 'Firearm', 'Knife'],
       ancestries: ['Dwarf', 'Elf', 'Gnome', 'Goblin', 'Halfling', 'Jotunborn', 'Orc', 'Tengu'],
       traitCategories: {
         onePoint: ['Backstabber', 'Backswing', 'Brace', 'Capacity 3', 'Climbing', 'Concealable', 'Disarm', 'Finesse', 'Forceful', 'Free-Hand', 'Grapple', 'Kickback', 'Parry', 'Propulsive', 'Shove', 'Sweep', 'Tearing', 'Thrown 10', 'Trip', 'Twin', 'Twin (Sheath)', 'Twin (Sword)', 'Two-Hand', 'Vehicular', 'Versatile B', 'Versatile P', 'Versatile S'],
@@ -219,37 +237,41 @@ export default {
   },
   watch: {
     range(newVal) {
-      // If switching to combination, proficiency can't be Simple or Unarmed (0 or -2)
       if (newVal === 'combination' && this.adjustements.proficiency <= 0) {
         this.adjustements.proficiency = 6;
       }
+      if (newVal === 'melee' && this.adjustements.hands > 6) this.adjustements.hands = 0;
+      if (newVal === 'ranged' && this.adjustements.hands > 2) this.adjustements.hands = 0;
     }
   },
   computed: {
     isCombo() { return this.range === 'combination'; },
+    meleeSpent() {
+      let cost = Math.abs(this.meleeForm.die - 3);
+      cost += this.calcTraitPoints(this.meleeForm.traits);
+      return cost;
+    },
+    rangedSpent() {
+      let cost = Math.abs(this.rangedForm.die - 3);
+      cost += this.calcTraitPoints(this.rangedForm.traits);
+      cost += Math.max(0, 4 - this.rangedForm.range);
+      return cost;
+    },
     total() {
-      // 1. Starting Budget: (4 or 3 base) + 1 expensive bonus
       let points = this.isCombo ? 4 : 5; 
-
-      // 2. Global Bonuses
       points += this.adjustements.proficiency;
       points += this.adjustements.hands;
       if (this.rangedForm.group === 'Firearm') points += 1;
 
-      // 3. Melee logic
       if (this.range !== 'ranged') {
-        points += (this.meleeForm.die - 3);
-        points -= this.calcTraitPoints(this.meleeForm.traits);
+        points -= this.meleeSpent;
         if (this.isCombo) points -= 3;
       }
 
-      // 4. Ranged logic
       if (this.range !== 'melee') {
-        points += (this.rangedForm.die - 3);
+        points -= this.rangedSpent;
         points += this.rangedForm.reload;
         points += this.rangedForm.volley;
-        points += (this.rangedForm.range - 4);
-        points -= this.calcTraitPoints(this.rangedForm.traits);
       }
       return points;
     }
