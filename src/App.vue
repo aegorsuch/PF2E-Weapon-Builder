@@ -233,8 +233,8 @@ export default {
       rangedGroups: ['Bow', 'Crossbow', 'Dart', 'Sling', 'Firearm', 'Knife'],
       ancestries: ['Dwarf', 'Elf', 'Gnome', 'Goblin', 'Halfling', 'Jotunborn', 'Orc', 'Tengu'],
       traitCategories: {
-        onePoint: ['Agile', 'Backstabber', 'Backswing', 'Brace', 'Climbing', 'Concealable', 'Disarm', 'Fatal Aim', 'Finesse', 'Forceful', 'Free-Hand', 'Grapple', 'Hampering', 'Kickback', 'Monk', 'Propulsive', 'Razing', 'Repeating', 'Shove', 'Sweep', 'Tearing', 'Tethered', 'Thrown 30', 'Training', 'Trip', 'Twin', 'Two-Hand', 'Vehicular', 'Versatile B', 'Versatile P', 'Versatile S'],
-        twoPoint: ['Capacity 3', 'Thrown 60', 'Attached to Crossbow or Firearm', 'Attached to Shield', 'Concussive', 'Deadly', 'Jousting', 'Modular (B P or S)', 'Parry', 'Ranged Trip', 'Resonant', 'Scatter 5', 'Versatile P'],
+        onePoint: ['Agile', 'Backstabber', 'Backswing', 'Brace', 'Climbing', 'Concealable', 'Disarm', 'Fatal Aim', 'Finesse', 'Forceful', 'Free-Hand', 'Grapple', 'Hampering', 'Kickback', 'Monk', 'Parry', 'Propulsive', 'Razing', 'Repeating', 'Shove', 'Sweep', 'Tearing', 'Tethered', 'Thrown 30', 'Training', 'Trip', 'Twin', 'Two-Hand', 'Vehicular', 'Versatile B', 'Versatile P', 'Versatile S'],
+        twoPoint: ['Capacity 3', 'Thrown 60', 'Attached to Crossbow or Firearm', 'Attached to Shield', 'Concussive', 'Deadly', 'Jousting', 'Modular (B P or S)', 'Ranged Trip', 'Resonant', 'Scatter 5'],
         threePoint: ['Capacity 5', 'Double Barrel', 'Fatal', 'Injection', 'Reach', 'Recovery', 'Repeating', 'Scatter 10']
       }
     };
