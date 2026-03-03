@@ -145,7 +145,7 @@
             </label>
             <label class="small">Range
               <select class="form-select form-select-sm" v-model="rangedForm.range">
-                <option :value="0">10 / 20 (0)</option>
+                <option :value="0">20 (0)</option>
                 <option :value="-1">50 (-1)</option>
                 <option :value="-2">110 (-2)</option>
                 <option :value="-3">180 (-3)</option>
