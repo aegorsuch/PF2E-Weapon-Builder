@@ -1,65 +1,39 @@
-# PF2E Weapon Builder ⚔️
+PF2e Custom Weapon Forge
+A web-based builder for creating balanced, custom weapons in Pathfinder 2nd Edition. This tool allows players and GMs to design unique armaments—ranging from simple daggers to complex combination weapons—while ensuring they adhere to mathematical balancing standards.
 
-A specialized web application for **Pathfinder 2nd Edition** players and Game Masters to design, customize, and calculate stats for weapons. Built with **Vue.js**, this tool streamlines the weapon creation process, ensuring all traits, proficiency, and damage dice align with PF2E rules.
+🛠 Features
+Melee, Ranged, and Combination Modes: Specialized logic for each weapon type, including shared point pools for dual-form weapons.
 
----
+Dynamic Point Tracking: Live "Points Left" counter that updates as you select damage dice, proficiency levels, hands, and traits.
 
-## ✨ Features
-* **Dynamic Stat Calculation:** Automatically updates weapon stats based on traits and proficiency.
-* **Trait Management:** Easily add or remove PF2E weapon traits (e.g., Agile, Trip, Versatile).
-* **Responsive UI:** A clean, intuitive interface built with Vue to make theory-crafting fast.
-* **Build Exports:** Save your weapon configurations for use in your next session.
+Automatic Trait Logic: - Auto-calculates costs for scaling traits like Deadly, Fatal, and Two-Hand.
 
----
+Dynamically updates trait costs based on damage die and weapon category.
 
-## 🚀 Live Demo
-[https://aegorsuch.github.io/PF2E-Weapon-Builder/](https://aegorsuch.github.io/PF2E-Weapon-Builder/)
+Specifically handles the Critical Fusion trait and Combination mechanics.
 
----
+Validation Quotas: Built-in alerts to ensure combination weapons meet the Minimum WP Quota for both their melee and ranged forms to maintain game balance.
 
-## 🛠️ Installation & Setup
+Group Whitelisting: Prevents the selection of traits that are mechanically or flavorfully incompatible with your chosen weapon group (e.g., Brawling vs. Axe).
 
-This project uses **Yarn** as the package manager. Ensure you have [Node.js](https://nodejs.org/) and [Yarn](https://yarnpkg.com/) installed.
+⚖ Balancing Logic & Credits
+The mathematical foundation of this builder is based on two primary community-driven balancing guides. You can find the source documentation here:
 
-### 1. Clone the repository
-```bash
-git clone [https://github.com/aegorsuch/PF2E-Weapon-Builder.git](https://github.com/aegorsuch/PF2E-Weapon-Builder.git)
-cd PF2E-Weapon-Builder
-```
-### 2. Install dependencies
-```bash
-yarn install
-```
-### 3. Start development server
-```bash
-yarn install
-```
-Your app will be available at http://localhost:8080/.
 
-### 4. Build for production
-```bash
-yarn build
-```
-## 📂 Project Structure
+Primary Logic: Emboar Bof's Custom Weapon Forge for PF2 
 
-* **`src/components/`**: Reusable Vue UI elements (Weapon displays, Trait buttons, etc.).
-* **`src/assets/`**: Icons, styling, and branding for the Pathfinder aesthetic.
-* **`public/`**: Static assets and the main `index.html` entry point.
 
-## 🤝 Contributing
-Contributions are welcome! If you want to add new traits from recent sourcebooks or fix a logic bug:
+Supplementary Framework: Pronate’s Guide to Custom Weapons 
 
-1. **Fork** the Project.
-2. **Create** your Feature Branch (`git checkout -b feature/AmazingFeature`).
-3. **Commit** your Changes (`git commit -m 'Add some AmazingFeature'`).
-4. **Push** to the Branch (`git push origin feature/AmazingFeature`).
-5. **Open** a Pull Request.
+🚀 Getting Started
+Select Mode: Choose between Melee, Ranged, or Combination.
 
-## 📜 License
-Distributed under the MIT License. See `LICENSE` for more information.
+Global Settings: Define your proficiency (Simple, Martial, or Advanced) and how many hands are required to wield the weapon.
 
----
+Customize Form: Select your weapon group, damage type, and damage die.
 
-## 🎲 Acknowledgments
-* Inspired by the **Pathfinder 2nd Edition** tabletop roleplaying game by **Paizo**.
-* Built for the community to make homebrewing and character management more accessible.
+Add Traits: Choose from a categorized list of traits. The builder will automatically adjust your remaining points based on the complexity of the trait.
+
+Review Summary: View the final weapon block, including all relevant traits and rarities.
+
+Note: Weapons created with this tool are homebrew. Always consult your Game Master before introducing custom weapons into your campaign.
