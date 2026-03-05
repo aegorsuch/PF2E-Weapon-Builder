@@ -14,11 +14,11 @@
           <div class="progress-bar" 
             :class="total >= 0 ? 'bg-success' : 'bg-danger'"
             role="progressbar" 
-            :style="{width: Math.max(pointsUsedPercentage, 5) + '%'}"
+            :style="{ width: pointsUsedPercentage + '%' }"
             :aria-valuenow="pointsUsed" 
             :aria-valuemin="0" 
             :aria-valuemax="totalAvailablePoints">
-            {{ pointsUsed }} / {{ totalAvailablePoints }} Points Used
+            {{ pointsUsed === 0 ? 'No points used' : pointsUsed + ' / ' + totalAvailablePoints + ' Points Used' }}
           </div>
         </div>
       </div>
@@ -93,7 +93,7 @@
               <div class="progress-bar" 
                 :class="meleeSpent >= meleeQuota ? 'bg-success' : 'bg-warning'"
                 role="progressbar" 
-                :style="{width: Math.max(meleeSpent / meleeQuota * 100, 5) + '%'}"
+                :style="{ width: Math.min(Math.max(meleeSpent / meleeQuota * 100, 0), 100) + '%' }"
                 :aria-valuenow="meleeSpent" 
                 :aria-valuemin="0" 
                 :aria-valuemax="meleeQuota">
@@ -147,7 +147,7 @@
               <div class="progress-bar" 
                 :class="rangedSpent >= rangedQuota ? 'bg-success' : 'bg-warning'"
                 role="progressbar" 
-                :style="{width: Math.max(rangedSpent / rangedQuota * 100, 5) + '%'}"
+                :style="{ width: Math.min(Math.max(rangedSpent / rangedQuota * 100, 0), 100) + '%' }"
                 :aria-valuenow="rangedSpent" 
                 :aria-valuemin="0" 
                 :aria-valuemax="rangedQuota">
