@@ -105,8 +105,8 @@
               <button v-for="t in traitList" :key="t" type="button"
                 @click="toggleTrait('melee', pointKey, t)"
                 class="btn btn-sm"
-                :disabled="!isTraitAllowed(t, meleeForm.group, meleeForm.damageType) && !meleeForm.traits[pointKey].includes(t)"
-                :class="getTraitClass(t, 'melee', pointKey, meleeForm.group, meleeForm.damageType)">
+                :disabled="!isTraitAllowed(t, meleeForm.group, meleeForm.damageType, meleeForm.die) && !meleeForm.traits[pointKey].includes(t)"
+                :class="getTraitClass(t, 'melee', pointKey, meleeForm.group, meleeForm.damageType, meleeForm.die)">
                 {{ t }}
               </button>
             </div>
@@ -170,8 +170,8 @@
               <button v-for="t in traitList" :key="t" type="button"
                 @click="toggleTrait('ranged', pointKey, t)"
                 class="btn btn-sm"
-                :disabled="!isTraitAllowed(t, rangedForm.group, rangedForm.damageType) && !rangedForm.traits[pointKey].includes(t)"
-                :class="getTraitClass(t, 'ranged', pointKey, rangedForm.group, rangedForm.damageType)">
+                :disabled="!isTraitAllowed(t, rangedForm.group, rangedForm.damageType, rangedForm.die) && !rangedForm.traits[pointKey].includes(t)"
+                :class="getTraitClass(t, 'ranged', pointKey, rangedForm.group, rangedForm.damageType, rangedForm.die)">
                 {{ t }}
               </button>
             </div>
@@ -314,7 +314,7 @@ export default {
       });
 
       if (this.adjustements.proficiency === -2 && !list.includes('Unarmed')) list.push('Unarmed');
-
+s
       if (this.isCombo) {
         if (!list.includes('Combination')) list.push('Combination');
         if (!isRangedForm && !list.includes('Critical Fusion')) list.push('Critical Fusion');
@@ -324,10 +324,12 @@ export default {
       if (this.selectedAncestry) list.push(this.selectedAncestry);
       return list.sort();
     },
-    isTraitAllowed(traitName, group, baseDamage) {
+    isTraitAllowed(traitName, group, baseDamage, die) {
       if (traitName === 'Versatile B' && baseDamage === 'B') return false;
       if (traitName === 'Versatile P' && baseDamage === 'P') return false;
       if (traitName === 'Versatile S' && baseDamage === 'S') return false;
+      if (traitName === 'Agile' && (die === -3 || die === -6 || die === -9)) return false; // d8, d10, d12
+      if (traitName === 'Finesse' && (die === -6 || die === -9)) return false; // d10, d12
       if (!group) return true;
       const allowed = groupTraitWhitelist[group];
       return allowed ? allowed.some(a => traitName.toLowerCase().includes(a.toLowerCase())) : true;
@@ -338,10 +340,10 @@ export default {
       if (index > -1) target.traits[pointKey].splice(index, 1);
       else target.traits[pointKey].push(trait);
     },
-    getTraitClass(t, formKey, pointKey, group, baseDamage) {
+    getTraitClass(t, formKey, pointKey, group, baseDamage, die) {
       const target = formKey === 'melee' ? this.meleeForm : this.rangedForm;
       const isSelected = target.traits[pointKey].includes(t);
-      const isAllowed = this.isTraitAllowed(t, group, baseDamage);
+      const isAllowed = this.isTraitAllowed(t, group, baseDamage, die);
       return {
         'selected-trait': isSelected && isAllowed,
         'illegal-selected-trait': isSelected && !isAllowed,
