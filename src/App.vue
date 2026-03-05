@@ -14,7 +14,7 @@
           <div class="progress-bar" 
             :class="total >= 0 ? 'bg-success' : 'bg-danger'"
             role="progressbar" 
-            :style="{width: pointsUsedPercentage + '%'}"
+            :style="{width: Math.max(pointsUsedPercentage, 5) + '%'}"
             :aria-valuenow="pointsUsed" 
             :aria-valuemin="0" 
             :aria-valuemax="totalAvailablePoints">
@@ -93,7 +93,7 @@
               <div class="progress-bar" 
                 :class="meleeSpent >= meleeQuota ? 'bg-success' : 'bg-warning'"
                 role="progressbar" 
-                :style="{width: (meleeSpent / meleeQuota * 100) + '%'}"
+                :style="{width: Math.max(meleeSpent / meleeQuota * 100, 5) + '%'}"
                 :aria-valuenow="meleeSpent" 
                 :aria-valuemin="0" 
                 :aria-valuemax="meleeQuota">
@@ -147,7 +147,7 @@
               <div class="progress-bar" 
                 :class="rangedSpent >= rangedQuota ? 'bg-success' : 'bg-warning'"
                 role="progressbar" 
-                :style="{width: (rangedSpent / rangedQuota * 100) + '%'}"
+                :style="{width: Math.max(rangedSpent / rangedQuota * 100, 5) + '%'}"
                 :aria-valuenow="rangedSpent" 
                 :aria-valuemin="0" 
                 :aria-valuemax="rangedQuota">
@@ -261,7 +261,7 @@ export default {
     return {
       range: 'melee', 
       selectedAncestry: '',
-      adjustements: { proficiency: 3, hands: 0 },
+      adjustements: { proficiency: 0, hands: 0 },
       meleeForm: { group: '', die: 3, damageType: 'S', traits: { onePoint: [], twoPoint: [], threePoint: [] } },
       rangedForm: { group: '', die: 3, damageType: 'P', reload: 0, volley: 0, range: 0, traits: { onePoint: [], twoPoint: [], threePoint: [] } },
       meleeGroups: ['Axe', 'Brawling', 'Club', 'Dart', 'Flail', 'Knife', 'Hammer', 'Pick', 'Polearm', 'Shield', 'Spear', 'Sword'],
@@ -467,7 +467,7 @@ export default {
     resetBuilder() {
       this.range = 'melee';
       this.selectedAncestry = '';
-      this.adjustements = { proficiency: 3, hands: 0 };
+      this.adjustements = { proficiency: 0, hands: 0 };
       this.meleeForm = { group: '', die: 3, damageType: 'S', traits: { onePoint: [], twoPoint: [], threePoint: [] } };
       this.rangedForm = { group: '', die: 3, damageType: 'P', reload: 0, volley: 0, range: 0, traits: { onePoint: [], twoPoint: [], threePoint: [] } };
     }
