@@ -105,7 +105,7 @@
               <button v-for="t in traitList" :key="t" type="button"
                 @click="toggleTrait('melee', pointKey, t)"
                 class="btn btn-sm"
-                :disabled="!isTraitAllowed(t, meleeForm.group, meleeForm.damageType)"
+                :disabled="!isTraitAllowed(t, meleeForm.group, meleeForm.damageType) && !meleeForm.traits[pointKey].includes(t)"
                 :class="getTraitClass(t, 'melee', pointKey, meleeForm.group, meleeForm.damageType)">
                 {{ t }}
               </button>
@@ -170,7 +170,7 @@
               <button v-for="t in traitList" :key="t" type="button"
                 @click="toggleTrait('ranged', pointKey, t)"
                 class="btn btn-sm"
-                :disabled="!isTraitAllowed(t, rangedForm.group, rangedForm.damageType)"
+                :disabled="!isTraitAllowed(t, rangedForm.group, rangedForm.damageType) && !rangedForm.traits[pointKey].includes(t)"
                 :class="getTraitClass(t, 'ranged', pointKey, rangedForm.group, rangedForm.damageType)">
                 {{ t }}
               </button>
@@ -341,10 +341,12 @@ export default {
     getTraitClass(t, formKey, pointKey, group, baseDamage) {
       const target = formKey === 'melee' ? this.meleeForm : this.rangedForm;
       const isSelected = target.traits[pointKey].includes(t);
+      const isAllowed = this.isTraitAllowed(t, group, baseDamage);
       return {
-        'selected-trait': isSelected,
-        'btn-outline-secondary opacity-75': !isSelected,
-        'opacity-25 pointer-none': !this.isTraitAllowed(t, group, baseDamage) && !isSelected
+        'selected-trait': isSelected && isAllowed,
+        'illegal-selected-trait': isSelected && !isAllowed,
+        'btn-outline-secondary opacity-75': !isSelected && isAllowed,
+        'opacity-25 pointer-none': !isSelected && !isAllowed
       };
     },
     formatPointLabel(key) {
@@ -366,6 +368,12 @@ export default {
   background-color: #198754 !important;
   color: white !important;
   border-color: #198754 !important;
+  font-weight: bold !important;
+}
+.illegal-selected-trait {
+  background-color: #dc3545 !important;
+  color: white !important;
+  border-color: #dc3545 !important;
   font-weight: bold !important;
 }
 .pointer-none { pointer-events: none; }
