@@ -314,7 +314,7 @@ export default {
       });
 
       if (this.adjustements.proficiency === -2 && !list.includes('Unarmed')) list.push('Unarmed');
-s
+
       if (this.isCombo) {
         if (!list.includes('Combination')) list.push('Combination');
         if (!isRangedForm && !list.includes('Critical Fusion')) list.push('Critical Fusion');
