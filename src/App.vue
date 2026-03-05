@@ -1,12 +1,25 @@
 <template>
   <div id="app" class="container pb-5">
     <form>
-      <div class="d-flex justify-content-between align-items-center mt-3">
-        <h1 class="mb-0" :class="{'text-danger': total < 0}">Points Left: {{ total }}</h1>
-        <div>
-          <button type="button" class="btn btn-outline-danger" @click="resetBuilder">
-            Clear All
-          </button>
+      <div class="mt-3">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h1 class="mb-0" :class="{'text-danger': total < 0}">Points Left: {{ total }}</h1>
+          <div>
+            <button type="button" class="btn btn-outline-danger" @click="resetBuilder">
+              Clear All
+            </button>
+          </div>
+        </div>
+        <div class="progress" style="height: 30px;">
+          <div class="progress-bar" 
+            :class="total >= 0 ? 'bg-success' : 'bg-danger'"
+            role="progressbar" 
+            :style="{width: pointsUsedPercentage + '%'}"
+            :aria-valuenow="pointsUsed" 
+            :aria-valuemin="0" 
+            :aria-valuemax="totalAvailablePoints">
+            {{ pointsUsed }} / {{ totalAvailablePoints }} Points Used
+          </div>
         </div>
       </div>
 
@@ -75,6 +88,19 @@
       <div class="row">
         <div v-if="range !== 'ranged'" :class="isCombo ? 'col-md-6 border-end' : 'col-12'">
           <h3 v-if="isCombo" class="text-primary mb-3">Melee Form</h3>
+          <div v-if="isCombo" class="mb-3">
+            <div class="progress" style="height: 25px;">
+              <div class="progress-bar" 
+                :class="meleeSpent >= meleeQuota ? 'bg-success' : 'bg-warning'"
+                role="progressbar" 
+                :style="{width: (meleeSpent / meleeQuota * 100) + '%'}"
+                :aria-valuenow="meleeSpent" 
+                :aria-valuemin="0" 
+                :aria-valuemax="meleeQuota">
+                {{ meleeSpent }} / {{ meleeQuota }} WP {{ meleeSpent >= meleeQuota ? '✔' : '' }}
+              </div>
+            </div>
+          </div>
           <div class="d-flex flex-wrap gap-3 mb-3">
             <label class="flex-grow-1">Melee Group
               <select class="form-select" v-model="meleeForm.group">
@@ -116,6 +142,19 @@
 
         <div v-if="range !== 'melee'" :class="isCombo ? 'col-md-6' : 'col-12'">
           <h3 v-if="isCombo" class="text-success mb-3">Ranged Form</h3>
+          <div v-if="isCombo" class="mb-3">
+            <div class="progress" style="height: 25px;">
+              <div class="progress-bar" 
+                :class="rangedSpent >= rangedQuota ? 'bg-success' : 'bg-warning'"
+                role="progressbar" 
+                :style="{width: (rangedSpent / rangedQuota * 100) + '%'}"
+                :aria-valuenow="rangedSpent" 
+                :aria-valuemin="0" 
+                :aria-valuemax="rangedQuota">
+                {{ rangedSpent }} / {{ rangedQuota }} WP {{ rangedSpent >= rangedQuota ? '✔' : '' }}
+              </div>
+            </div>
+          </div>
           <div class="d-flex flex-wrap gap-3 mb-3">
             <label class="flex-grow-1">Ranged Group
               <select class="form-select" v-model="rangedForm.group">
@@ -187,16 +226,10 @@
       <div v-if="range !== 'ranged'" class="mb-2">
         <strong class="text-primary">{{ isCombo ? 'Melee Form:' : 'Traits:' }}</strong> 
         {{ getFormTraits(meleeForm, false).join(', ') }}
-        <div v-if="isCombo" class="small" :class="meleeSpent >= meleeQuota ? 'text-success' : 'text-muted'">
-          Investment: {{ meleeSpent }} / {{ meleeQuota }} WP {{ meleeSpent >= meleeQuota ? '✔' : '' }}
-        </div>
       </div>
       <div v-if="range !== 'melee'">
         <strong class="text-success">{{ isCombo ? 'Ranged Form:' : 'Traits:' }}</strong> 
         {{ getFormTraits(rangedForm, true).join(', ') }}
-        <div v-if="isCombo" class="small" :class="rangedSpent >= rangedQuota ? 'text-success' : 'text-muted'">
-          Investment: {{ rangedSpent }} / {{ rangedQuota }} WP {{ rangedSpent >= rangedQuota ? '✔' : '' }}
-        </div>
       </div>
     </div>
   </div>
@@ -343,6 +376,26 @@ export default {
         points -= this.rangedSpent;
       }
       return points;
+    },
+    totalAvailablePoints() {
+      let points = this.isCombo ? 3 : 4;
+      points += this.adjustements.proficiency;
+      points += this.adjustements.hands;
+      points += 1; // Expensive
+      if (this.range !== 'melee' && this.rangedForm.group === 'Firearm') points += 1;
+      if (this.range !== 'melee') {
+        points += this.rangedForm.reload;
+        points += this.rangedForm.volley;
+      }
+      return points;
+    },
+    pointsUsed() {
+      return this.totalAvailablePoints - this.total;
+    },
+    pointsUsedPercentage() {
+      if (this.totalAvailablePoints === 0) return 0;
+      const percentage = (this.pointsUsed / this.totalAvailablePoints) * 100;
+      return Math.min(Math.max(percentage, 0), 100);
     }
   },
   methods: {
