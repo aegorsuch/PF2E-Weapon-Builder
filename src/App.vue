@@ -2,15 +2,15 @@
   <div id="app" class="container pb-5">
     <form>
       <div class="mt-3">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-          <h1 class="mb-0" :class="{'text-danger': total < 0}">Points Left: {{ total }}</h1>
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-3 gap-2">
+          <h1 class="mb-0 h4 h2-md" :class="{'text-danger': total < 0}">Points Left: {{ total }}</h1>
           <div>
-            <button type="button" class="btn btn-outline-danger" @click="resetBuilder">
+            <button type="button" class="btn btn-outline-danger btn-sm" @click="resetBuilder">
               Clear All
             </button>
           </div>
         </div>
-        <div class="progress" style="height: 30px;">
+        <div class="progress mb-3" style="height: 30px;">
           <div class="progress-bar" 
             :class="total >= 0 ? 'bg-success' : 'bg-danger'"
             role="progressbar" 
@@ -40,9 +40,9 @@
 
       <hr>
 
-      <div class="d-flex flex-wrap gap-3 mt-2">
-        <label class="me-2 mb-2">Proficiency
-          <select class="form-select" v-model="adjustements.proficiency">
+      <div class="d-flex flex-column flex-sm-row flex-wrap gap-2 gap-sm-3 mt-2">
+        <label class="me-2 mb-2 flex-shrink-0">Proficiency
+          <select class="form-select form-select-sm" v-model="adjustements.proficiency">
             <template v-if="!isCombo">
               <option :value="-2">Unarmed (-2)</option>
               <option :value="0">Simple (+0)</option>
@@ -56,8 +56,8 @@
           </select>
         </label>
 
-        <label class="me-2 mb-2">Hands
-          <select class="form-select" v-model="adjustements.hands">
+        <label class="me-2 mb-2 flex-shrink-0">Hands
+          <select class="form-select form-select-sm" v-model="adjustements.hands">
             <template v-if="isCombo">
               <option :value="0">1 / 1 Hand (+0)</option>
               <option :value="7">1+ / 2 Hands (+7)</option>
@@ -75,8 +75,8 @@
           </select>
         </label>
 
-        <label class="me-2 mb-2">Ancestry
-          <select class="form-select" v-model="selectedAncestry">
+        <label class="me-2 mb-2 flex-shrink-0">Ancestry
+          <select class="form-select form-select-sm" v-model="selectedAncestry">
             <option value="">None</option>
             <option v-for="a in ancestries" :key="a" :value="a">{{ a }}</option>
           </select>
@@ -85,8 +85,8 @@
 
       <hr>
 
-      <div class="row">
-        <div v-if="range !== 'ranged'" :class="isCombo ? 'col-md-6 border-end' : 'col-12'">
+      <div class="row g-3">
+        <div v-if="range !== 'ranged'" :class="isCombo ? 'col-lg-6' : 'col-12'">
           <h3 v-if="isCombo" class="text-primary mb-3">Melee Form</h3>
           <div v-if="isCombo" class="mb-3">
             <div class="progress" style="height: 25px;">
@@ -101,22 +101,22 @@
               </div>
             </div>
           </div>
-          <div class="d-flex flex-wrap gap-3 mb-3">
+          <div class="d-flex flex-column flex-sm-row flex-wrap gap-2 gap-sm-3 mb-3">
             <label class="flex-grow-1">Melee Group
-              <select class="form-select" v-model="meleeForm.group">
+              <select class="form-select form-select-sm" v-model="meleeForm.group">
                 <option value="">None</option>
                 <option v-for="g in meleeGroups" :key="g" :value="g">{{ g }}</option>
               </select>
             </label>
             <label class="flex-grow-1">Damage Type
-              <select class="form-select" v-model="meleeForm.damageType">
+              <select class="form-select form-select-sm" v-model="meleeForm.damageType">
                 <option value="B">B</option>
                 <option value="P">P</option>
                 <option value="S">S</option>
               </select>
             </label>
             <label class="flex-grow-1">Melee Die
-              <select class="form-select" v-model="meleeForm.die">
+              <select class="form-select form-select-sm" v-model="meleeForm.die">
                 <option :value="3">d4 (0)</option>
                 <option :value="0">d6 (-3)</option>
                 <option :value="-3">d8 (-6)</option>
@@ -140,7 +140,7 @@
           </div>
         </div>
 
-        <div v-if="range !== 'melee'" :class="isCombo ? 'col-md-6' : 'col-12'">
+        <div v-if="range !== 'melee'" :class="isCombo ? 'col-lg-6' : 'col-12'">
           <h3 v-if="isCombo" class="text-success mb-3">Ranged Form</h3>
           <div v-if="isCombo" class="mb-3">
             <div class="progress" style="height: 25px;">
@@ -155,22 +155,22 @@
               </div>
             </div>
           </div>
-          <div class="d-flex flex-wrap gap-3 mb-3">
+          <div class="d-flex flex-column flex-sm-row flex-wrap gap-2 gap-sm-3 mb-3">
             <label class="flex-grow-1">Ranged Group
-              <select class="form-select" v-model="rangedForm.group">
+              <select class="form-select form-select-sm" v-model="rangedForm.group">
                 <option value="">None</option>
                 <option v-for="g in rangedGroups" :key="g" :value="g">{{ g }}</option>
               </select>
             </label>
             <label class="flex-grow-1">Damage Type
-              <select class="form-select" v-model="rangedForm.damageType">
+              <select class="form-select form-select-sm" v-model="rangedForm.damageType">
                 <option value="B">B</option>
                 <option value="P">P</option>
                 <option value="S">S</option>
               </select>
             </label>
             <label class="flex-grow-1">Ranged Die
-              <select class="form-select" v-model="rangedForm.die">
+              <select class="form-select form-select-sm" v-model="rangedForm.die">
                 <option :value="3">d4 (0)</option>
                 <option :value="0">d6 (-3)</option>
                 <option :value="-3">d8 (-6)</option>
@@ -179,7 +179,7 @@
               </select>
             </label>
           </div>
-          <div class="d-flex flex-wrap gap-2 mb-3">
+          <div class="d-flex flex-column flex-sm-row flex-wrap gap-2 gap-sm-3 mb-3">
             <label class="small">Reload
               <select class="form-select form-select-sm" v-model="rangedForm.reload">
                 <option :value="0">0 (+0)</option>
@@ -489,4 +489,42 @@ export default {
   font-weight: bold !important;
 }
 .pointer-none { pointer-events: none; }
+
+/* Mobile responsive adjustments */
+@media (max-width: 576px) {
+  h1 {
+    font-size: 1.5rem;
+  }
+  
+  h3 {
+    font-size: 1.2rem;
+  }
+  
+  .btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+  }
+  
+  .form-select {
+    font-size: 0.9rem;
+  }
+  
+  .progress {
+    font-size: 0.8rem;
+  }
+  
+  .d-flex.flex-wrap {
+    gap: 0.5rem !important;
+  }
+  
+  label {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .row {
+    gap: 1rem;
+  }
+}
 </style>
