@@ -6,3 +6,4 @@ Vue.config.productionTip = false
 new Vue({
   render: h => h(App),
 }).$mount('#app')
+// PR protection smoke test marker
