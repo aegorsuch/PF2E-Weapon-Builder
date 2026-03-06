@@ -124,7 +124,7 @@
           </div>
           <div v-for="(traitList, pointKey) in traitCategories" :key="'m'+pointKey" class="mb-3">
             <label class="fw-bold small">{{ formatPointLabel(pointKey) }} Melee Traits</label>
-            <div class="d-flex flex-wrap gap-2 mt-1">
+            <div class="trait-button-grid mt-1">
               <button v-for="t in traitList" :key="t" type="button"
                 @click="toggleTrait('melee', pointKey, t)"
                 class="btn btn-sm"
@@ -203,7 +203,7 @@
           </div>
           <div v-for="(traitList, pointKey) in traitCategories" :key="'r'+pointKey" class="mb-3">
             <label class="fw-bold small">{{ formatPointLabel(pointKey) }} Ranged Traits</label>
-            <div class="d-flex flex-wrap gap-2 mt-1">
+            <div class="trait-button-grid mt-1">
               <button v-for="t in traitList" :key="t" type="button"
                 @click="toggleTrait('ranged', pointKey, t)"
                 class="btn btn-sm"
@@ -501,6 +501,18 @@ export default {
 }
 .pointer-none { pointer-events: none; }
 
+.trait-button-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 0.7rem;
+}
+
+.trait-button-grid .btn {
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
+  line-height: 1.2;
+}
+
 #app hr {
   border-color: #374151;
   opacity: 1;
@@ -572,6 +584,15 @@ export default {
   .btn {
     padding: 0.4rem 0.8rem;
     font-size: 0.85rem;
+  }
+
+  .trait-button-grid {
+    gap: 0.45rem 0.5rem;
+  }
+
+  .trait-button-grid .btn {
+    padding: 0.32rem 0.58rem;
+    font-size: 0.8rem;
   }
   
   .form-select {
