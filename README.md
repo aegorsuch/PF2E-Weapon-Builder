@@ -1,32 +1,71 @@
-# PF2e Custom Weapon Forge
+# PF2e Weapon Builder
 
-A web-based builder for creating balanced, custom weapons in Pathfinder 2nd Edition. This tool allows players and GMs to design unique armaments—ranging from simple daggers to complex combination weapons—while ensuring they adhere to mathematical balancing standards.
+A Vue-based web app for designing custom Pathfinder 2e weapons using point-budget rules. It supports melee, ranged, and combination weapons with live validation and trait filtering.
 
-## 🛠 Features
+## Features
 
-- **Melee, Ranged, and Combination Modes:** Specialized logic for each weapon type, including shared point pools for dual-form weapons.
-- **Dynamic Point Tracking:** Live "Points Left" counter that updates as you select damage dice, proficiency levels, hands, and traits.
-- **Automatic Trait Logic:** - Auto-calculates costs for scaling traits like **Deadly**, **Fatal**, and **Two-Hand**.
-    - Dynamically updates trait costs based on damage die and weapon category.
-    - Specifically handles the **Critical Fusion** trait and **Combination** mechanics automatically.
-- **Validation Quotas:** Built-in alerts to ensure combination weapons meet the **Minimum WP Quota** for both their melee and ranged forms to maintain game balance.
-- **Group Whitelisting:** Prevents the selection of traits that are mechanically or flavorfully incompatible with your chosen weapon group (e.g., Brawling vs. Axe).
+- `Melee`, `Ranged`, and `Combination` modes.
+- Live total budget progress bar and per-form quota bars in combination mode.
+- Mode state memory: switching modes restores the last build for that mode.
+- `Clear All` button to reset all modes back to defaults.
+- Group whitelist and rule checks that disable illegal trait choices.
+- Trait label expansion in summary for traits like `Deadly`, `Fatal`, `Fatal Aim`, and `Two-Hand`.
+- Combination summary handling for `Combination` and `Critical Fusion` traits.
+- Warnings panel for invalid selections and quota failures.
+- Copy-to-clipboard actions for melee and ranged trait summaries.
+- Optional ancestry tag added to output traits.
 
-## ⚖ Balancing Logic & Credits
+## Project Setup
 
-The mathematical foundation of this builder is based on two primary community-driven balancing guides:
+Prerequisites:
 
-* **Primary Logic:** [Emboar Bof's Custom Weapon Forge for PF2](https://docs.google.com/document/u/1/d/1NXkYl-TsPU16S7EnFhMtBhkj6dkbbQD7LhO_ch2MZPw/mobilebasic)
-* **Supplementary Framework:** [Pronate’s Guide to Custom Weapons](https://docs.google.com/document/d/1j0uUtVcTgvn2a0oMYFKMwe_-tAPOdnFY21_0FOiX2DI/edit?usp=sharing)
+- Node.js 16+ (Node.js 18 LTS recommended)
+- npm
 
-## 🚀 Getting Started
+Install dependencies:
 
-1.  **Select Mode:** Choose between Melee, Ranged, or Combination.
-2.  **Global Settings:** Define your proficiency (Simple, Martial, or Advanced) and how many hands are required to wield the weapon.
-3.  **Customize Form:** Select your weapon group, damage type, and damage die.
-4.  **Add Traits:** Choose from a categorized list of traits. The builder will automatically adjust your remaining points based on the complexity of the trait.
-5.  **Review Summary:** View the final weapon block, including all relevant traits and rarities.
+```bash
+npm install
+```
 
----
+Run locally:
 
-*Note: Weapons created with this tool are homebrew. Always consult your Game Master before introducing custom weapons into your campaign.*
+```bash
+npm run serve
+```
+
+Build production bundle:
+
+```bash
+npm run build
+```
+
+Lint source files:
+
+```bash
+npm run lint
+```
+
+Alternative production build script (same output target, explicit `NODE_ENV=production`):
+
+```bash
+npm run prod
+```
+
+Deploy `dist/` to GitHub Pages (requires repo/pages setup):
+
+```bash
+npm run deploy
+```
+
+## Balancing Sources
+
+The balancing model is based on community guides:
+
+- Primary: [Emboar Bof's Custom Weapon Forge for PF2](https://docs.google.com/document/u/1/d/1NXkYl-TsPU16S7EnFhMtBhkj6dkbbQD7LhO_ch2MZPw/mobilebasic)
+- Supplementary: [Pronate's Guide to Custom Weapons](https://docs.google.com/document/d/1j0uUtVcTgvn2a0oMYFKMwe_-tAPOdnFY21_0FOiX2DI/edit?usp=sharing)
+
+## Notes
+
+- This is a homebrew aid, not official Paizo tooling.
+- Final balance decisions should be reviewed by your GM.
