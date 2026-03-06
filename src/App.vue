@@ -124,9 +124,17 @@
           </div>
           <div v-for="(traitList, pointKey) in traitCategories" :key="'m'+pointKey" class="trait-block mb-3">
             <div class="d-flex justify-content-between align-items-center gap-2 mb-1">
-              <label class="fw-bold small mb-0">{{ formatPointLabel(pointKey) }} Melee Traits</label>
+              <button
+                type="button"
+                class="trait-collapse-btn"
+                :aria-expanded="(!isTraitSectionCollapsed('melee', pointKey)).toString()"
+                @click="toggleTraitSection('melee', pointKey)">
+                <span class="trait-collapse-title">{{ formatPointLabel(pointKey) }} Melee Traits</span>
+                <span class="trait-collapse-meta">{{ getSelectedTraitCount('melee', pointKey) }} selected</span>
+                <span class="trait-collapse-icon">{{ isTraitSectionCollapsed('melee', pointKey) ? '+' : '-' }}</span>
+              </button>
             </div>
-            <div class="trait-button-grid mt-1">
+            <div v-show="!isTraitSectionCollapsed('melee', pointKey)" class="trait-button-grid mt-1">
               <button v-for="t in traitList" :key="t" type="button"
                 @click="toggleTrait('melee', pointKey, t)"
                 class="btn btn-sm"
@@ -208,9 +216,17 @@
           </div>
           <div v-for="(traitList, pointKey) in traitCategories" :key="'r'+pointKey" class="trait-block mb-3">
             <div class="d-flex justify-content-between align-items-center gap-2 mb-1">
-              <label class="fw-bold small mb-0">{{ formatPointLabel(pointKey) }} Ranged Traits</label>
+              <button
+                type="button"
+                class="trait-collapse-btn"
+                :aria-expanded="(!isTraitSectionCollapsed('ranged', pointKey)).toString()"
+                @click="toggleTraitSection('ranged', pointKey)">
+                <span class="trait-collapse-title">{{ formatPointLabel(pointKey) }} Ranged Traits</span>
+                <span class="trait-collapse-meta">{{ getSelectedTraitCount('ranged', pointKey) }} selected</span>
+                <span class="trait-collapse-icon">{{ isTraitSectionCollapsed('ranged', pointKey) ? '+' : '-' }}</span>
+              </button>
             </div>
-            <div class="trait-button-grid mt-1">
+            <div v-show="!isTraitSectionCollapsed('ranged', pointKey)" class="trait-button-grid mt-1">
               <button v-for="t in traitList" :key="t" type="button"
                 @click="toggleTrait('ranged', pointKey, t)"
                 class="btn btn-sm"
@@ -263,6 +279,29 @@
       </div>
       <div v-if="copyNotice" class="copy-notice mt-2">{{ copyNotice }}</div>
     </div>
+
+    <div class="mobile-sticky-footer d-md-none">
+      <div class="mobile-sticky-points" :class="total >= 0 ? 'is-ok' : 'is-over'">
+        <strong>{{ total >= 0 ? total + ' points left' : Math.abs(total) + ' over budget' }}</strong>
+        <span>{{ pointsUsed }}/{{ totalAvailablePoints }} used</span>
+      </div>
+      <div class="mobile-sticky-actions">
+        <button
+          v-if="range !== 'ranged'"
+          type="button"
+          class="btn btn-outline-info btn-sm"
+          @click="copyTraitsToClipboard('melee')">
+          {{ isCombo ? 'Copy Melee' : 'Copy Traits' }}
+        </button>
+        <button
+          v-if="range !== 'melee'"
+          type="button"
+          class="btn btn-outline-info btn-sm"
+          @click="copyTraitsToClipboard('ranged')">
+          {{ isCombo ? 'Copy Ranged' : 'Copy Traits' }}
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -297,6 +336,15 @@ export default {
       switchNoticeTimer: null,
       copyNotice: '',
       copyNoticeTimer: null,
+      isNarrowScreen: false,
+      lastOpenTraitSections: {
+        melee: 'onePoint',
+        ranged: 'onePoint'
+      },
+      collapsedTraitSections: {
+        melee: { onePoint: false, twoPoint: true, threePoint: true },
+        ranged: { onePoint: false, twoPoint: true, threePoint: true }
+      },
       selectedAncestry: '',
       adjustements: { proficiency: 0, hands: 0 },
       meleeForm: { group: '', die: 3, damageType: 'S', traits: { onePoint: [], twoPoint: [], threePoint: [] } },
@@ -372,10 +420,13 @@ export default {
       this.modeStateStore[oldVal] = this.captureCurrentState();
       this.restoreStateForMode(newVal);
       this.showSwitchNotice(newVal);
+      this.restoreTraitSectionsForCurrentMode();
     }
   },
   mounted() {
     document.body.classList.add('dark-mode');
+    this.syncViewportFlags();
+    window.addEventListener('resize', this.syncViewportFlags);
     this.initModeStateStore();
   },
   beforeDestroy() {
@@ -387,6 +438,7 @@ export default {
       clearTimeout(this.copyNoticeTimer);
       this.copyNoticeTimer = null;
     }
+    window.removeEventListener('resize', this.syncViewportFlags);
     document.body.classList.remove('dark-mode');
   },
   computed: {
@@ -627,6 +679,52 @@ export default {
       if (index > -1) target.traits[pointKey].splice(index, 1);
       else target.traits[pointKey].push(trait);
     },
+    isTraitSectionCollapsed(formKey, pointKey) {
+      const formState = this.collapsedTraitSections[formKey];
+      return formState ? !!formState[pointKey] : false;
+    },
+    syncViewportFlags() {
+      const wasNarrow = this.isNarrowScreen;
+      this.isNarrowScreen = window.innerWidth < 768;
+
+      if (!wasNarrow && this.isNarrowScreen) {
+        this.restoreTraitSectionsForCurrentMode();
+      }
+    },
+    collapseTraitSectionsForForm(formKey) {
+      if (!this.collapsedTraitSections[formKey]) return;
+      this.collapsedTraitSections[formKey] = { onePoint: true, twoPoint: true, threePoint: true };
+    },
+    expandLastOpenTraitSection(formKey) {
+      if (!this.collapsedTraitSections[formKey]) return;
+      const pointKey = this.lastOpenTraitSections[formKey] || 'onePoint';
+      this.collapseTraitSectionsForForm(formKey);
+      this.collapsedTraitSections[formKey][pointKey] = false;
+    },
+    restoreTraitSectionsForCurrentMode() {
+      if (!this.isNarrowScreen) return;
+      if (this.range !== 'ranged') this.expandLastOpenTraitSection('melee');
+      if (this.range !== 'melee') this.expandLastOpenTraitSection('ranged');
+    },
+    toggleTraitSection(formKey, pointKey) {
+      if (!this.collapsedTraitSections[formKey]) return;
+      const willOpen = this.collapsedTraitSections[formKey][pointKey];
+
+      if (this.isNarrowScreen && willOpen) {
+        this.collapseTraitSectionsForForm(formKey);
+      }
+
+      this.collapsedTraitSections[formKey][pointKey] = !this.collapsedTraitSections[formKey][pointKey];
+
+      if (!this.collapsedTraitSections[formKey][pointKey]) {
+        this.lastOpenTraitSections[formKey] = pointKey;
+      }
+    },
+    getSelectedTraitCount(formKey, pointKey) {
+      const form = formKey === 'melee' ? this.meleeForm : this.rangedForm;
+      const list = form.traits[pointKey];
+      return Array.isArray(list) ? list.length : 0;
+    },
     showCopyNotice(message) {
       this.copyNotice = message;
       if (this.copyNoticeTimer) clearTimeout(this.copyNoticeTimer);
@@ -836,6 +934,49 @@ export default {
   gap: 0.6rem 0.7rem;
 }
 
+.trait-collapse-btn {
+  width: 100%;
+  border: 1px solid #334155;
+  background: #0f1b2c;
+  color: #cbd5e1;
+  border-radius: 10px;
+  padding: 0.45rem 0.6rem;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  column-gap: 0.55rem;
+  text-align: left;
+}
+
+.trait-collapse-btn:hover {
+  border-color: #4b5563;
+  background: #122138;
+}
+
+.trait-collapse-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(96, 165, 250, 0.25);
+}
+
+.trait-collapse-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.trait-collapse-meta {
+  font-size: 0.74rem;
+  color: #93c5fd;
+  white-space: nowrap;
+}
+
+.trait-collapse-icon {
+  font-size: 0.95rem;
+  font-weight: 700;
+  width: 1.35rem;
+  text-align: center;
+}
+
 .trait-button-grid .btn {
   border-radius: 999px;
   padding: 0.35rem 0.7rem;
@@ -865,6 +1006,10 @@ export default {
 
 .control-field .form-select {
   min-height: 2.2rem;
+}
+
+.mobile-sticky-footer {
+  display: none;
 }
 
 #app hr {
@@ -967,6 +1112,19 @@ export default {
     padding: 0.32rem 0.58rem;
     font-size: 0.8rem;
   }
+
+  .trait-collapse-btn {
+    padding: 0.4rem 0.55rem;
+    grid-template-columns: 1fr auto auto;
+  }
+
+  .trait-collapse-title {
+    font-size: 0.78rem;
+  }
+
+  .trait-collapse-meta {
+    font-size: 0.7rem;
+  }
   
   .form-select {
     font-size: 0.9rem;
@@ -997,8 +1155,65 @@ export default {
 }
 
 @media (max-width: 768px) {
+  #app {
+    padding-bottom: 6.6rem;
+  }
+
   .row {
     gap: 1rem;
+  }
+
+  .mobile-sticky-footer {
+    display: flex;
+    position: fixed;
+    left: 0.65rem;
+    right: 0.65rem;
+    bottom: 0.55rem;
+    z-index: 1050;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    padding: 0.6rem 0.72rem;
+    border-radius: 12px;
+    border: 1px solid #334155;
+    background: rgba(15, 23, 42, 0.94);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 10px 26px rgba(2, 6, 23, 0.45);
+  }
+
+  .mobile-sticky-points {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+    min-width: 0;
+  }
+
+  .mobile-sticky-points strong {
+    font-size: 0.86rem;
+    color: #86efac;
+  }
+
+  .mobile-sticky-points span {
+    font-size: 0.73rem;
+    color: #cbd5e1;
+  }
+
+  .mobile-sticky-points.is-over strong {
+    color: #fca5a5;
+  }
+
+  .mobile-sticky-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.35rem;
+    flex-shrink: 0;
+  }
+
+  .mobile-sticky-actions .btn {
+    padding: 0.3rem 0.55rem;
+    line-height: 1.15;
+    font-size: 0.75rem;
   }
 }
 </style>
