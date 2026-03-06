@@ -2,6 +2,7 @@ name: README Guard
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
     branches:
       - main
   workflow_dispatch:
@@ -26,6 +27,12 @@ jobs:
             exit 0
           fi
 
+          LABELS_JSON='${{ toJson(github.event.pull_request.labels.*.name) }}'
+          if echo "$LABELS_JSON" | grep -q '"docs-not-needed"'; then
+            echo "Bypass label detected: docs-not-needed. Skipping README guard."
+            exit 0
+          fi
+
           git fetch origin "$BASE_REF" --depth=1
           CHANGED_FILES=$(git diff --name-only "origin/$BASE_REF"...HEAD)
 
@@ -43,7 +50,7 @@ jobs:
               echo "README updated in this PR. Guard passed."
             else
               echo "README guard failed: docs-sensitive files changed, but README.md was not updated."
-              echo "If README changes are unnecessary, include an explanation in the PR description and add a minimal README note or intentionally update this guard." 
+              echo "If README changes are unnecessary, add the PR label 'docs-not-needed' to bypass this check."
               exit 1
             fi
           else
