@@ -1,8 +1,9 @@
 <template>
   <div id="app" class="container pb-5">
     <form>
-      <div class="mt-3">
-        <div class="d-flex justify-content-end mb-3">
+      <div class="builder-card mb-3 mt-3">
+        <div class="d-flex justify-content-between align-items-center mb-3 gap-2">
+          <h2 class="section-title mb-0">Base Setup</h2>
           <button type="button" class="btn btn-outline-danger btn-sm" @click="resetBuilder">
             Clear All
           </button>
@@ -18,73 +19,70 @@
             {{ pointsUsed === 0 ? '' : pointsUsed + '/' + totalAvailablePoints }}
           </div>
         </div>
-      </div>
 
-      <div class="mt-3">
-        <div class="form-check form-check-inline">
-          <input v-model="range" class="form-check-input" type="radio" id="mode-melee" value="melee">
-          <label class="form-check-label" for="mode-melee">Melee</label>
+        <div class="mode-toggle-row mt-3 mb-2">
+          <div class="form-check form-check-inline">
+            <input v-model="range" class="form-check-input" type="radio" id="mode-melee" value="melee">
+            <label class="form-check-label" for="mode-melee">Melee</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input v-model="range" class="form-check-input" type="radio" id="mode-ranged" value="ranged">
+            <label class="form-check-label" for="mode-ranged">Ranged</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input v-model="range" class="form-check-input" type="radio" id="mode-combo" value="combination">
+            <label class="form-check-label" for="mode-combo">Combination</label>
+          </div>
         </div>
-        <div class="form-check form-check-inline">
-          <input v-model="range" class="form-check-input" type="radio" id="mode-ranged" value="ranged">
-          <label class="form-check-label" for="mode-ranged">Ranged</label>
-        </div>
-        <div class="form-check form-check-inline">
-          <input v-model="range" class="form-check-input" type="radio" id="mode-combo" value="combination">
-          <label class="form-check-label" for="mode-combo">Combination</label>
+
+        <div class="control-row mt-2 mb-1">
+          <label class="control-field control-field-sm">Proficiency
+            <select class="form-select form-select-sm" v-model="adjustements.proficiency">
+              <template v-if="!isCombo">
+                <option :value="-2">Unarmed (-2)</option>
+                <option :value="0">Simple (+0)</option>
+                <option :value="3">Martial (+3)</option>
+                <option :value="5">Advanced (+5)</option>
+              </template>
+              <template v-else>
+                <option :value="6">Martial (+6)</option>
+                <option :value="10">Advanced (+10)</option>
+              </template>
+            </select>
+          </label>
+
+          <label class="control-field control-field-sm">Hands
+            <select class="form-select form-select-sm" v-model="adjustements.hands">
+              <template v-if="isCombo">
+                <option :value="0">1 / 1 Hand (+0)</option>
+                <option :value="7">1+ / 2 Hands (+7)</option>
+                <option :value="8">2 / 2 Hands (+8)</option>
+              </template>
+              <template v-else-if="range === 'ranged'">
+                <option :value="0">1 Hand (+0)</option>
+                <option :value="1">1+ Hand (+1)</option>
+                <option :value="2">2 Hands (+2)</option>
+              </template>
+              <template v-else>
+                <option :value="0">1 Hand (+0)</option>
+                <option :value="6">2 Hands (+6)</option>
+              </template>
+            </select>
+          </label>
+
+          <label class="control-field control-field-sm">Ancestry
+            <select class="form-select form-select-sm" v-model="selectedAncestry">
+              <option value="">None</option>
+              <option v-for="a in ancestries" :key="a" :value="a">{{ a }}</option>
+            </select>
+          </label>
         </div>
       </div>
-
-      <hr>
-
-      <div class="d-flex flex-column flex-sm-row flex-wrap gap-2 gap-sm-3 mt-2">
-        <label class="me-2 mb-2 flex-shrink-0">Proficiency
-          <select class="form-select form-select-sm" v-model="adjustements.proficiency">
-            <template v-if="!isCombo">
-              <option :value="-2">Unarmed (-2)</option>
-              <option :value="0">Simple (+0)</option>
-              <option :value="3">Martial (+3)</option>
-              <option :value="5">Advanced (+5)</option>
-            </template>
-            <template v-else>
-              <option :value="6">Martial (+6)</option>
-              <option :value="10">Advanced (+10)</option>
-            </template>
-          </select>
-        </label>
-
-        <label class="me-2 mb-2 flex-shrink-0">Hands
-          <select class="form-select form-select-sm" v-model="adjustements.hands">
-            <template v-if="isCombo">
-              <option :value="0">1 / 1 Hand (+0)</option>
-              <option :value="7">1+ / 2 Hands (+7)</option>
-              <option :value="8">2 / 2 Hands (+8)</option>
-            </template>
-            <template v-else-if="range === 'ranged'">
-              <option :value="0">1 Hand (+0)</option>
-              <option :value="1">1+ Hand (+1)</option>
-              <option :value="2">2 Hands (+2)</option>
-            </template>
-            <template v-else>
-              <option :value="0">1 Hand (+0)</option>
-              <option :value="6">2 Hands (+6)</option>
-            </template>
-          </select>
-        </label>
-
-        <label class="me-2 mb-2 flex-shrink-0">Ancestry
-          <select class="form-select form-select-sm" v-model="selectedAncestry">
-            <option value="">None</option>
-            <option v-for="a in ancestries" :key="a" :value="a">{{ a }}</option>
-          </select>
-        </label>
-      </div>
-
-      <hr>
 
       <div class="row g-3">
         <div v-if="range !== 'ranged'" :class="isCombo ? 'col-lg-6' : 'col-12'">
-          <h3 v-if="isCombo" class="text-primary mb-3">Melee Form</h3>
+          <div class="builder-card builder-card-form h-100">
+          <h3 class="section-title-sm text-primary mb-3">{{ isCombo ? 'Melee Form' : 'Melee Setup' }}</h3>
           <div v-if="isCombo" class="mb-3">
             <div class="progress" style="height: 25px;">
               <div class="progress-bar" 
@@ -98,21 +96,21 @@
               </div>
             </div>
           </div>
-          <div class="d-flex flex-column flex-sm-row flex-wrap gap-2 gap-sm-3 mb-3">
-            <label class="flex-grow-1">Melee Group
+          <div class="control-row mb-3">
+            <label class="control-field">Melee Group
               <select class="form-select form-select-sm" v-model="meleeForm.group">
                 <option value="">None</option>
                 <option v-for="g in meleeGroups" :key="g" :value="g">{{ g }}</option>
               </select>
             </label>
-            <label class="flex-grow-1">Damage Type
+            <label class="control-field">Damage Type
               <select class="form-select form-select-sm" v-model="meleeForm.damageType">
                 <option value="B">B</option>
                 <option value="P">P</option>
                 <option value="S">S</option>
               </select>
             </label>
-            <label class="flex-grow-1">Melee Die
+            <label class="control-field">Melee Die
               <select class="form-select form-select-sm" v-model="meleeForm.die">
                 <option :value="3">d4 (0)</option>
                 <option :value="0">d6 (-3)</option>
@@ -122,7 +120,7 @@
               </select>
             </label>
           </div>
-          <div v-for="(traitList, pointKey) in traitCategories" :key="'m'+pointKey" class="mb-3">
+          <div v-for="(traitList, pointKey) in traitCategories" :key="'m'+pointKey" class="trait-block mb-3">
             <label class="fw-bold small">{{ formatPointLabel(pointKey) }} Melee Traits</label>
             <div class="trait-button-grid mt-1">
               <button v-for="t in traitList" :key="t" type="button"
@@ -135,10 +133,12 @@
               </button>
             </div>
           </div>
+          </div>
         </div>
 
         <div v-if="range !== 'melee'" :class="isCombo ? 'col-lg-6' : 'col-12'">
-          <h3 v-if="isCombo" class="text-success mb-3">Ranged Form</h3>
+          <div class="builder-card builder-card-form h-100">
+          <h3 class="section-title-sm text-success mb-3">{{ isCombo ? 'Ranged Form' : 'Ranged Setup' }}</h3>
           <div v-if="isCombo" class="mb-3">
             <div class="progress" style="height: 25px;">
               <div class="progress-bar" 
@@ -152,21 +152,21 @@
               </div>
             </div>
           </div>
-          <div class="d-flex flex-column flex-sm-row flex-wrap gap-2 gap-sm-3 mb-3">
-            <label class="flex-grow-1">Ranged Group
+          <div class="control-row mb-3">
+            <label class="control-field">Ranged Group
               <select class="form-select form-select-sm" v-model="rangedForm.group">
                 <option value="">None</option>
                 <option v-for="g in rangedGroups" :key="g" :value="g">{{ g }}</option>
               </select>
             </label>
-            <label class="flex-grow-1">Damage Type
+            <label class="control-field">Damage Type
               <select class="form-select form-select-sm" v-model="rangedForm.damageType">
                 <option value="B">B</option>
                 <option value="P">P</option>
                 <option value="S">S</option>
               </select>
             </label>
-            <label class="flex-grow-1">Ranged Die
+            <label class="control-field">Ranged Die
               <select class="form-select form-select-sm" v-model="rangedForm.die">
                 <option :value="3">d4 (0)</option>
                 <option :value="0">d6 (-3)</option>
@@ -176,15 +176,15 @@
               </select>
             </label>
           </div>
-          <div class="d-flex flex-column flex-sm-row flex-wrap gap-2 gap-sm-3 mb-3">
-            <label class="small">Reload
+          <div class="control-row mb-3">
+            <label class="control-field control-field-sm">Reload
               <select class="form-select form-select-sm" v-model="rangedForm.reload">
                 <option :value="0">0 (+0)</option>
                 <option :value="3">1 (+3)</option>
                 <option :value="6">2 (+6)</option>
               </select>
             </label>
-            <label class="small">Range
+            <label class="control-field control-field-sm">Range
               <select class="form-select form-select-sm" v-model="rangedForm.range">
                 <option :value="0">20 (0)</option>
                 <option :value="-1">50 (-1)</option>
@@ -194,14 +194,14 @@
                 <option :value="-5">320 (-5)</option>
               </select>
             </label>
-            <label class="small">Volley
+            <label class="control-field control-field-sm">Volley
               <select class="form-select form-select-sm" v-model="rangedForm.volley">
                 <option :value="0">None (+0)</option>
                 <option :value="3">30 (+3)</option>
               </select>
             </label>
           </div>
-          <div v-for="(traitList, pointKey) in traitCategories" :key="'r'+pointKey" class="mb-3">
+          <div v-for="(traitList, pointKey) in traitCategories" :key="'r'+pointKey" class="trait-block mb-3">
             <label class="fw-bold small">{{ formatPointLabel(pointKey) }} Ranged Traits</label>
             <div class="trait-button-grid mt-1">
               <button v-for="t in traitList" :key="t" type="button"
@@ -213,6 +213,7 @@
                 {{ t }}
               </button>
             </div>
+          </div>
           </div>
         </div>
       </div>
@@ -487,6 +488,57 @@ export default {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
+.builder-card {
+  background: #182334;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.builder-card-form {
+  padding: 1rem;
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #bfdbfe;
+}
+
+.section-title-sm {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.mode-toggle-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem 1.25rem;
+}
+
+.mode-toggle-row .form-check {
+  margin-right: 0;
+}
+
+.builder-card .section-title-sm.mb-3 {
+  margin-bottom: 0.75rem !important;
+}
+
+.builder-card .control-row.mb-3 {
+  margin-bottom: 0.8rem !important;
+}
+
+.builder-card .trait-block {
+  margin-bottom: 0.8rem !important;
+}
+
+.builder-card .trait-block:last-child {
+  margin-bottom: 0 !important;
+}
+
 .selected-trait {
   background-color: #198754 !important;
   color: white !important;
@@ -511,6 +563,31 @@ export default {
   border-radius: 999px;
   padding: 0.35rem 0.7rem;
   line-height: 1.2;
+}
+
+.control-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.9rem 1rem;
+}
+
+.control-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 170px;
+  flex: 1 1 220px;
+  font-size: 0.95rem;
+}
+
+.control-field-sm {
+  min-width: 140px;
+  flex-basis: 170px;
+}
+
+.control-field .form-select {
+  min-height: 2.2rem;
 }
 
 #app hr {
@@ -586,6 +663,25 @@ export default {
     font-size: 0.85rem;
   }
 
+  .builder-card,
+  .builder-card-form {
+    padding: 0.8rem;
+  }
+
+  .builder-card .control-row.mb-3,
+  .builder-card .trait-block {
+    margin-bottom: 0.65rem !important;
+  }
+
+  .section-title,
+  .section-title-sm {
+    font-size: 0.95rem;
+  }
+
+  .mode-toggle-row {
+    gap: 0.55rem 0.8rem;
+  }
+
   .trait-button-grid {
     gap: 0.45rem 0.5rem;
   }
@@ -597,6 +693,17 @@ export default {
   
   .form-select {
     font-size: 0.9rem;
+  }
+
+  .control-row {
+    gap: 0.65rem;
+  }
+
+  .control-field,
+  .control-field-sm {
+    min-width: 100%;
+    flex-basis: 100%;
+    font-size: 0.92rem;
   }
   
   .progress {
