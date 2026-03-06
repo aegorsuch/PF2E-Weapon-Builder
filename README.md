@@ -58,6 +58,13 @@ Deploy `dist/` to GitHub Pages (requires repo/pages setup):
 npm run deploy
 ```
 
+## Quality Policy
+
+- Every change targeting `main` must pass automated CI quality checks.
+- The `Quality Gate` workflow runs `npm ci`, `npm run lint`, and `npm run build` on PRs and pushes to `main`.
+- The `README Guard` workflow enforces README review when docs-sensitive files change.
+- If README updates are intentionally unnecessary, use the PR label `docs-not-needed`.
+
 ## Balancing Sources
 
 The balancing model is based on community guides:
