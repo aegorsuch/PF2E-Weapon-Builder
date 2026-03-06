@@ -1,0 +1,13 @@
+// Unit test for HelloWorld.vue
+import { shallowMount } from '@vue/test-utils';
+import HelloWorld from '../src/components/HelloWorld.vue';
+
+describe('HelloWorld.vue', () => {
+  it('renders props.msg when passed', () => {
+    const msg = 'Hello, Vue!';
+    const wrapper = shallowMount(HelloWorld, {
+      propsData: { msg }
+    });
+    expect(wrapper.text()).toContain(msg);
+  });
+});

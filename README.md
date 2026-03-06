@@ -6,18 +6,29 @@ A Vue-based web app for designing custom Pathfinder 2e weapons using point-budge
 
 ## Features
 
-- `Melee`, `Ranged`, and `Combination` modes.
-- Live total budget progress bar and per-form quota bars in combination mode.
-- Mode state memory: switching modes restores the last build for that mode.
-- `Clear All` button to reset all modes back to defaults.
-- Group whitelist and rule checks that disable illegal trait choices.
-- Trait label expansion in summary for traits like `Deadly`, `Fatal`, `Fatal Aim`, and `Two-Hand`.
-- Combination summary handling for `Combination` and `Critical Fusion` traits.
-- Warnings panel for invalid selections and quota failures.
-- Copy-to-clipboard actions for melee and ranged trait summaries.
-- Optional ancestry tag added to output traits.
+
+## Usage
+
+### Quick Start
+
+1. Run `npm install` to install dependencies.
+2. Run `npm run serve` to start the local development server.
+3. Open your browser to `http://localhost:8080`.
+4. Select a weapon mode (Melee, Ranged, Combination).
+5. Choose traits and options, watch the budget bar update.
+6. Use the warnings drawer for validation feedback.
+7. Click "Copy Visible" to copy trait summaries.
+8. Use "Clear All" to reset.
+
+### Example Screenshot
+
+![Weapon Builder Screenshot](docs/screenshot-placeholder.png)
+
+> Replace this placeholder with a real screenshot for better documentation.
 
 ## Project Setup
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to help improve this project.
 
 Prerequisites:
 
