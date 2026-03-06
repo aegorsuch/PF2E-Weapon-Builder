@@ -82,7 +82,7 @@
       </div>
 
       <div class="row g-3">
-        <div v-if="range !== 'ranged'" :class="isCombo ? 'col-lg-6' : 'col-12'">
+        <div v-if="range !== 'ranged'" ref="meleeSection" :class="isCombo ? 'col-lg-6' : 'col-12'">
           <div class="builder-card builder-card-form h-100">
           <h3 class="section-title-sm text-primary mb-3">{{ isCombo ? 'Melee Form' : 'Melee Setup' }}</h3>
           <div v-if="isCombo" class="mb-3">
@@ -122,6 +122,16 @@
               </select>
             </label>
           </div>
+          <div v-if="getSelectedTraitsForForm('melee').length" class="selected-chip-row mb-3">
+            <button
+              v-for="chip in getSelectedTraitsForForm('melee')"
+              :key="'m-chip-' + chip"
+              type="button"
+              class="selected-chip"
+              @click="removeTraitByName('melee', chip)">
+              {{ chip }} x
+            </button>
+          </div>
           <div v-for="(traitList, pointKey) in traitCategories" :key="'m'+pointKey" class="trait-block mb-3">
             <div class="d-flex justify-content-between align-items-center gap-2 mb-1">
               <button
@@ -136,7 +146,13 @@
             </div>
             <transition name="trait-collapse">
               <div v-show="!isTraitSectionCollapsed('melee', pointKey)" class="trait-button-grid mt-1">
-                <button v-for="t in traitList" :key="t" type="button"
+                <input
+                  v-model.trim="traitSearch.melee[pointKey]"
+                  class="form-control form-control-sm trait-search-input"
+                  type="text"
+                  :placeholder="'Search ' + formatPointLabel(pointKey) + ' melee traits'"
+                >
+                <button v-for="t in getFilteredTraits('melee', pointKey, traitList)" :key="t" type="button"
                   @click="toggleTrait('melee', pointKey, t)"
                   class="btn btn-sm"
                   :title="getTraitDescription(t)"
@@ -145,13 +161,16 @@
                   :class="getTraitClass(t, 'melee', pointKey, meleeForm.group, meleeForm.damageType, meleeForm.die)">
                   {{ t }}
                 </button>
+                <p v-if="getFilteredTraits('melee', pointKey, traitList).length === 0" class="trait-empty-search mb-0">
+                  No matching melee traits.
+                </p>
               </div>
             </transition>
           </div>
           </div>
         </div>
 
-        <div v-if="range !== 'melee'" :class="isCombo ? 'col-lg-6' : 'col-12'">
+        <div v-if="range !== 'melee'" ref="rangedSection" :class="isCombo ? 'col-lg-6' : 'col-12'">
           <div class="builder-card builder-card-form h-100">
           <h3 class="section-title-sm text-success mb-3">{{ isCombo ? 'Ranged Form' : 'Ranged Setup' }}</h3>
           <div v-if="isCombo" class="mb-3">
@@ -216,6 +235,16 @@
               </select>
             </label>
           </div>
+          <div v-if="getSelectedTraitsForForm('ranged').length" class="selected-chip-row mb-3">
+            <button
+              v-for="chip in getSelectedTraitsForForm('ranged')"
+              :key="'r-chip-' + chip"
+              type="button"
+              class="selected-chip"
+              @click="removeTraitByName('ranged', chip)">
+              {{ chip }} x
+            </button>
+          </div>
           <div v-for="(traitList, pointKey) in traitCategories" :key="'r'+pointKey" class="trait-block mb-3">
             <div class="d-flex justify-content-between align-items-center gap-2 mb-1">
               <button
@@ -230,7 +259,13 @@
             </div>
             <transition name="trait-collapse">
               <div v-show="!isTraitSectionCollapsed('ranged', pointKey)" class="trait-button-grid mt-1">
-                <button v-for="t in traitList" :key="t" type="button"
+                <input
+                  v-model.trim="traitSearch.ranged[pointKey]"
+                  class="form-control form-control-sm trait-search-input"
+                  type="text"
+                  :placeholder="'Search ' + formatPointLabel(pointKey) + ' ranged traits'"
+                >
+                <button v-for="t in getFilteredTraits('ranged', pointKey, traitList)" :key="t" type="button"
                   @click="toggleTrait('ranged', pointKey, t)"
                   class="btn btn-sm"
                   :title="getTraitDescription(t)"
@@ -239,6 +274,9 @@
                   :class="getTraitClass(t, 'ranged', pointKey, rangedForm.group, rangedForm.damageType, rangedForm.die)">
                   {{ t }}
                 </button>
+                <p v-if="getFilteredTraits('ranged', pointKey, traitList).length === 0" class="trait-empty-search mb-0">
+                  No matching ranged traits.
+                </p>
               </div>
             </transition>
           </div>
@@ -246,12 +284,13 @@
         </div>
       </div>
 
-      <div class="builder-card warning-card mb-3">
+      <div ref="warningsSection" class="builder-card warning-card mb-3">
         <h3 class="section-title-sm text-warning mb-2">Warnings</h3>
         <p v-if="warnings.length === 0" class="warning-clear mb-0">No warnings.</p>
         <ul v-else class="warning-list mb-0">
           <li v-for="(warning, index) in warnings" :key="'warn-' + index">{{ warning }}</li>
         </ul>
+        <p v-if="disabledTraitNotice" class="disabled-trait-note mt-2 mb-0">{{ disabledTraitNotice }}</p>
       </div>
     </form>
     <hr />
@@ -291,19 +330,61 @@
       </div>
       <div class="mobile-sticky-actions">
         <button
-          v-if="range !== 'ranged'"
           type="button"
-          class="btn btn-outline-info btn-sm"
-          @click="copyTraitsToClipboard('melee')">
-          {{ isCombo ? 'Copy Melee' : 'Copy Traits' }}
+          class="btn btn-outline-danger btn-sm"
+          @click="resetBuilder">
+          Reset
         </button>
         <button
-          v-if="range !== 'melee'"
+          type="button"
+          class="btn btn-outline-secondary btn-sm"
+          @click="jumpToForm('melee')">
+          Melee
+        </button>
+        <button
+          type="button"
+          class="btn btn-outline-secondary btn-sm"
+          @click="jumpToForm('ranged')">
+          Ranged
+        </button>
+        <button
           type="button"
           class="btn btn-outline-info btn-sm"
-          @click="copyTraitsToClipboard('ranged')">
-          {{ isCombo ? 'Copy Ranged' : 'Copy Traits' }}
+          :disabled="!canCopyVisibleTraits"
+          @click="copyVisibleTraits">
+          Copy Visible
         </button>
+        <button
+          type="button"
+          class="btn btn-sm"
+          :class="warnings.length === 0 ? 'btn-outline-success' : 'btn-outline-warning'"
+          ref="mobileWarningsTrigger"
+          :aria-expanded="mobileWarningsOpen ? 'true' : 'false'"
+          aria-controls="mobile-warnings-sheet"
+          @click="openMobileWarningsDrawer">
+          {{ warnings.length === 0 ? 'No Issues' : warnings.length + ' Issues' }}
+        </button>
+      </div>
+    </div>
+
+    <div v-if="mobileWarningsOpen" class="mobile-warnings-overlay d-md-none" @click.self="closeMobileWarningsDrawer">
+      <div
+        id="mobile-warnings-sheet"
+        ref="mobileWarningsSheet"
+        class="mobile-warnings-sheet"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="mobile-warnings-heading"
+        tabindex="-1"
+        @keydown="handleWarningsKeydown">
+        <div class="mobile-warnings-header">
+          <h5 id="mobile-warnings-heading" class="mb-0">Warnings</h5>
+          <button ref="mobileWarningsClose" type="button" class="btn btn-outline-light btn-sm" @click="closeMobileWarningsDrawer">Close</button>
+        </div>
+        <p v-if="warnings.length === 0" class="warning-clear mb-0">No warnings.</p>
+        <ul v-else class="warning-list mb-0">
+          <li v-for="(warning, index) in warnings" :key="'mobile-warn-' + index">{{ warning }}</li>
+        </ul>
       </div>
     </div>
   </div>
@@ -340,6 +421,11 @@ export default {
       switchNoticeTimer: null,
       copyNotice: '',
       copyNoticeTimer: null,
+      disabledTraitNotice: '',
+      disabledTraitNoticeTimer: null,
+      mobileWarningsOpen: false,
+      lastFocusedElement: null,
+      scrollPositions: { melee: 0, ranged: 0, combination: 0 },
       isNarrowScreen: false,
       lastOpenTraitSections: {
         melee: 'onePoint',
@@ -348,6 +434,10 @@ export default {
       collapsedTraitSections: {
         melee: { onePoint: false, twoPoint: true, threePoint: true },
         ranged: { onePoint: false, twoPoint: true, threePoint: true }
+      },
+      traitSearch: {
+        melee: { onePoint: '', twoPoint: '', threePoint: '' },
+        ranged: { onePoint: '', twoPoint: '', threePoint: '' }
       },
       selectedAncestry: '',
       adjustements: { proficiency: 0, hands: 0 },
@@ -421,10 +511,14 @@ export default {
   watch: {
     range(newVal, oldVal) {
       if (this.isResettingBuilder || !oldVal) return;
+      this.captureScrollForMode(oldVal);
       this.modeStateStore[oldVal] = this.captureCurrentState();
       this.restoreStateForMode(newVal);
       this.showSwitchNotice(newVal);
       this.restoreTraitSectionsForCurrentMode();
+      this.$nextTick(() => {
+        this.restoreScrollForMode(newVal);
+      });
     }
   },
   mounted() {
@@ -442,6 +536,12 @@ export default {
       clearTimeout(this.copyNoticeTimer);
       this.copyNoticeTimer = null;
     }
+    if (this.disabledTraitNoticeTimer) {
+      clearTimeout(this.disabledTraitNoticeTimer);
+      this.disabledTraitNoticeTimer = null;
+    }
+    window.removeEventListener('keydown', this.handleWarningsGlobalKeydown);
+    document.body.style.overflow = '';
     window.removeEventListener('resize', this.syncViewportFlags);
     document.body.classList.remove('dark-mode');
   },
@@ -542,6 +642,11 @@ export default {
       issues.push(...this.getInvalidTraitWarnings('Ranged', this.rangedForm, this.range !== 'melee'));
 
       return issues;
+    },
+    canCopyVisibleTraits() {
+      if (this.range === 'melee') return this.hasAnySelectedTraits('melee');
+      if (this.range === 'ranged') return this.hasAnySelectedTraits('ranged');
+      return this.hasAnySelectedTraits('melee') || this.hasAnySelectedTraits('ranged');
     }
   },
   methods: {
@@ -675,11 +780,58 @@ export default {
       const allowed = groupTraitWhitelist[group];
       return allowed ? allowed.some(a => traitName.toLowerCase().includes(a.toLowerCase())) : true;
     },
+    getTraitDisableReason(traitName, group, baseDamage, die) {
+      if (traitName === 'Versatile B' && baseDamage === 'B') return 'Versatile B is disabled because the weapon already deals bludgeoning damage.';
+      if (traitName === 'Versatile P' && baseDamage === 'P') return 'Versatile P is disabled because the weapon already deals piercing damage.';
+      if (traitName === 'Versatile S' && baseDamage === 'S') return 'Versatile S is disabled because the weapon already deals slashing damage.';
+      if (traitName === 'Agile' && (die === -3 || die === -6 || die === -9)) return 'Agile is disabled on d8 or larger base dice.';
+      if (traitName === 'Finesse' && (die === -6 || die === -9)) return 'Finesse is disabled on d10 or larger base dice.';
+      if (!group) return 'Select a weapon group to validate this trait.';
+      const allowed = groupTraitWhitelist[group];
+      if (!allowed) return 'This weapon group has no configured whitelist restriction.';
+      return `${traitName} does not match the allowed traits for the ${group} group.`;
+    },
+    showDisabledTraitNotice(message) {
+      this.disabledTraitNotice = message;
+      if (this.disabledTraitNoticeTimer) clearTimeout(this.disabledTraitNoticeTimer);
+      this.disabledTraitNoticeTimer = setTimeout(() => {
+        this.disabledTraitNotice = '';
+        this.disabledTraitNoticeTimer = null;
+      }, 2600);
+    },
+    getFilteredTraits(formKey, pointKey, traitList) {
+      const searchMap = this.traitSearch[formKey] || {};
+      const query = (searchMap[pointKey] || '').trim().toLowerCase();
+      if (!query) return traitList;
+      return traitList.filter(trait => trait.toLowerCase().includes(query));
+    },
+    getSelectedTraitsForForm(formKey) {
+      const form = formKey === 'melee' ? this.meleeForm : this.rangedForm;
+      const collected = [];
+      Object.keys(form.traits).forEach(pointKey => {
+        form.traits[pointKey].forEach(trait => {
+          if (!collected.includes(trait)) collected.push(trait);
+        });
+      });
+      return collected.sort();
+    },
+    removeTraitByName(formKey, traitName) {
+      const form = formKey === 'melee' ? this.meleeForm : this.rangedForm;
+      Object.keys(form.traits).forEach(pointKey => {
+        form.traits[pointKey] = form.traits[pointKey].filter(trait => trait !== traitName);
+      });
+    },
+    hasAnySelectedTraits(formKey) {
+      return this.getSelectedTraitsForForm(formKey).length > 0;
+    },
     toggleTrait(formKey, pointKey, trait) {
       const target = formKey === 'melee' ? this.meleeForm : this.rangedForm;
       const isAllowed = this.isTraitAllowed(trait, target.group, target.damageType, target.die);
       const index = target.traits[pointKey].indexOf(trait);
-      if (!isAllowed && index === -1) return;
+      if (!isAllowed && index === -1) {
+        this.showDisabledTraitNotice(this.getTraitDisableReason(trait, target.group, target.damageType, target.die));
+        return;
+      }
       if (index > -1) target.traits[pointKey].splice(index, 1);
       else target.traits[pointKey].push(trait);
     },
@@ -693,6 +845,10 @@ export default {
 
       if (!wasNarrow && this.isNarrowScreen) {
         this.restoreTraitSectionsForCurrentMode();
+      }
+
+      if (wasNarrow && !this.isNarrowScreen && this.mobileWarningsOpen) {
+        this.closeMobileWarningsDrawer();
       }
     },
     collapseTraitSectionsForForm(formKey) {
@@ -728,6 +884,122 @@ export default {
       const form = formKey === 'melee' ? this.meleeForm : this.rangedForm;
       const list = form.traits[pointKey];
       return Array.isArray(list) ? list.length : 0;
+    },
+    openMobileWarningsDrawer() {
+      this.lastFocusedElement = document.activeElement;
+      this.mobileWarningsOpen = true;
+      document.body.style.overflow = 'hidden';
+      window.addEventListener('keydown', this.handleWarningsGlobalKeydown);
+      this.$nextTick(() => {
+        const sheet = this.$refs.mobileWarningsSheet;
+        if (sheet && sheet.focus) sheet.focus();
+      });
+    },
+    closeMobileWarningsDrawer() {
+      this.mobileWarningsOpen = false;
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', this.handleWarningsGlobalKeydown);
+      this.$nextTick(() => {
+        if (this.lastFocusedElement && this.lastFocusedElement.focus) {
+          this.lastFocusedElement.focus();
+          return;
+        }
+        const trigger = this.$refs.mobileWarningsTrigger;
+        if (trigger && trigger.focus) trigger.focus();
+      });
+    },
+    handleWarningsGlobalKeydown(event) {
+      if (!this.mobileWarningsOpen) return;
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        this.closeMobileWarningsDrawer();
+      }
+    },
+    getWarningsFocusableElements() {
+      const sheet = this.$refs.mobileWarningsSheet;
+      if (!sheet) return [];
+      const nodes = sheet.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+      return Array.from(nodes).filter(el => !el.disabled && el.offsetParent !== null);
+    },
+    handleWarningsKeydown(event) {
+      if (!this.mobileWarningsOpen) return;
+
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        this.closeMobileWarningsDrawer();
+        return;
+      }
+
+      if (event.key !== 'Tab') return;
+
+      const focusables = this.getWarningsFocusableElements();
+      if (focusables.length === 0) {
+        event.preventDefault();
+        return;
+      }
+
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active = document.activeElement;
+
+      if (event.shiftKey && active === first) {
+        event.preventDefault();
+        last.focus();
+        return;
+      }
+
+      if (!event.shiftKey && active === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    },
+    copyVisibleTraits() {
+      if (!this.canCopyVisibleTraits) return;
+
+      if (this.range === 'melee') {
+        this.copyTraitsToClipboard('melee');
+        return;
+      }
+
+      if (this.range === 'ranged') {
+        this.copyTraitsToClipboard('ranged');
+        return;
+      }
+
+      const meleeText = this.getFormTraits(this.meleeForm, false).join(', ');
+      const rangedText = this.getFormTraits(this.rangedForm, true).join(', ');
+      const combined = `Melee: ${meleeText}\nRanged: ${rangedText}`;
+      this.copyToClipboard(combined)
+        .then(() => this.showCopyNotice('Visible form traits copied to clipboard'))
+        .catch(() => this.showCopyNotice('Unable to copy traits on this browser'));
+    },
+    captureScrollForMode(mode) {
+      this.scrollPositions[mode] = window.scrollY || window.pageYOffset || 0;
+    },
+    restoreScrollForMode(mode) {
+      const top = this.scrollPositions[mode] || 0;
+      window.scrollTo({ top, behavior: 'auto' });
+    },
+    jumpToForm(formKey) {
+      const targetMode = formKey === 'melee' ? 'melee' : 'ranged';
+      const refName = formKey === 'melee' ? 'meleeSection' : 'rangedSection';
+
+      const scrollToTarget = () => {
+        this.$nextTick(() => {
+          const section = this.$refs[refName];
+          if (section && section.scrollIntoView) {
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        });
+      };
+
+      if (this.range !== targetMode && this.range !== 'combination') {
+        this.range = targetMode;
+        scrollToTarget();
+        return;
+      }
+
+      scrollToTarget();
     },
     showCopyNotice(message) {
       this.copyNotice = message;
@@ -803,6 +1075,7 @@ export default {
       return key === 'onePoint' ? '1-Point' : key === 'twoPoint' ? '2-Point' : '3-Point';
     },
     resetBuilder() {
+      this.closeMobileWarningsDrawer();
       this.isResettingBuilder = true;
       this.modeStateStore = {
         melee: this.getDefaultStateForMode('melee'),
@@ -810,8 +1083,10 @@ export default {
         combination: this.getDefaultStateForMode('combination')
       };
       this.range = 'melee';
+      this.scrollPositions = { melee: 0, ranged: 0, combination: 0 };
       this.applyState(this.modeStateStore.melee, 'melee');
       this.$nextTick(() => {
+        this.restoreScrollForMode('melee');
         this.isResettingBuilder = false;
       });
     }
@@ -894,6 +1169,11 @@ export default {
   color: #86efac;
 }
 
+.disabled-trait-note {
+  color: #fbbf24;
+  font-size: 0.82rem;
+}
+
 .summary-copy-btn {
   padding: 0.14rem 0.5rem;
   font-size: 0.72rem;
@@ -938,6 +1218,17 @@ export default {
   gap: 0.6rem 0.7rem;
 }
 
+.trait-search-input {
+  width: 100%;
+  max-width: 100%;
+}
+
+.trait-empty-search {
+  width: 100%;
+  color: #94a3b8;
+  font-size: 0.78rem;
+}
+
 .trait-collapse-enter-active,
 .trait-collapse-leave-active {
   overflow: hidden;
@@ -970,6 +1261,7 @@ export default {
   align-items: center;
   column-gap: 0.55rem;
   text-align: left;
+  transition: transform 0.1s ease, background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .trait-collapse-btn:hover {
@@ -980,6 +1272,10 @@ export default {
 .trait-collapse-btn:focus {
   outline: none;
   box-shadow: 0 0 0 0.2rem rgba(96, 165, 250, 0.25);
+}
+
+.trait-collapse-btn:active {
+  transform: translateY(1px) scale(0.995);
 }
 
 .trait-collapse-title {
@@ -1005,6 +1301,31 @@ export default {
   border-radius: 999px;
   padding: 0.35rem 0.7rem;
   line-height: 1.2;
+  transition: transform 0.08s ease, box-shadow 0.12s ease;
+}
+
+.trait-button-grid .btn:active {
+  transform: scale(0.97);
+}
+
+.selected-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.selected-chip {
+  border: 1px solid #334155;
+  background: #0f1b2c;
+  color: #cbd5e1;
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.75rem;
+  line-height: 1.2;
+}
+
+.selected-chip:hover {
+  border-color: #64748b;
 }
 
 .control-row {
@@ -1223,7 +1544,8 @@ export default {
   }
 
   .mobile-sticky-points.is-over strong {
-    color: #fca5a5;
+    color: #fecaca;
+    text-shadow: 0 0 8px rgba(239, 68, 68, 0.35);
   }
 
   .mobile-sticky-actions {
@@ -1232,12 +1554,93 @@ export default {
     justify-content: flex-end;
     gap: 0.35rem;
     flex-shrink: 0;
+    flex-wrap: wrap;
   }
 
   .mobile-sticky-actions .btn {
     padding: 0.3rem 0.55rem;
     line-height: 1.15;
     font-size: 0.75rem;
+  }
+
+  .mobile-sticky-actions .btn[disabled] {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .mobile-warnings-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    background: rgba(2, 6, 23, 0.65);
+    display: flex;
+    align-items: flex-end;
+  }
+
+  .mobile-warnings-sheet {
+    width: 100%;
+    max-height: 72vh;
+    overflow-y: auto;
+    background: #0f172a;
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+    border: 1px solid #334155;
+    border-bottom: 0;
+    padding: 0.9rem;
+  }
+
+  .mobile-warnings-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+    margin-bottom: 0.7rem;
+  }
+}
+
+/* Compact mode for very small phones */
+@media (max-width: 390px) {
+  .trait-button-grid {
+    gap: 0.3rem 0.35rem;
+  }
+
+  .trait-button-grid .btn,
+  .selected-chip,
+  .mobile-sticky-actions .btn {
+    font-size: 0.68rem;
+    padding: 0.24rem 0.44rem;
+  }
+
+  .mobile-sticky-footer {
+    left: 0.45rem;
+    right: 0.45rem;
+    bottom: 0.4rem;
+    padding: 0.45rem 0.55rem;
+  }
+
+  .mobile-sticky-points strong {
+    font-size: 0.75rem;
+  }
+
+  .mobile-sticky-points span {
+    font-size: 0.68rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trait-collapse-enter-active,
+  .trait-collapse-leave-active,
+  .trait-button-grid .btn,
+  .trait-collapse-btn,
+  .mobile-sticky-footer,
+  #app {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .trait-collapse-enter,
+  .trait-collapse-leave-to {
+    transform: none;
   }
 }
 </style>
