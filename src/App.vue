@@ -336,6 +336,12 @@ export default {
       }
     }
   },
+  mounted() {
+    document.body.classList.add('dark-mode');
+  },
+  beforeDestroy() {
+    document.body.classList.remove('dark-mode');
+  },
   computed: {
     isCombo() { return this.range === 'combination'; },
     meleeQuota() {
@@ -476,6 +482,14 @@ export default {
 </script>
 
 <style scoped>
+#app {
+  border-radius: 12px;
+  padding-top: 0.75rem;
+  background: #111827;
+  color: #e5e7eb;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
 .selected-trait {
   background-color: #198754 !important;
   color: white !important;
@@ -489,6 +503,64 @@ export default {
   font-weight: bold !important;
 }
 .pointer-none { pointer-events: none; }
+
+#app hr {
+  border-color: #374151;
+  opacity: 1;
+}
+
+#app .text-primary {
+  color: #93c5fd !important;
+}
+
+#app .text-success {
+  color: #86efac !important;
+}
+
+#app .form-select,
+#app .form-check-input,
+#app .btn-outline-secondary,
+#app .btn-outline-danger {
+  background-color: #1f2937;
+  color: #e5e7eb;
+  border-color: #4b5563;
+}
+
+#app .form-select:focus,
+#app .form-check-input:focus,
+#app .btn:focus {
+  box-shadow: 0 0 0 0.2rem rgba(96, 165, 250, 0.25);
+}
+
+#app .form-check-input:checked {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+#app .progress {
+  background-color: #374151;
+}
+
+#app .bg-light {
+  background-color: #1f2937 !important;
+  color: #e5e7eb;
+  border-color: #4b5563 !important;
+}
+
+#app .shadow-sm {
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.15) !important;
+}
+
+/* Keep dimmed trait buttons readable on dark backgrounds. */
+#app .btn.opacity-75 {
+  opacity: 0.9 !important;
+}
+
+#app .opacity-25.pointer-none {
+  opacity: 0.6 !important;
+  color: #cbd5e1 !important;
+  border-color: #64748b !important;
+}
 
 /* Mobile responsive adjustments */
 @media (max-width: 576px) {
@@ -526,5 +598,12 @@ export default {
   .row {
     gap: 1rem;
   }
+}
+</style>
+
+<style>
+body.dark-mode {
+  background: #0b1220;
+  color: #e5e7eb;
 }
 </style>
