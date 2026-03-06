@@ -35,6 +35,8 @@
           </div>
         </div>
 
+        <div v-if="switchNotice" class="switch-notice mb-2">{{ switchNotice }}</div>
+
         <div class="control-row mt-2 mb-1">
           <label class="control-field control-field-sm">Proficiency
             <select class="form-select form-select-sm" v-model="adjustements.proficiency">
@@ -54,9 +56,9 @@
           <label class="control-field control-field-sm">Hands
             <select class="form-select form-select-sm" v-model="adjustements.hands">
               <template v-if="isCombo">
-                <option :value="0">1 / 1 Hand (+0)</option>
-                <option :value="7">1+ / 2 Hands (+7)</option>
-                <option :value="8">2 / 2 Hands (+8)</option>
+                <option :value="0">1 Melee / 1 Ranged Hands (+0)</option>
+                <option :value="7">1+ Melee / 2 Ranged Hands (+7)</option>
+                <option :value="8">2 Melee / 2 Ranged Hands (+8)</option>
               </template>
               <template v-else-if="range === 'ranged'">
                 <option :value="0">1 Hand (+0)</option>
@@ -121,7 +123,9 @@
             </label>
           </div>
           <div v-for="(traitList, pointKey) in traitCategories" :key="'m'+pointKey" class="trait-block mb-3">
-            <label class="fw-bold small">{{ formatPointLabel(pointKey) }} Melee Traits</label>
+            <div class="d-flex justify-content-between align-items-center gap-2 mb-1">
+              <label class="fw-bold small mb-0">{{ formatPointLabel(pointKey) }} Melee Traits</label>
+            </div>
             <div class="trait-button-grid mt-1">
               <button v-for="t in traitList" :key="t" type="button"
                 @click="toggleTrait('melee', pointKey, t)"
@@ -202,7 +206,9 @@
             </label>
           </div>
           <div v-for="(traitList, pointKey) in traitCategories" :key="'r'+pointKey" class="trait-block mb-3">
-            <label class="fw-bold small">{{ formatPointLabel(pointKey) }} Ranged Traits</label>
+            <div class="d-flex justify-content-between align-items-center gap-2 mb-1">
+              <label class="fw-bold small mb-0">{{ formatPointLabel(pointKey) }} Ranged Traits</label>
+            </div>
             <div class="trait-button-grid mt-1">
               <button v-for="t in traitList" :key="t" type="button"
                 @click="toggleTrait('ranged', pointKey, t)"
@@ -222,13 +228,30 @@
     <div class="mt-4 p-3 bg-light rounded border shadow-sm">
       <h4>Weapon Summary (13gp+)</h4>
       <div v-if="range !== 'ranged'" class="mb-2">
-        <strong class="text-primary">{{ isCombo ? 'Melee Form:' : 'Traits:' }}</strong> 
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+          <strong class="text-primary">{{ isCombo ? 'Melee Form:' : 'Traits:' }}</strong>
+          <button
+            type="button"
+            class="btn btn-outline-info btn-sm summary-copy-btn"
+            @click="copyTraitsToClipboard('melee')">
+            Copy Traits
+          </button>
+        </div>
         {{ getFormTraits(meleeForm, false).join(', ') }}
       </div>
       <div v-if="range !== 'melee'">
-        <strong class="text-success">{{ isCombo ? 'Ranged Form:' : 'Traits:' }}</strong> 
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+          <strong class="text-success">{{ isCombo ? 'Ranged Form:' : 'Traits:' }}</strong>
+          <button
+            type="button"
+            class="btn btn-outline-info btn-sm summary-copy-btn"
+            @click="copyTraitsToClipboard('ranged')">
+            Copy Traits
+          </button>
+        </div>
         {{ getFormTraits(rangedForm, true).join(', ') }}
       </div>
+      <div v-if="copyNotice" class="copy-notice mt-2">{{ copyNotice }}</div>
     </div>
   </div>
 </template>
@@ -258,6 +281,12 @@ export default {
   data() {
     return {
       range: 'melee', 
+      modeStateStore: {},
+      isResettingBuilder: false,
+      switchNotice: '',
+      switchNoticeTimer: null,
+      copyNotice: '',
+      copyNoticeTimer: null,
       selectedAncestry: '',
       adjustements: { proficiency: 0, hands: 0 },
       meleeForm: { group: '', die: 3, damageType: 'S', traits: { onePoint: [], twoPoint: [], threePoint: [] } },
@@ -328,16 +357,26 @@ export default {
     };
   },
   watch: {
-    range(newVal) {
-      if (newVal === 'combination' && (this.adjustements.proficiency !== 6 && this.adjustements.proficiency !== 10)) {
-        this.adjustements.proficiency = 6;
-      }
+    range(newVal, oldVal) {
+      if (this.isResettingBuilder || !oldVal) return;
+      this.modeStateStore[oldVal] = this.captureCurrentState();
+      this.restoreStateForMode(newVal);
+      this.showSwitchNotice(newVal);
     }
   },
   mounted() {
     document.body.classList.add('dark-mode');
+    this.initModeStateStore();
   },
   beforeDestroy() {
+    if (this.switchNoticeTimer) {
+      clearTimeout(this.switchNoticeTimer);
+      this.switchNoticeTimer = null;
+    }
+    if (this.copyNoticeTimer) {
+      clearTimeout(this.copyNoticeTimer);
+      this.copyNoticeTimer = null;
+    }
     document.body.classList.remove('dark-mode');
   },
   computed: {
@@ -403,6 +442,91 @@ export default {
     }
   },
   methods: {
+    deepClone(value) {
+      return JSON.parse(JSON.stringify(value));
+    },
+    createEmptyTraits() {
+      return { onePoint: [], twoPoint: [], threePoint: [] };
+    },
+    createDefaultMeleeForm() {
+      return { group: '', die: 3, damageType: 'S', traits: this.createEmptyTraits() };
+    },
+    createDefaultRangedForm() {
+      return { group: '', die: 3, damageType: 'P', reload: 0, volley: 0, range: 0, traits: this.createEmptyTraits() };
+    },
+    getDefaultStateForMode(mode) {
+      const defaults = {
+        selectedAncestry: '',
+        meleeForm: this.createDefaultMeleeForm(),
+        rangedForm: this.createDefaultRangedForm()
+      };
+
+      if (mode === 'combination') {
+        return {
+          adjustements: { proficiency: 6, hands: 0 },
+          ...defaults
+        };
+      }
+
+      return {
+        adjustements: { proficiency: 0, hands: 0 },
+        ...defaults
+      };
+    },
+    normalizeAdjustementsForMode(mode, adjustements) {
+      const normalized = this.deepClone(adjustements || { proficiency: 0, hands: 0 });
+      if (mode === 'combination') {
+        if (![6, 10].includes(normalized.proficiency)) normalized.proficiency = 6;
+        if (![0, 7, 8].includes(normalized.hands)) normalized.hands = 0;
+        return normalized;
+      }
+
+      if (![-2, 0, 3, 5].includes(normalized.proficiency)) normalized.proficiency = 0;
+      if (mode === 'melee' && ![0, 6].includes(normalized.hands)) normalized.hands = 0;
+      if (mode === 'ranged' && ![0, 1, 2].includes(normalized.hands)) normalized.hands = 0;
+      return normalized;
+    },
+    captureCurrentState() {
+      return {
+        selectedAncestry: this.selectedAncestry,
+        adjustements: this.deepClone(this.adjustements),
+        meleeForm: this.deepClone(this.meleeForm),
+        rangedForm: this.deepClone(this.rangedForm)
+      };
+    },
+    applyState(state, mode) {
+      const nextState = this.deepClone(state);
+      this.selectedAncestry = nextState.selectedAncestry || '';
+      this.adjustements = this.normalizeAdjustementsForMode(mode, nextState.adjustements);
+      this.meleeForm = nextState.meleeForm || this.createDefaultMeleeForm();
+      this.rangedForm = nextState.rangedForm || this.createDefaultRangedForm();
+    },
+    initModeStateStore() {
+      this.modeStateStore = {
+        melee: this.getDefaultStateForMode('melee'),
+        ranged: this.getDefaultStateForMode('ranged'),
+        combination: this.getDefaultStateForMode('combination')
+      };
+      this.modeStateStore[this.range] = this.captureCurrentState();
+      this.restoreStateForMode(this.range);
+    },
+    restoreStateForMode(mode) {
+      if (!this.modeStateStore[mode]) {
+        this.modeStateStore[mode] = this.getDefaultStateForMode(mode);
+      }
+      this.applyState(this.modeStateStore[mode], mode);
+    },
+    formatModeLabel(mode) {
+      return mode === 'combination' ? 'Combination' : mode.charAt(0).toUpperCase() + mode.slice(1);
+    },
+    showSwitchNotice(mode) {
+      this.switchNotice = `Restored ${this.formatModeLabel(mode)} build`;
+      if (this.switchNoticeTimer) clearTimeout(this.switchNoticeTimer);
+      this.switchNoticeTimer = setTimeout(() => {
+        this.switchNotice = '';
+        this.switchNoticeTimer = null;
+      }, 1700);
+    },
     calcTraitPoints(traits) {
       let sum = traits.onePoint.length;
       sum += (traits.twoPoint.length * 2) + (traits.threePoint.length * 3);
@@ -454,6 +578,49 @@ export default {
       if (index > -1) target.traits[pointKey].splice(index, 1);
       else target.traits[pointKey].push(trait);
     },
+    showCopyNotice(message) {
+      this.copyNotice = message;
+      if (this.copyNoticeTimer) clearTimeout(this.copyNoticeTimer);
+      this.copyNoticeTimer = setTimeout(() => {
+        this.copyNotice = '';
+        this.copyNoticeTimer = null;
+      }, 1700);
+    },
+    copyToClipboard(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        return navigator.clipboard.writeText(text);
+      }
+
+      return new Promise((resolve, reject) => {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.setAttribute('readonly', '');
+        textarea.style.position = 'fixed';
+        textarea.style.left = '-9999px';
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          const success = document.execCommand('copy');
+          document.body.removeChild(textarea);
+          if (success) resolve();
+          else reject(new Error('Copy command failed'));
+        } catch (err) {
+          document.body.removeChild(textarea);
+          reject(err);
+        }
+      });
+    },
+    async copyTraitsToClipboard(formKey) {
+      const isRangedForm = formKey === 'ranged';
+      const form = isRangedForm ? this.rangedForm : this.meleeForm;
+      const traitsText = this.getFormTraits(form, isRangedForm).join(', ');
+      try {
+        await this.copyToClipboard(traitsText);
+        this.showCopyNotice('Traits copied to clipboard');
+      } catch (error) {
+        this.showCopyNotice('Unable to copy traits on this browser');
+      }
+    },
     getTraitClass(t, formKey, pointKey, group, baseDamage, die) {
       const target = formKey === 'melee' ? this.meleeForm : this.rangedForm;
       const isSelected = target.traits[pointKey].includes(t);
@@ -469,11 +636,17 @@ export default {
       return key === 'onePoint' ? '1-Point' : key === 'twoPoint' ? '2-Point' : '3-Point';
     },
     resetBuilder() {
+      this.isResettingBuilder = true;
+      this.modeStateStore = {
+        melee: this.getDefaultStateForMode('melee'),
+        ranged: this.getDefaultStateForMode('ranged'),
+        combination: this.getDefaultStateForMode('combination')
+      };
       this.range = 'melee';
-      this.selectedAncestry = '';
-      this.adjustements = { proficiency: 0, hands: 0 };
-      this.meleeForm = { group: '', die: 3, damageType: 'S', traits: { onePoint: [], twoPoint: [], threePoint: [] } };
-      this.rangedForm = { group: '', die: 3, damageType: 'P', reload: 0, volley: 0, range: 0, traits: { onePoint: [], twoPoint: [], threePoint: [] } };
+      this.applyState(this.modeStateStore.melee, 'melee');
+      this.$nextTick(() => {
+        this.isResettingBuilder = false;
+      });
     }
   }
 };
@@ -521,6 +694,24 @@ export default {
 
 .mode-toggle-row .form-check {
   margin-right: 0;
+}
+
+.switch-notice {
+  color: #93c5fd;
+  font-size: 0.85rem;
+  line-height: 1.2;
+}
+
+.copy-notice {
+  color: #86efac;
+  font-size: 0.85rem;
+  line-height: 1.2;
+}
+
+.summary-copy-btn {
+  padding: 0.14rem 0.5rem;
+  font-size: 0.72rem;
+  line-height: 1.2;
 }
 
 .builder-card .section-title-sm.mb-3 {
