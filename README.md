@@ -1,5 +1,7 @@
 # PF2e Weapon Builder
 
+![Codecov Coverage](https://codecov.io/gh/aegorsuch/PF2E-Weapon-Builder/branch/main/graph/badge.svg)
+
 A Vue-based web app for designing custom Pathfinder 2e weapons using point-budget rules. It supports melee, ranged, and combination weapons with live validation and trait filtering.
 
 ## Features
