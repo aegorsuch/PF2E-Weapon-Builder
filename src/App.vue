@@ -134,17 +134,19 @@
                 <span class="trait-collapse-icon">{{ isTraitSectionCollapsed('melee', pointKey) ? '+' : '-' }}</span>
               </button>
             </div>
-            <div v-show="!isTraitSectionCollapsed('melee', pointKey)" class="trait-button-grid mt-1">
-              <button v-for="t in traitList" :key="t" type="button"
-                @click="toggleTrait('melee', pointKey, t)"
-                class="btn btn-sm"
-                :title="getTraitDescription(t)"
-                :aria-label="getTraitDescription(t)"
-                :aria-disabled="!isTraitAllowed(t, meleeForm.group, meleeForm.damageType, meleeForm.die) && !meleeForm.traits[pointKey].includes(t)"
-                :class="getTraitClass(t, 'melee', pointKey, meleeForm.group, meleeForm.damageType, meleeForm.die)">
-                {{ t }}
-              </button>
-            </div>
+            <transition name="trait-collapse">
+              <div v-show="!isTraitSectionCollapsed('melee', pointKey)" class="trait-button-grid mt-1">
+                <button v-for="t in traitList" :key="t" type="button"
+                  @click="toggleTrait('melee', pointKey, t)"
+                  class="btn btn-sm"
+                  :title="getTraitDescription(t)"
+                  :aria-label="getTraitDescription(t)"
+                  :aria-disabled="!isTraitAllowed(t, meleeForm.group, meleeForm.damageType, meleeForm.die) && !meleeForm.traits[pointKey].includes(t)"
+                  :class="getTraitClass(t, 'melee', pointKey, meleeForm.group, meleeForm.damageType, meleeForm.die)">
+                  {{ t }}
+                </button>
+              </div>
+            </transition>
           </div>
           </div>
         </div>
@@ -226,17 +228,19 @@
                 <span class="trait-collapse-icon">{{ isTraitSectionCollapsed('ranged', pointKey) ? '+' : '-' }}</span>
               </button>
             </div>
-            <div v-show="!isTraitSectionCollapsed('ranged', pointKey)" class="trait-button-grid mt-1">
-              <button v-for="t in traitList" :key="t" type="button"
-                @click="toggleTrait('ranged', pointKey, t)"
-                class="btn btn-sm"
-                :title="getTraitDescription(t)"
-                :aria-label="getTraitDescription(t)"
-                :aria-disabled="!isTraitAllowed(t, rangedForm.group, rangedForm.damageType, rangedForm.die) && !rangedForm.traits[pointKey].includes(t)"
-                :class="getTraitClass(t, 'ranged', pointKey, rangedForm.group, rangedForm.damageType, rangedForm.die)">
-                {{ t }}
-              </button>
-            </div>
+            <transition name="trait-collapse">
+              <div v-show="!isTraitSectionCollapsed('ranged', pointKey)" class="trait-button-grid mt-1">
+                <button v-for="t in traitList" :key="t" type="button"
+                  @click="toggleTrait('ranged', pointKey, t)"
+                  class="btn btn-sm"
+                  :title="getTraitDescription(t)"
+                  :aria-label="getTraitDescription(t)"
+                  :aria-disabled="!isTraitAllowed(t, rangedForm.group, rangedForm.damageType, rangedForm.die) && !rangedForm.traits[pointKey].includes(t)"
+                  :class="getTraitClass(t, 'ranged', pointKey, rangedForm.group, rangedForm.damageType, rangedForm.die)">
+                  {{ t }}
+                </button>
+              </div>
+            </transition>
           </div>
           </div>
         </div>
@@ -932,6 +936,26 @@ export default {
   display: flex;
   flex-wrap: wrap;
   gap: 0.6rem 0.7rem;
+}
+
+.trait-collapse-enter-active,
+.trait-collapse-leave-active {
+  overflow: hidden;
+  transition: max-height 0.22s ease, opacity 0.2s ease, transform 0.2s ease;
+}
+
+.trait-collapse-enter,
+.trait-collapse-leave-to {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+.trait-collapse-enter-to,
+.trait-collapse-leave {
+  max-height: 1200px;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .trait-collapse-btn {
