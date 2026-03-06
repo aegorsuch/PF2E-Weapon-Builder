@@ -130,7 +130,8 @@
               <button v-for="t in traitList" :key="t" type="button"
                 @click="toggleTrait('melee', pointKey, t)"
                 class="btn btn-sm"
-                :title="traitDescriptions[t]"
+                :title="getTraitDescription(t)"
+                :aria-label="getTraitDescription(t)"
                 :aria-disabled="!isTraitAllowed(t, meleeForm.group, meleeForm.damageType, meleeForm.die) && !meleeForm.traits[pointKey].includes(t)"
                 :class="getTraitClass(t, 'melee', pointKey, meleeForm.group, meleeForm.damageType, meleeForm.die)">
                 {{ t }}
@@ -213,7 +214,8 @@
               <button v-for="t in traitList" :key="t" type="button"
                 @click="toggleTrait('ranged', pointKey, t)"
                 class="btn btn-sm"
-                :title="traitDescriptions[t]"
+                :title="getTraitDescription(t)"
+                :aria-label="getTraitDescription(t)"
                 :aria-disabled="!isTraitAllowed(t, rangedForm.group, rangedForm.damageType, rangedForm.die) && !rangedForm.traits[pointKey].includes(t)"
                 :class="getTraitClass(t, 'ranged', pointKey, rangedForm.group, rangedForm.damageType, rangedForm.die)">
                 {{ t }}
@@ -633,6 +635,10 @@ export default {
         'btn-outline-secondary opacity-75': !isSelected && isAllowed,
         'opacity-25 disabled-trait': !isSelected && !isAllowed
       };
+    },
+    getTraitDescription(traitName) {
+      const description = this.traitDescriptions[traitName];
+      return description && description.trim() ? description : `No description available for ${traitName}.`;
     },
     formatPointLabel(key) {
       return key === 'onePoint' ? '1-Point' : key === 'twoPoint' ? '2-Point' : '3-Point';
