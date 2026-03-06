@@ -94,7 +94,7 @@
                 :aria-valuenow="meleeSpent" 
                 :aria-valuemin="0" 
                 :aria-valuemax="meleeQuota">
-                {{ meleeSpent }}/{{ meleeQuota }}{{ meleeSpent >= meleeQuota ? ' -œ”' : '' }}
+                {{ meleeSpent }}/{{ meleeQuota }}{{ meleeSpent >= meleeQuota ? ' OK' : '' }}
               </div>
             </div>
           </div>
@@ -153,7 +153,7 @@
                 :aria-valuenow="rangedSpent" 
                 :aria-valuemin="0" 
                 :aria-valuemax="rangedQuota">
-                {{ rangedSpent }}/{{ rangedQuota }}{{ rangedSpent >= rangedQuota ? ' -œ”' : '' }}
+                {{ rangedSpent }}/{{ rangedQuota }}{{ rangedSpent >= rangedQuota ? ' OK' : '' }}
               </div>
             </div>
           </div>
@@ -224,6 +224,14 @@
           </div>
           </div>
         </div>
+      </div>
+
+      <div class="builder-card warning-card mb-3">
+        <h3 class="section-title-sm text-warning mb-2">Warnings</h3>
+        <p v-if="warnings.length === 0" class="warning-clear mb-0">No warnings.</p>
+        <ul v-else class="warning-list mb-0">
+          <li v-for="(warning, index) in warnings" :key="'warn-' + index">{{ warning }}</li>
+        </ul>
       </div>
     </form>
     <hr />
@@ -302,7 +310,7 @@ export default {
         threePoint: ['Capacity 5', 'Double Barrel', 'Fatal', 'Injection', 'Reach', 'Recovery', 'Repeating', 'Scatter 10']
       },
       traitDescriptions: {
-        'Agile': "The multiple attack penalty you take with this weapon on the second attack on your turn is -€“4 instead of -€“5, and -€“8 instead of -€“10 on the third and subsequent attacks in the turn.",
+        'Agile': "The multiple attack penalty you take with this weapon on the second attack on your turn is -4 instead of -5, and -8 instead of -10 on the third and subsequent attacks in the turn.",
         'Attached to Crossbow or Firearm': "An attached weapon must be combined with another piece of gear to be used. The trait lists what type of item the weapon must be attached to. You must be wielding or wearing the item the weapon is attached to in order to attack with it.",
         'Attached to Shield': "An attached weapon must be combined with another piece of gear to be used. The trait lists what type of item the weapon must be attached to. You must be wielding or wearing the item the weapon is attached to in order to attack with it.",
         'Backstabber': "When you hit an off-guard creature, this weapon deals 1 precision damage in addition to its normal damage. The precision damage increases to 2 if the weapon is a +3 weapon.",
@@ -317,21 +325,21 @@ export default {
         'Disarm': "You can use this weapon to Disarm with the Athletics skill even if you don't have a free hand. This uses the weapon's reach (if different from your own) and adds the weapon's item bonus to attack rolls (if any) as an item bonus to the Athletics check.",
         'Double Barrel': "This weapon has two barrels that are each loaded separately. You can fire both barrels of a double barrel weapon in a single Strike to increase the weapon damage die by one step. If the weapon has the fatal trait, this increases the fatal die by one step.",
         'Fatal': "The fatal trait includes a die size. On a critical hit, the weapon's damage die increases to that die size instead of the normal die size, and the weapon adds one additional damage die of the listed size.",
-        'Fatal Aim': "It-€™s possible to hold the stock of this weapon under one arm so you can fire it with a single hand as long as the other hand isn-€™t holding a weapon, shield, or anything else you would need to move and position, to ensure the weapon doesn-€™t slip out from under your arm. However, if you use both hands, the weapon can make fatal attacks. When you wield the weapon in two hands, it gains the fatal trait with the listed damage die. Holding the weapon underarm stably enough to fire is significantly more complicated than just releasing one hand from the weapon, so to switch between the two grips, you must do so with an Interact action rather than Releasing or as part of reloading.",
+        'Fatal Aim': "It's possible to hold the stock of this weapon under one arm so you can fire it with a single hand as long as the other hand isn't holding a weapon, shield, or anything else you would need to move and position, to ensure the weapon doesn't slip out from under your arm. However, if you use both hands, the weapon can make fatal attacks. When you wield the weapon in two hands, it gains the fatal trait with the listed damage die. Holding the weapon underarm stably enough to fire is significantly more complicated than just releasing one hand from the weapon, so to switch between the two grips, you must do so with an Interact action rather than Releasing or as part of reloading.",
         'Finesse': "You can use your Dexterity modifier instead of your Strength modifier on attack rolls using this melee weapon. You still calculate damage using Strength.",
         'Forceful': "This weapon becomes more dangerous as you build momentum. When you attack with it more than once on your turn, the second attack gains a circumstance bonus to damage equal to the number of weapon damage dice, and each later attack gains a circumstance bonus to damage equal to double the number of damage dice.",
         'Free-Hand': "This weapon doesn't take up your hand, usually because it is built into your armor. A free-hand weapon can't be Disarmed. You can use the hand covered by your free-hand weapon to wield other items, perform manipulate actions, and so on.",
         'Grapple': "You can use this weapon to Grapple with the Athletics skill even if you don't have a free hand. This uses the weapon's reach (if different from your own) and adds the weapon's item bonus to attack rolls as an item bonus to the Athletics check.",
-        'Hampering': "A weapon with the hampering trait includes a disruptive limb or flange. After you hit with the weapon, you can use an Interact action to give the target a -€“10-foot circumstance penalty to all Speeds. The penalty ends after the target takes a move action, at the start of your next turn, if you attack with the weapon, or if you move out of reach of the target, whichever comes first.",
+        'Hampering': "A weapon with the hampering trait includes a disruptive limb or flange. After you hit with the weapon, you can use an Interact action to give the target a -10-foot circumstance penalty to all Speeds. The penalty ends after the target takes a move action, at the start of your next turn, if you attack with the weapon, or if you move out of reach of the target, whichever comes first.",
         'Injection': "This weapon can be filled with a liquid, usually an injury poison. Immediately after a successful attack with the weapon, you can inject the target with the loaded contents with a single Interact action. (If the target is willing, the injection takes only 1 Interact action total.) Refilling the weapon with a new substance requires 3 Interact actions and uses two hands.",
         'Jousting': "The weapon is suited for mounted combat with a harness or similar means. When mounted, if you moved at least 10 feet on the action before your attack, add a circumstance bonus to damage for that attack equal to the number of damage dice for the weapon.",
-        'Kickback': "A kickback weapon is extra powerful and difficult to use due to its high recoil. A kickback weapon deals 1 additional damage with all attacks. Firing a kickback weapon gives a -€“2 circumstance penalty to the attack roll, but characters with +2 or more Strength ignore the penalty. Attaching a kickback weapon to a deployed bipod, tripod, or other stabilizer can lower or negate this penalty.",
+        'Kickback': "A kickback weapon is extra powerful and difficult to use due to its high recoil. A kickback weapon deals 1 additional damage with all attacks. Firing a kickback weapon gives a -2 circumstance penalty to the attack roll, but characters with +2 or more Strength ignore the penalty. Attaching a kickback weapon to a deployed bipod, tripod, or other stabilizer can lower or negate this penalty.",
         'Modular (B P or S)': "The weapon has multiple configurations that you can switch between using an Interact action. Typically, switching between configurations of a modular weapon allows it to deal different types of damage (listed in the trait, such as \"modular B, P, or S\"), though it's possible for a modular weapon's description to list more complicated configurations.",
         'Monk': "Many monks learn to use these weapons.",
-        'Nonlethal': "Attacks with this weapon are nonlethal, and are used to knock creatures unconscious instead of kill them. You can use a nonlethal weapon to make a lethal attack with a -€“2 circumstance penalty.",
+        'Nonlethal': "Attacks with this weapon are nonlethal, and are used to knock creatures unconscious instead of kill them. You can use a nonlethal weapon to make a lethal attack with a -2 circumstance penalty.",
         'Parry': "This weapon can be used defensively to block attacks. While wielding this weapon, if your proficiency with it is trained or better, you can spend a single action to position your weapon defensively, gaining a +1 circumstance bonus to AC until the start of your next turn.",
         'Propulsive': "You add half your Strength modifier (if positive) to damage rolls with a propulsive ranged weapon. If you have a negative Strength modifier, you add your full Strength modifier instead.",
-        'Ranged Trip': "The weapon can be used to Trip with the Athletics skill within the weapon's first range increment. The skill check takes a -€“2 circumstance penalty. You can add the weapon's item bonus to attack rolls as a bonus to the check.",
+        'Ranged Trip': "The weapon can be used to Trip with the Athletics skill within the weapon's first range increment. The skill check takes a -2 circumstance penalty. You can add the weapon's item bonus to attack rolls as a bonus to the check.",
         'Razing': "Razing weapons are particularly good at damaging objects, structures, and vehicles. Whenever you deal damage to an object (including shields and animated objects), structure, or vehicle with a razing weapon, the object takes an amount of additional damage equal to double the number of weapon damage dice.",
         'Reach': "This weapon can be used to attack enemies up to 10 feet away instead of only adjacent enemies. For creatures with reach, the weapon increases their reach by 5 feet.",
         'Recovery': "Recovery weapons are thrown weapons designed to return to the thrower when they miss the target. When you make an unsuccessful thrown Strike with this weapon, it flies back to your hand after the Strike is complete, allowing you to try again. If your hands are full when the weapon returns, it falls to the ground in your space.",
@@ -354,7 +362,7 @@ export default {
         'Versatile B': "A versatile weapon can be used to deal a different type of damage than its listed type. This trait indicates the alternate damage type.",
         'Versatile P': "A versatile weapon can be used to deal a different type of damage than its listed type. This trait indicates the alternate damage type.",
         'Versatile S': "A versatile weapon can be used to deal a different type of damage than its listed type. This trait indicates the alternate damage type.",
-        'Volley': "This ranged weapon is less effective at close distances. Your attacks against targets that are at a distance within the range listed take a -€“2 penalty."
+        'Volley': "This ranged weapon is less effective at close distances. Your attacks against targets that are at a distance within the range listed take a -2 penalty."
       }
     };
   },
@@ -441,6 +449,43 @@ export default {
       if (this.totalAvailablePoints === 0) return 0;
       const percentage = (this.pointsUsed / this.totalAvailablePoints) * 100;
       return Math.min(Math.max(percentage, 0), 100);
+    },
+    warnings() {
+      const issues = [];
+
+      if (this.total < 0) {
+        issues.push(`Points overspent by ${Math.abs(this.total)}.`);
+      }
+
+      if (this.range !== 'ranged' && !this.meleeForm.group) {
+        issues.push('Melee group is not selected.');
+      }
+
+      if (this.range !== 'melee' && !this.rangedForm.group) {
+        issues.push('Ranged group is not selected.');
+      }
+
+      if (this.isCombo) {
+        const meleeDelta = this.meleeSpent - this.meleeQuota;
+        const rangedDelta = this.rangedSpent - this.rangedQuota;
+
+        if (meleeDelta < 0) {
+          issues.push(`Melee form is under quota by ${Math.abs(meleeDelta)} points.`);
+        } else if (meleeDelta > 0) {
+          issues.push(`Melee form is over quota by ${meleeDelta} points.`);
+        }
+
+        if (rangedDelta < 0) {
+          issues.push(`Ranged form is under quota by ${Math.abs(rangedDelta)} points.`);
+        } else if (rangedDelta > 0) {
+          issues.push(`Ranged form is over quota by ${rangedDelta} points.`);
+        }
+      }
+
+      issues.push(...this.getInvalidTraitWarnings('Melee', this.meleeForm, this.range !== 'ranged'));
+      issues.push(...this.getInvalidTraitWarnings('Ranged', this.rangedForm, this.range !== 'melee'));
+
+      return issues;
     }
   },
   methods: {
@@ -640,6 +685,18 @@ export default {
       const description = this.traitDescriptions[traitName];
       return description && description.trim() ? description : `No description available for ${traitName}.`;
     },
+    getInvalidTraitWarnings(formLabel, form, isVisible) {
+      if (!isVisible) return [];
+      const issues = [];
+      Object.keys(form.traits).forEach(pointKey => {
+        form.traits[pointKey].forEach(trait => {
+          if (!this.isTraitAllowed(trait, form.group, form.damageType, form.die)) {
+            issues.push(`${formLabel}: "${trait}" is selected but is not valid for the current group, damage type, or die.`);
+          }
+        });
+      });
+      return issues;
+    },
     formatPointLabel(key) {
       return key === 'onePoint' ? '1-Point' : key === 'twoPoint' ? '2-Point' : '3-Point';
     },
@@ -714,6 +771,25 @@ export default {
   color: #86efac;
   font-size: 0.85rem;
   line-height: 1.2;
+}
+
+.warning-card {
+  border-color: #7c5a1b;
+  background: #221a08;
+}
+
+.warning-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: #facc15;
+}
+
+.warning-list li + li {
+  margin-top: 0.3rem;
+}
+
+.warning-clear {
+  color: #86efac;
 }
 
 .summary-copy-btn {
