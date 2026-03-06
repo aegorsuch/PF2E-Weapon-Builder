@@ -18,7 +18,7 @@
             :aria-valuenow="pointsUsed" 
             :aria-valuemin="0" 
             :aria-valuemax="totalAvailablePoints">
-            {{ pointsUsed === 0 ? '' : pointsUsed + ' / ' + totalAvailablePoints + ' Points Used' }}
+            {{ pointsUsed === 0 ? '' : pointsUsed + '/' + totalAvailablePoints }}
           </div>
         </div>
       </div>
@@ -97,7 +97,7 @@
                 :aria-valuenow="meleeSpent" 
                 :aria-valuemin="0" 
                 :aria-valuemax="meleeQuota">
-                {{ meleeSpent }} / {{ meleeQuota }} WP {{ meleeSpent >= meleeQuota ? '✔' : '' }}
+                {{ meleeSpent }}/{{ meleeQuota }}{{ meleeSpent >= meleeQuota ? ' ✔' : '' }}
               </div>
             </div>
           </div>
@@ -151,7 +151,7 @@
                 :aria-valuenow="rangedSpent" 
                 :aria-valuemin="0" 
                 :aria-valuemax="rangedQuota">
-                {{ rangedSpent }} / {{ rangedQuota }} WP {{ rangedSpent >= rangedQuota ? '✔' : '' }}
+                {{ rangedSpent }}/{{ rangedQuota }}{{ rangedSpent >= rangedQuota ? ' ✔' : '' }}
               </div>
             </div>
           </div>
