@@ -69,3 +69,20 @@ The balancing model is based on community guides:
 
 - This is a homebrew aid, not official Paizo tooling.
 - Final balance decisions should be reviewed by your GM.
+
+## Accessibility & Mobile Controls
+
+The mobile warnings drawer supports keyboard and reduced-motion use:
+
+- `Esc` closes the warnings drawer.
+- `Tab` and `Shift+Tab` stay trapped inside the drawer while it is open.
+- Focus is moved into the drawer when opened and restored to the trigger when closed.
+- Drawer trigger reports open state with ARIA attributes.
+- Motion-heavy transitions are disabled when `prefers-reduced-motion: reduce` is enabled.
+
+Mobile quick actions in the sticky footer:
+
+- `Reset` clears the current build state.
+- `Melee` and `Ranged` jump to the relevant form section.
+- `Copy Visible` copies traits from the currently visible form(s).
+- `No Issues` / `N Issues` opens the warnings drawer.
