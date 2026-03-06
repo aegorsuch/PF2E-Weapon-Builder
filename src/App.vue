@@ -18,7 +18,7 @@
             :aria-valuenow="pointsUsed" 
             :aria-valuemin="0" 
             :aria-valuemax="totalAvailablePoints">
-            {{ pointsUsed === 0 ? 'No points used' : pointsUsed + ' / ' + totalAvailablePoints + ' Points Used' }}
+            {{ pointsUsed === 0 ? '' : pointsUsed + ' / ' + totalAvailablePoints + ' Points Used' }}
           </div>
         </div>
       </div>
