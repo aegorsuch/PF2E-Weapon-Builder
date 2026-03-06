@@ -70,6 +70,13 @@ The balancing model is based on community guides:
 - This is a homebrew aid, not official Paizo tooling.
 - Final balance decisions should be reviewed by your GM.
 
+## Recent Changes
+
+- Added mobile-first UX polish across trait/category workflows (collapsible sections, sticky quick actions/footer, and mobile warnings drawer).
+- Improved accessibility: keyboard support for the warnings drawer (`Esc`, focus trap, and focus restore) and reduced-motion handling.
+- Added trait search/filter and selected-trait chip management for faster editing on small screens.
+- Optimized `public/android-chrome-512x512.png` to reduce asset size and remove production build size warnings.
+
 ## Accessibility & Mobile Controls
 
 The mobile warnings drawer supports keyboard and reduced-motion use:
