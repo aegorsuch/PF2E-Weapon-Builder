@@ -2,13 +2,10 @@
   <div id="app" class="container pb-5">
     <form>
       <div class="mt-3">
-        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-3 gap-2">
-          <h1 class="mb-0 h4 h2-md" :class="{'text-danger': total < 0}">Points Left: {{ total }}</h1>
-          <div>
-            <button type="button" class="btn btn-outline-danger btn-sm" @click="resetBuilder">
-              Clear All
-            </button>
-          </div>
+        <div class="d-flex justify-content-end mb-3">
+          <button type="button" class="btn btn-outline-danger btn-sm" @click="resetBuilder">
+            Clear All
+          </button>
         </div>
         <div class="progress mb-3" style="height: 30px;">
           <div class="progress-bar" 
